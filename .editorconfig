@@ -1,0 +1,26 @@
+# EditorConfig is awesome: https://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+
+# C# files
+[*.cs]
+
+# Namespace settings - Luôn dùng namespace gốc thay vì theo folder
+dotnet_style_namespace_match_folder = false
+
+# IDE0130: Namespace does not match folder structure
+dotnet_diagnostic.IDE0130.severity = none
+
+# Prefer simple using statement
+csharp_prefer_simple_using_statement = true:suggestion
+
+# Indentation and spacing
+indent_style = space
+indent_size = 4
+tab_width = 4
+
+# New line preferences
+end_of_line = crlf
+insert_final_newline = false
+charset = utf-8-bom

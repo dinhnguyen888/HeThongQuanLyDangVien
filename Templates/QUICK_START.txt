@@ -1,0 +1,76 @@
+╔════════════════════════════════════════════════════════════════╗
+║  🚀 QUICK START: Tạo Form/UserControl KHÔNG BỊ LỖI DESIGNER    ║
+╚════════════════════════════════════════════════════════════════╝
+
+📌 LỖI THƯỜNG GẶP:
+   "Value does not fall within the expected range"
+   
+📌 NGUYÊN NHÂN:
+   Visual Studio tự động tạo namespace theo thư mục
+   (VD: QuanLyDangVien.Forms) → Conflict với class Form
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚡ CÁCH SỬA NHANH NHẤT - Code Snippet (3 bước)
+
+🔧 BƯỚC 1: Cài đặt Snippet (Chỉ làm 1 lần)
+   1. Visual Studio → Tools → Code Snippets Manager
+   2. Chọn Language: Visual C#
+   3. Click [Import...] → Chọn file:
+      Templates/QuanLyDangVienSnippets.snippet
+   4. Click [Finish]
+   
+✅ BƯỚC 2: Tạo Form
+   1. Tạo file .cs mới (VD: Forms/MyNewForm.cs)
+   2. Gõ: qldvform → Tab Tab
+   3. Nhập tên class → Enter
+   4. ✅ XONG! Namespace đã đúng!
+
+✅ BƯỚC 3: Tạo UserControl
+   1. Tạo file .cs mới (VD: Controls/MyControl.cs)
+   2. Gõ: qldvuc → Tab Tab
+   3. Nhập tên class → Enter
+   4. ✅ XONG!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔍 NẾU ĐÃ TẠO FORM/USERCONTROL BỊ LỖI
+
+✏️ Cách sửa nhanh (2 phút):
+
+1️⃣ Mở file .cs và .Designer.cs
+2️⃣ Find & Replace (Ctrl+H):
+   ├─ Tìm:  namespace QuanLyDangVien.Forms
+   └─ Thay: namespace QuanLyDangVien
+
+3️⃣ Trong file .cs, sửa:
+   ├─ Tìm:  : Form
+   └─ Thay: : global::System.Windows.Forms.Form
+
+4️⃣ Đóng file → Mở lại Designer → ✅ OK!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📖 QUY TẮC VÀNG
+
+✅ ĐÚNG:
+   namespace QuanLyDangVien
+   public partial class MyForm : global::System.Windows.Forms.Form
+
+❌ SAI:
+   namespace QuanLyDangVien.Forms
+   public partial class MyForm : Form
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📚 CHI TIẾT HƠN:
+   Xem file: Templates/README_CACH_SU_DUNG.md
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 MẸO:
+   - Khởi động lại Visual Studio sau khi cài snippet
+   - Snippet keywords: qldvform (Form), qldvuc (UserControl)
+   - Tab Tab để kích hoạt snippet
+   
+🎉 CHÚC BẠN CODE VUI VẺ!
