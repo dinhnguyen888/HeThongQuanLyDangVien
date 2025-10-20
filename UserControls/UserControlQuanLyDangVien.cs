@@ -69,7 +69,43 @@ namespace QuanLyDangVien
 
                 case "Sửa thông tin":
                     MessageBox.Show($"Sửa thông tin đảng viên {id}");
-                    // TODO: Mở form sửa thông tin
+                    // Tạo dữ liệu giả cho DangVien
+                    DangVien dangVienGia = new DangVien
+                    {
+                        DangVienID = 1,
+                        DonViID = "Chi bộ 1",
+                        HoTen = "Nguyễn Văn A",
+                        NgaySinh = new DateTime(1990, 5, 15),
+                        GioiTinh = "Nam",
+                        SoCCCD = "001234567890",
+                        SoDienThoai = "0987654321",
+                        SoTheDangVien = "DV2020001",
+                        SoLyLichDangVien = "LL2020001",
+                        NgayVaoDang = new DateTime(2015, 6, 1),
+                        NgayChinhThuc = new DateTime(2016, 6, 1),
+                        LoaiDangVien = "Chính thức",
+                        DoiTuong = "Quần chúng",
+                        CapBac = "Đảng viên",
+                        ChucVu = "Trưởng phòng",
+                        QueQuan = "Hà Nội, Việt Nam",
+                        TrinhDo = "Đại học",
+                        AnhDaiDien = "", // Để trống hoặc path ảnh nếu có
+                        QuaTrinhCongTac = @"2010 - 2014: Học tại Đại học Bách Khoa Hà Nội
+2014 - 2018: Nhân viên phòng Kỹ thuật
+2018 - 2022: Phó phòng Kỹ thuật
+2022 - nay: Trưởng phòng Kỹ thuật",
+                        HoSoGiaDinh = @"Cha: Nguyễn Văn B - Nghề nghiệp: Nông dân
+Mẹ: Trần Thị C - Nghề nghiệp: Giáo viên
+Vợ: Lê Thị D - Nghề nghiệp: Y tá
+Con: Nguyễn Văn E - Sinh năm 2018",
+                        TrangThai = true,
+                        NgayTao = DateTime.Now.AddMonths(-6),
+                        NguoiTao = "admin"
+                    };
+
+                    // Hiển thị form
+                    FormSua form = new FormSua(dangVienGia);
+                    form.ShowDialog(); // Dùng ShowDialog() thay vì Show() để chờ kết quả
                     break;
 
                 case "Xóa đảng viên":
@@ -93,7 +129,8 @@ namespace QuanLyDangVien
 
         private void ThemBtn_Click(object sender, EventArgs e)
         {
-            FormThaoTacDulieu form = new FormThaoTacDulieu(typeof(DangVien));
+            //FormThaoTacDulieu form = new FormThaoTacDulieu(typeof(DangVien));
+            FormThem form = new FormThem(typeof(DangVien));
             form.Show();
         }
 

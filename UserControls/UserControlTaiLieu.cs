@@ -8,14 +8,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace QuanLyDangVien
+namespace QuanLyDangVien.UserControls
 {
-    public partial class UserControlBaoCaoThongKe : UserControl
+    public partial class UserControlTaiLieu : UserControl
     {
-        public UserControlBaoCaoThongKe()
+        public UserControlTaiLieu()
         {
             InitializeComponent();
-           
         }
     }
 }

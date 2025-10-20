@@ -1,0 +1,386 @@
+using QuanLyDangVien.Attributes;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Windows.Forms;
+
+namespace QuanLyDangVien.Helper
+{
+    /// <summary>
+    /// Helper class chứa các hàm tiện ích cho dynamic forms
+    /// </summary>
+    public static class FormHelper
+    {
+        /// <summary>
+        /// Lấy display name từ property name hoặc DisplayNameAttribute
+        /// </summary>
+        public static string GetDisplayName(PropertyInfo property)
+        {
+            var displayNameAttr = property.GetCustomAttribute<QuanLyDangVien.Attributes.DisplayNameAttribute>();
+            if (displayNameAttr != null)
+            {
+                return displayNameAttr.Name;
+            }
+            
+            // Convert PascalCase to spaced text
+            return System.Text.RegularExpressions.Regex.Replace(property.Name, "([A-Z])", " $1").Trim();
+        }
+
+        /// <summary>
+        /// Convert string value sang kiểu dữ liệu target
+        /// </summary>
+        public static object ConvertValue(string value, Type targetType)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                if (Nullable.GetUnderlyingType(targetType) != null)
+                    return null;
+                if (targetType == typeof(string))
+                    return string.Empty;
+                throw new ArgumentException("Giá trị không được để trống");
+            }
+
+            Type underlyingType = Nullable.GetUnderlyingType(targetType) ?? targetType;
+
+            if (underlyingType == typeof(int))
+                return int.Parse(value);
+            else if (underlyingType == typeof(long))
+                return long.Parse(value);
+            else if (underlyingType == typeof(decimal))
+                return decimal.Parse(value);
+            else if (underlyingType == typeof(double))
+                return double.Parse(value);
+            else if (underlyingType == typeof(float))
+                return float.Parse(value);
+            else if (underlyingType == typeof(DateTime))
+                return DateTime.Parse(value);
+            else
+                return value;
+        }
+
+        /// <summary>
+        /// Validate các input controls dựa trên RequiredAttribute
+        /// </summary>
+        public static bool ValidateInputs(Dictionary<string, Control> controlsDictionary, 
+            Dictionary<string, PropertyInfo> propertiesDictionary)
+        {
+            foreach (var kvp in controlsDictionary)
+            {
+                string propertyName = kvp.Key;
+                Control control = kvp.Value;
+                PropertyInfo property = propertiesDictionary[propertyName];
+
+                var requiredAttr = property.GetCustomAttribute<RequiredAttribute>();
+                if (requiredAttr != null && requiredAttr.IsRequired)
+                {
+                    bool isEmpty = false;
+
+                    if (control is TextBox textBox && string.IsNullOrWhiteSpace(textBox.Text))
+                        isEmpty = true;
+                    else if (control is RichTextBox richTextBox && string.IsNullOrWhiteSpace(richTextBox.Text))
+                        isEmpty = true;
+                    else if (control is ComboBox comboBox && comboBox.SelectedIndex == -1)
+                        isEmpty = true;
+
+                    if (isEmpty)
+                    {
+                        string displayName = GetDisplayName(property);
+                        MessageBox.Show($"Vui lòng nhập {displayName}!", "Cảnh báo",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        control.Focus();
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Load dữ liệu từ object vào controls
+        /// </summary>
+        public static void LoadDataToControls(object dataObject, Dictionary<string, Control> controlsDictionary,
+            Dictionary<string, PropertyInfo> propertiesDictionary)
+        {
+            foreach (var kvp in controlsDictionary)
+            {
+                string propertyName = kvp.Key;
+                Control control = kvp.Value;
+                PropertyInfo property = propertiesDictionary[propertyName];
+
+                object value = property.GetValue(dataObject);
+                if (value == null) continue;
+
+                if (control is TextBox textBox)
+                {
+                    textBox.Text = value.ToString();
+                }
+                else if (control is RichTextBox richTextBox)
+                {
+                    richTextBox.Text = value.ToString();
+                }
+                else if (control is CheckBox checkBox)
+                {
+                    checkBox.Checked = (bool)value;
+                }
+                else if (control is DateTimePicker dateTimePicker)
+                {
+                    dateTimePicker.Value = (DateTime)value;
+                }
+                else if (control is ComboBox comboBox)
+                {
+                    comboBox.SelectedItem = value;
+                }
+                else if (control is NumericUpDown numericUpDown)
+                {
+                    numericUpDown.Value = Convert.ToDecimal(value);
+                }
+                else if (control is Panel panel)
+                {
+                    PictureBox pictureBox = panel.Controls.OfType<PictureBox>().FirstOrDefault();
+                    if (pictureBox != null && value is string imagePath && !string.IsNullOrEmpty(imagePath))
+                    {
+                        if (File.Exists(imagePath))
+                        {
+                            pictureBox.Image = Image.FromFile(imagePath);
+                            pictureBox.Tag = imagePath;
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Lưu dữ liệu từ controls vào object
+        /// </summary>
+        public static void SaveDataFromControls(object dataObject, Dictionary<string, Control> controlsDictionary,
+            Dictionary<string, PropertyInfo> propertiesDictionary)
+        {
+            foreach (var kvp in controlsDictionary)
+            {
+                string propertyName = kvp.Key;
+                Control control = kvp.Value;
+                PropertyInfo property = propertiesDictionary[propertyName];
+
+                if (!property.CanWrite) continue;
+
+                object value = null;
+
+                try
+                {
+                    if (control is TextBox textBox)
+                    {
+                        value = ConvertValue(textBox.Text, property.PropertyType);
+                    }
+                    else if (control is RichTextBox richTextBox)
+                    {
+                        value = richTextBox.Text;
+                    }
+                    else if (control is CheckBox checkBox)
+                    {
+                        value = checkBox.Checked;
+                    }
+                    else if (control is DateTimePicker dateTimePicker)
+                    {
+                        value = dateTimePicker.Value;
+                    }
+                    else if (control is ComboBox comboBox)
+                    {
+                        value = comboBox.SelectedItem;
+                    }
+                    else if (control is NumericUpDown numericUpDown)
+                    {
+                        value = Convert.ChangeType(numericUpDown.Value, property.PropertyType);
+                    }
+                    else if (control is Panel panel)
+                    {
+                        PictureBox pictureBox = panel.Controls.OfType<PictureBox>().FirstOrDefault();
+                        if (pictureBox != null && pictureBox.Tag != null)
+                        {
+                            value = pictureBox.Tag.ToString();
+                        }
+                    }
+
+                    property.SetValue(dataObject, value);
+                }
+                catch (Exception ex)
+                {
+                    string displayName = GetDisplayName(property);
+                    throw new Exception($"Lỗi tại trường {displayName}: {ex.Message}");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Tính toán chiều cao panel dựa trên danh sách properties
+        /// </summary>
+        public static int CalculatePanelHeight(List<PropertyInfo> properties)
+        {
+            int totalHeight = 10; // padding top
+
+            foreach (PropertyInfo property in properties)
+            {
+                ControlInputType inputType = ControlFactory.DetermineInputType(property);
+
+                // Tính chiều cao dựa trên loại control
+                if (inputType == ControlInputType.RichTextBox)
+                {
+                    totalHeight += 460; // RichTextBox height + label
+                }
+                else if (inputType == ControlInputType.PictureBox)
+                {
+                    totalHeight += 260; // PictureBox container height
+                }
+                else
+                {
+                    totalHeight += 65; // Normal control height
+                }
+            }
+
+            return totalHeight;
+        }
+
+        /// <summary>
+        /// Phân loại properties theo nhóm (left, right, bottom)
+        /// </summary>
+        public static void ClassifyProperties(PropertyInfo[] properties, 
+            out List<PropertyInfo> leftGroup, 
+            out List<PropertyInfo> rightGroup, 
+            out List<PropertyInfo> bottomGroup)
+        {
+            leftGroup = new List<PropertyInfo>();
+            rightGroup = new List<PropertyInfo>();
+            bottomGroup = new List<PropertyInfo>();
+
+            foreach (PropertyInfo property in properties)
+            {
+                if (!property.CanWrite) continue;
+
+                ControlInputType inputType = ControlFactory.DetermineInputType(property);
+
+                // Phân loại vào nhóm
+                switch (inputType)
+                {
+                    case ControlInputType.PictureBox:
+                    case ControlInputType.CheckBox:
+                    case ControlInputType.DateTimePicker:
+                        leftGroup.Add(property);
+                        break;
+
+                    case ControlInputType.RichTextBox:
+                        bottomGroup.Add(property);
+                        break;
+
+                    default: // TextBox, NumericUpDown, ComboBox
+                        rightGroup.Add(property);
+                        break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Tạo các controls cho panel
+        /// </summary>
+        public static void CreateControlsForPanel(FlowLayoutPanel panel, List<PropertyInfo> properties, 
+            int controlWidth, Dictionary<string, Control> controlsDictionary, 
+            Dictionary<string, PropertyInfo> propertiesDictionary, bool isReadOnly = false, bool isEditMode = false)
+        {
+            int labelWidth = 150;
+
+            foreach (PropertyInfo property in properties)
+            {
+                // Kiểm tra ReadOnly attribute (chỉ áp dụng khi isEditMode = true)
+                var readOnlyAttr = property.GetCustomAttribute<ReadOnlyFieldAttribute>();
+                bool fieldIsReadOnly = isReadOnly || (readOnlyAttr != null && readOnlyAttr.IsReadOnly && isEditMode);
+
+                // Lấy display name
+                string displayName = GetDisplayName(property);
+
+                // Kiểm tra required (không hiển thị * nếu là readonly mode)
+                var requiredAttr = property.GetCustomAttribute<RequiredAttribute>();
+                bool isRequired = !isReadOnly && requiredAttr != null && requiredAttr.IsRequired;
+
+                // Container cho mỗi field
+                Panel fieldContainer = new Panel();
+                fieldContainer.AutoSize = true;
+                fieldContainer.Padding = new Padding(5);
+                fieldContainer.Width = controlWidth;
+
+                // Tạo label
+                Label label = new Label();
+                label.Text = displayName + (isRequired ? " *" : "") + ":";
+                label.Location = new Point(0, 5);
+                label.Size = new Size(labelWidth, 23);
+                label.TextAlign = ContentAlignment.MiddleLeft;
+                label.Font = new Font("Segoe UI", 9, isReadOnly ? FontStyle.Bold : FontStyle.Regular);
+                if (isRequired)
+                {
+                    label.ForeColor = Color.FromArgb(209, 17, 65);
+                }
+                fieldContainer.Controls.Add(label);
+
+                // Tạo control
+                Control inputControl = ControlFactory.CreateControl(property);
+                inputControl.Location = new Point(0, 30);
+                inputControl.Name = property.Name;
+
+                // Set kích thước
+                if (inputControl is RichTextBox)
+                {
+                    inputControl.Size = new Size(controlWidth - 10, 400);
+                    fieldContainer.Height = 460;
+                }
+                else if (inputControl is Panel) // PictureBox container
+                {
+                    inputControl.Size = new Size(controlWidth - 10, 200);
+                    fieldContainer.Height = 260;
+                }
+                else
+                {
+                    inputControl.Size = new Size(controlWidth - 10, 25);
+                    fieldContainer.Height = 65;
+                }
+
+                // Set ReadOnly/Disabled
+                if (fieldIsReadOnly)
+                {
+                    if (inputControl is TextBox textBox)
+                    {
+                        textBox.ReadOnly = true;
+                        if (isReadOnly) textBox.BackColor = Color.FromArgb(245, 245, 245);
+                    }
+                    else if (inputControl is RichTextBox richTextBox)
+                    {
+                        richTextBox.ReadOnly = true;
+                        if (isReadOnly) richTextBox.BackColor = Color.FromArgb(245, 245, 245);
+                    }
+                    else if (inputControl is Panel picturePanel && isReadOnly)
+                    {
+                        // Ẩn các button chọn/xóa ảnh trong view-only mode
+                        foreach (Control ctrl in picturePanel.Controls)
+                        {
+                            if (ctrl is Button)
+                            {
+                                ctrl.Visible = false;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        inputControl.Enabled = false;
+                    }
+                }
+
+                fieldContainer.Controls.Add(inputControl);
+
+                // Lưu vào dictionary
+                controlsDictionary[property.Name] = inputControl;
+                propertiesDictionary[property.Name] = property;
+
+                panel.Controls.Add(fieldContainer);
+            }
+        }
+    }
+}

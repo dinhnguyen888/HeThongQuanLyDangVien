@@ -31,6 +31,7 @@
             this.components = new System.ComponentModel.Container();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.metroTile1 = new MetroFramework.Controls.MetroTile();
             this.TimKiemBtn = new MetroFramework.Controls.MetroButton();
             this.TimTb = new MetroFramework.Controls.MetroTextBox();
             this.metroComboBox5 = new MetroFramework.Controls.MetroComboBox();
@@ -38,12 +39,22 @@
             this.metroComboBox3 = new MetroFramework.Controls.MetroComboBox();
             this.metroComboBox2 = new MetroFramework.Controls.MetroComboBox();
             this.metroComboBox1 = new MetroFramework.Controls.MetroComboBox();
-            this.metroTile1 = new MetroFramework.Controls.MetroTile();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel4 = new System.Windows.Forms.Panel();
             this.panel8 = new System.Windows.Forms.Panel();
             this.DangVienGridView = new System.Windows.Forms.DataGridView();
+            this.dangVienIDDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.hoTenDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.soTheDangVienDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ngaySinhDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.gioiTinhDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.soCCCDDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ngayVaoDangDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ngayChinhThucDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.loaiDangVienDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.trangThaiDataGridViewCheckBoxColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.ChucNang = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.dangVienBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.panel5 = new System.Windows.Forms.Panel();
             this.panel7 = new System.Windows.Forms.Panel();
             this.metroLabel2 = new MetroFramework.Controls.MetroLabel();
@@ -56,28 +67,18 @@
             this.ThemBtn = new System.Windows.Forms.Button();
             this.XuatBtn = new System.Windows.Forms.Button();
             this.metroTile3 = new MetroFramework.Controls.MetroTile();
-            this.dangVienIDDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.hoTenDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.soTheDangVienDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ngaySinhDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.gioiTinhDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.soCCCDDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ngayVaoDangDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ngayChinhThucDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.loaiDangVienDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.trangThaiDataGridViewCheckBoxColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.dangVienBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.button2 = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel4.SuspendLayout();
             this.panel8.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DangVienGridView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dangVienBindingSource)).BeginInit();
             this.panel5.SuspendLayout();
             this.panel7.SuspendLayout();
             this.panel6.SuspendLayout();
             this.panel3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dangVienBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -107,11 +108,12 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(980, 461);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1126, 451);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.metroTile1);
             this.panel1.Controls.Add(this.TimKiemBtn);
             this.panel1.Controls.Add(this.TimTb);
             this.panel1.Controls.Add(this.metroComboBox5);
@@ -119,12 +121,25 @@
             this.panel1.Controls.Add(this.metroComboBox3);
             this.panel1.Controls.Add(this.metroComboBox2);
             this.panel1.Controls.Add(this.metroComboBox1);
-            this.panel1.Controls.Add(this.metroTile1);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(3, 3);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(974, 84);
+            this.panel1.Size = new System.Drawing.Size(1120, 82);
             this.panel1.TabIndex = 0;
+            // 
+            // metroTile1
+            // 
+            this.metroTile1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.metroTile1.Location = new System.Drawing.Point(0, 0);
+            this.metroTile1.Name = "metroTile1";
+            this.metroTile1.Size = new System.Drawing.Size(1120, 29);
+            this.metroTile1.Style = MetroFramework.MetroColorStyle.Red;
+            this.metroTile1.TabIndex = 33;
+            this.metroTile1.Text = "Tìm kiếm";
+            this.metroTile1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.metroTile1.TileImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.metroTile1.TileTextFontSize = MetroFramework.MetroTileTextSize.Tall;
+            this.metroTile1.TileTextFontWeight = MetroFramework.MetroTileTextWeight.Regular;
             // 
             // TimKiemBtn
             // 
@@ -194,26 +209,13 @@
             this.metroComboBox1.Size = new System.Drawing.Size(180, 35);
             this.metroComboBox1.TabIndex = 18;
             // 
-            // metroTile1
-            // 
-            this.metroTile1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.metroTile1.Location = new System.Drawing.Point(0, 0);
-            this.metroTile1.Name = "metroTile1";
-            this.metroTile1.Size = new System.Drawing.Size(974, 26);
-            this.metroTile1.Style = MetroFramework.MetroColorStyle.Red;
-            this.metroTile1.TabIndex = 17;
-            this.metroTile1.Text = "Tìm kiếm ";
-            this.metroTile1.Theme = MetroFramework.MetroThemeStyle.Light;
-            this.metroTile1.TileTextFontSize = MetroFramework.MetroTileTextSize.Tall;
-            this.metroTile1.TileTextFontWeight = MetroFramework.MetroTileTextWeight.Regular;
-            // 
             // panel2
             // 
             this.panel2.Controls.Add(this.panel4);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(3, 93);
+            this.panel2.Location = new System.Drawing.Point(3, 91);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(974, 365);
+            this.panel2.Size = new System.Drawing.Size(1120, 357);
             this.panel2.TabIndex = 1;
             // 
             // panel4
@@ -225,16 +227,16 @@
             this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel4.Location = new System.Drawing.Point(0, 0);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(974, 365);
+            this.panel4.Size = new System.Drawing.Size(1120, 357);
             this.panel4.TabIndex = 2;
             // 
             // panel8
             // 
             this.panel8.Controls.Add(this.DangVienGridView);
             this.panel8.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel8.Location = new System.Drawing.Point(0, 152);
+            this.panel8.Location = new System.Drawing.Point(0, 158);
             this.panel8.Name = "panel8";
-            this.panel8.Size = new System.Drawing.Size(974, 213);
+            this.panel8.Size = new System.Drawing.Size(1120, 199);
             this.panel8.TabIndex = 7;
             // 
             // DangVienGridView
@@ -263,155 +265,8 @@
             this.DangVienGridView.Name = "DangVienGridView";
             this.DangVienGridView.RowHeadersWidth = 51;
             this.DangVienGridView.RowTemplate.Height = 24;
-            this.DangVienGridView.Size = new System.Drawing.Size(974, 213);
+            this.DangVienGridView.Size = new System.Drawing.Size(1120, 199);
             this.DangVienGridView.TabIndex = 6;
-            // 
-            // ChucNang
-            // 
-            this.ChucNang.HeaderText = "Chức năng";
-            this.ChucNang.Items.AddRange(new object[] {
-            "Chi Tiết Đảng Viên",
-            "Sửa Thông Tin ",
-            "Xóa Đảng Viên"});
-            this.ChucNang.MinimumWidth = 6;
-            this.ChucNang.Name = "ChucNang";
-            // 
-            // panel5
-            // 
-            this.panel5.Controls.Add(this.panel7);
-            this.panel5.Controls.Add(this.panel6);
-            this.panel5.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel5.Location = new System.Drawing.Point(0, 115);
-            this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(974, 37);
-            this.panel5.TabIndex = 6;
-            // 
-            // panel7
-            // 
-            this.panel7.Controls.Add(this.metroLabel2);
-            this.panel7.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel7.Location = new System.Drawing.Point(576, 0);
-            this.panel7.Name = "panel7";
-            this.panel7.Size = new System.Drawing.Size(198, 37);
-            this.panel7.TabIndex = 1;
-            // 
-            // metroLabel2
-            // 
-            this.metroLabel2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.metroLabel2.AutoSize = true;
-            this.metroLabel2.FontSize = MetroFramework.MetroLabelSize.Tall;
-            this.metroLabel2.Location = new System.Drawing.Point(123, 9);
-            this.metroLabel2.Name = "metroLabel2";
-            this.metroLabel2.Size = new System.Drawing.Size(71, 25);
-            this.metroLabel2.TabIndex = 5;
-            this.metroLabel2.Text = "Hiển thị";
-            // 
-            // panel6
-            // 
-            this.panel6.Controls.Add(this.SoluongCb);
-            this.panel6.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel6.Location = new System.Drawing.Point(774, 0);
-            this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(200, 37);
-            this.panel6.TabIndex = 0;
-            // 
-            // SoluongCb
-            // 
-            this.SoluongCb.Dock = System.Windows.Forms.DockStyle.Top;
-            this.SoluongCb.FontSize = MetroFramework.MetroLinkSize.Tall;
-            this.SoluongCb.FormattingEnabled = true;
-            this.SoluongCb.ItemHeight = 29;
-            this.SoluongCb.Location = new System.Drawing.Point(0, 0);
-            this.SoluongCb.Name = "SoluongCb";
-            this.SoluongCb.Size = new System.Drawing.Size(200, 35);
-            this.SoluongCb.TabIndex = 6;
-            this.SoluongCb.SelectedIndexChanged += new System.EventHandler(this.SoluongCb_SelectedIndexChanged);
-            // 
-            // panel3
-            // 
-            this.panel3.Controls.Add(this.metroLabel1);
-            this.panel3.Controls.Add(this.button1);
-            this.panel3.Controls.Add(this.XoaBtn);
-            this.panel3.Controls.Add(this.ThemBtn);
-            this.panel3.Controls.Add(this.XuatBtn);
-            this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel3.Location = new System.Drawing.Point(0, 24);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(974, 91);
-            this.panel3.TabIndex = 1;
-            // 
-            // metroLabel1
-            // 
-            this.metroLabel1.AutoSize = true;
-            this.metroLabel1.FontSize = MetroFramework.MetroLabelSize.Tall;
-            this.metroLabel1.Location = new System.Drawing.Point(9, 54);
-            this.metroLabel1.Name = "metroLabel1";
-            this.metroLabel1.Size = new System.Drawing.Size(1051, 25);
-            this.metroLabel1.TabIndex = 20;
-            this.metroLabel1.Text = "*Chọn hàng Đảng viên cần thao tác bằng cách nhấp vào ô đầu tiên của hàng, sau đó " +
-    "sử dụng các nút chức năng phía trên để thực hiện.";
-            // 
-            // button1
-            // 
-            this.button1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.button1.Font = new System.Drawing.Font("Arial", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.button1.Location = new System.Drawing.Point(431, 6);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(243, 35);
-            this.button1.TabIndex = 19;
-            this.button1.Text = "Xem tài liệu Hồ Sơ Đảng Viên";
-            this.button1.UseVisualStyleBackColor = false;
-            // 
-            // XoaBtn
-            // 
-            this.XoaBtn.BackColor = System.Drawing.Color.Red;
-            this.XoaBtn.Font = new System.Drawing.Font("Arial", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.XoaBtn.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.XoaBtn.Location = new System.Drawing.Point(310, 6);
-            this.XoaBtn.Name = "XoaBtn";
-            this.XoaBtn.Size = new System.Drawing.Size(100, 35);
-            this.XoaBtn.TabIndex = 16;
-            this.XoaBtn.Text = "Xóa nhiều ";
-            this.XoaBtn.UseVisualStyleBackColor = false;
-            this.XoaBtn.Click += new System.EventHandler(this.XoaBtn_Click);
-            // 
-            // ThemBtn
-            // 
-            this.ThemBtn.BackColor = System.Drawing.Color.SteelBlue;
-            this.ThemBtn.Font = new System.Drawing.Font("Arial", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ThemBtn.ForeColor = System.Drawing.SystemColors.Control;
-            this.ThemBtn.Location = new System.Drawing.Point(189, 6);
-            this.ThemBtn.Name = "ThemBtn";
-            this.ThemBtn.Size = new System.Drawing.Size(100, 35);
-            this.ThemBtn.TabIndex = 15;
-            this.ThemBtn.Text = "Thêm mới";
-            this.ThemBtn.UseVisualStyleBackColor = false;
-            this.ThemBtn.Click += new System.EventHandler(this.ThemBtn_Click);
-            // 
-            // XuatBtn
-            // 
-            this.XuatBtn.BackColor = System.Drawing.Color.Orange;
-            this.XuatBtn.Font = new System.Drawing.Font("Arial", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.XuatBtn.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.XuatBtn.Location = new System.Drawing.Point(9, 6);
-            this.XuatBtn.Name = "XuatBtn";
-            this.XuatBtn.Size = new System.Drawing.Size(156, 35);
-            this.XuatBtn.TabIndex = 14;
-            this.XuatBtn.Text = "Xuất danh sách";
-            this.XuatBtn.UseVisualStyleBackColor = false;
-            // 
-            // metroTile3
-            // 
-            this.metroTile3.Dock = System.Windows.Forms.DockStyle.Top;
-            this.metroTile3.Location = new System.Drawing.Point(0, 0);
-            this.metroTile3.Name = "metroTile3";
-            this.metroTile3.Size = new System.Drawing.Size(974, 24);
-            this.metroTile3.Style = MetroFramework.MetroColorStyle.Red;
-            this.metroTile3.TabIndex = 0;
-            this.metroTile3.Text = "Thao tác";
-            this.metroTile3.TileTextFontSize = MetroFramework.MetroTileTextSize.Tall;
-            this.metroTile3.TileTextFontWeight = MetroFramework.MetroTileTextWeight.Regular;
             // 
             // dangVienIDDataGridViewTextBoxColumn
             // 
@@ -483,9 +338,167 @@
             this.trangThaiDataGridViewCheckBoxColumn.MinimumWidth = 6;
             this.trangThaiDataGridViewCheckBoxColumn.Name = "trangThaiDataGridViewCheckBoxColumn";
             // 
+            // ChucNang
+            // 
+            this.ChucNang.HeaderText = "Chức năng";
+            this.ChucNang.Items.AddRange(new object[] {
+            "Chi Tiết Đảng Viên",
+            "Sửa Thông Tin ",
+            "Xóa Đảng Viên"});
+            this.ChucNang.MinimumWidth = 6;
+            this.ChucNang.Name = "ChucNang";
+            // 
             // dangVienBindingSource
             // 
             this.dangVienBindingSource.DataSource = typeof(QuanLyDangVien.Models.DangVien);
+            // 
+            // panel5
+            // 
+            this.panel5.Controls.Add(this.panel7);
+            this.panel5.Controls.Add(this.panel6);
+            this.panel5.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel5.Location = new System.Drawing.Point(0, 121);
+            this.panel5.Name = "panel5";
+            this.panel5.Size = new System.Drawing.Size(1120, 37);
+            this.panel5.TabIndex = 6;
+            // 
+            // panel7
+            // 
+            this.panel7.Controls.Add(this.metroLabel2);
+            this.panel7.Dock = System.Windows.Forms.DockStyle.Right;
+            this.panel7.Location = new System.Drawing.Point(722, 0);
+            this.panel7.Name = "panel7";
+            this.panel7.Size = new System.Drawing.Size(198, 37);
+            this.panel7.TabIndex = 1;
+            // 
+            // metroLabel2
+            // 
+            this.metroLabel2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.metroLabel2.AutoSize = true;
+            this.metroLabel2.FontSize = MetroFramework.MetroLabelSize.Tall;
+            this.metroLabel2.Location = new System.Drawing.Point(123, 9);
+            this.metroLabel2.Name = "metroLabel2";
+            this.metroLabel2.Size = new System.Drawing.Size(71, 25);
+            this.metroLabel2.TabIndex = 5;
+            this.metroLabel2.Text = "Hiển thị";
+            // 
+            // panel6
+            // 
+            this.panel6.Controls.Add(this.SoluongCb);
+            this.panel6.Dock = System.Windows.Forms.DockStyle.Right;
+            this.panel6.Location = new System.Drawing.Point(920, 0);
+            this.panel6.Name = "panel6";
+            this.panel6.Size = new System.Drawing.Size(200, 37);
+            this.panel6.TabIndex = 0;
+            // 
+            // SoluongCb
+            // 
+            this.SoluongCb.Dock = System.Windows.Forms.DockStyle.Top;
+            this.SoluongCb.FontSize = MetroFramework.MetroLinkSize.Tall;
+            this.SoluongCb.FormattingEnabled = true;
+            this.SoluongCb.ItemHeight = 29;
+            this.SoluongCb.Location = new System.Drawing.Point(0, 0);
+            this.SoluongCb.Name = "SoluongCb";
+            this.SoluongCb.Size = new System.Drawing.Size(200, 35);
+            this.SoluongCb.TabIndex = 6;
+            this.SoluongCb.SelectedIndexChanged += new System.EventHandler(this.SoluongCb_SelectedIndexChanged);
+            // 
+            // panel3
+            // 
+            this.panel3.Controls.Add(this.button2);
+            this.panel3.Controls.Add(this.metroLabel1);
+            this.panel3.Controls.Add(this.button1);
+            this.panel3.Controls.Add(this.XoaBtn);
+            this.panel3.Controls.Add(this.ThemBtn);
+            this.panel3.Controls.Add(this.XuatBtn);
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel3.Location = new System.Drawing.Point(0, 30);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(1120, 91);
+            this.panel3.TabIndex = 1;
+            // 
+            // metroLabel1
+            // 
+            this.metroLabel1.AutoSize = true;
+            this.metroLabel1.FontSize = MetroFramework.MetroLabelSize.Tall;
+            this.metroLabel1.Location = new System.Drawing.Point(9, 54);
+            this.metroLabel1.Name = "metroLabel1";
+            this.metroLabel1.Size = new System.Drawing.Size(1051, 25);
+            this.metroLabel1.TabIndex = 20;
+            this.metroLabel1.Text = "*Chọn hàng Đảng viên cần thao tác bằng cách nhấp vào ô đầu tiên của hàng, sau đó " +
+    "sử dụng các nút chức năng phía trên để thực hiện.";
+            // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            this.button1.Font = new System.Drawing.Font("Arial", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button1.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.button1.Location = new System.Drawing.Point(431, 6);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(243, 35);
+            this.button1.TabIndex = 19;
+            this.button1.Text = "Xem tài liệu Hồ Sơ Đảng Viên";
+            this.button1.UseVisualStyleBackColor = false;
+            // 
+            // XoaBtn
+            // 
+            this.XoaBtn.BackColor = System.Drawing.Color.Red;
+            this.XoaBtn.Font = new System.Drawing.Font("Arial", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.XoaBtn.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.XoaBtn.Location = new System.Drawing.Point(310, 6);
+            this.XoaBtn.Name = "XoaBtn";
+            this.XoaBtn.Size = new System.Drawing.Size(100, 35);
+            this.XoaBtn.TabIndex = 16;
+            this.XoaBtn.Text = "Xóa nhiều ";
+            this.XoaBtn.UseVisualStyleBackColor = false;
+            this.XoaBtn.Click += new System.EventHandler(this.XoaBtn_Click);
+            // 
+            // ThemBtn
+            // 
+            this.ThemBtn.BackColor = System.Drawing.Color.SteelBlue;
+            this.ThemBtn.Font = new System.Drawing.Font("Arial", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ThemBtn.ForeColor = System.Drawing.SystemColors.Control;
+            this.ThemBtn.Location = new System.Drawing.Point(189, 6);
+            this.ThemBtn.Name = "ThemBtn";
+            this.ThemBtn.Size = new System.Drawing.Size(100, 35);
+            this.ThemBtn.TabIndex = 15;
+            this.ThemBtn.Text = "Thêm mới";
+            this.ThemBtn.UseVisualStyleBackColor = false;
+            this.ThemBtn.Click += new System.EventHandler(this.ThemBtn_Click);
+            // 
+            // XuatBtn
+            // 
+            this.XuatBtn.BackColor = System.Drawing.Color.Orange;
+            this.XuatBtn.Font = new System.Drawing.Font("Arial", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.XuatBtn.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.XuatBtn.Location = new System.Drawing.Point(9, 6);
+            this.XuatBtn.Name = "XuatBtn";
+            this.XuatBtn.Size = new System.Drawing.Size(156, 35);
+            this.XuatBtn.TabIndex = 14;
+            this.XuatBtn.Text = "Xuất danh sách";
+            this.XuatBtn.UseVisualStyleBackColor = false;
+            // 
+            // metroTile3
+            // 
+            this.metroTile3.Dock = System.Windows.Forms.DockStyle.Top;
+            this.metroTile3.Location = new System.Drawing.Point(0, 0);
+            this.metroTile3.Name = "metroTile3";
+            this.metroTile3.Size = new System.Drawing.Size(1120, 30);
+            this.metroTile3.Style = MetroFramework.MetroColorStyle.Red;
+            this.metroTile3.TabIndex = 0;
+            this.metroTile3.Text = "Thao tác";
+            this.metroTile3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.metroTile3.TileTextFontSize = MetroFramework.MetroTileTextSize.Tall;
+            this.metroTile3.TileTextFontWeight = MetroFramework.MetroTileTextWeight.Regular;
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(697, 6);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(183, 35);
+            this.button2.TabIndex = 21;
+            this.button2.Text = "Chuyển sinh hoạt Đảng";
+            this.button2.UseVisualStyleBackColor = true;
             // 
             // UserControlQuanLyDangVien
             // 
@@ -493,20 +506,20 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.tableLayoutPanel1);
             this.Name = "UserControlQuanLyDangVien";
-            this.Size = new System.Drawing.Size(980, 461);
+            this.Size = new System.Drawing.Size(1126, 451);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.panel4.ResumeLayout(false);
             this.panel8.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.DangVienGridView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dangVienBindingSource)).EndInit();
             this.panel5.ResumeLayout(false);
             this.panel7.ResumeLayout(false);
             this.panel7.PerformLayout();
             this.panel6.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dangVienBindingSource)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -523,7 +536,6 @@
         private MetroFramework.Controls.MetroComboBox metroComboBox3;
         private MetroFramework.Controls.MetroComboBox metroComboBox2;
         private MetroFramework.Controls.MetroComboBox metroComboBox1;
-        private MetroFramework.Controls.MetroTile metroTile1;
         private System.Windows.Forms.Panel panel4;
         private MetroFramework.Controls.MetroTile metroTile3;
         private System.Windows.Forms.Panel panel3;
@@ -532,14 +544,10 @@
         private System.Windows.Forms.Button ThemBtn;
         private System.Windows.Forms.Button XuatBtn;
         private MetroFramework.Controls.MetroLabel metroLabel1;
-        private System.Windows.Forms.Panel panel5;
-        private System.Windows.Forms.Panel panel7;
-        private MetroFramework.Controls.MetroLabel metroLabel2;
-        private System.Windows.Forms.Panel panel6;
-        private MetroFramework.Controls.MetroComboBox SoluongCb;
         private System.Windows.Forms.Panel panel8;
-        private System.Windows.Forms.DataGridView DangVienGridView;
         private System.Windows.Forms.BindingSource dangVienBindingSource;
+        private MetroFramework.Controls.MetroTile metroTile1;
+        private System.Windows.Forms.DataGridView DangVienGridView;
         private System.Windows.Forms.DataGridViewTextBoxColumn dangVienIDDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn hoTenDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn soTheDangVienDataGridViewTextBoxColumn;
@@ -551,5 +559,11 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn loaiDangVienDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewCheckBoxColumn trangThaiDataGridViewCheckBoxColumn;
         private System.Windows.Forms.DataGridViewComboBoxColumn ChucNang;
+        private System.Windows.Forms.Panel panel5;
+        private System.Windows.Forms.Panel panel7;
+        private MetroFramework.Controls.MetroLabel metroLabel2;
+        private System.Windows.Forms.Panel panel6;
+        private MetroFramework.Controls.MetroComboBox SoluongCb;
+        private System.Windows.Forms.Button button2;
     }
 }

@@ -8,14 +8,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace QuanLyDangVien
+namespace QuanLyDangVien.Pages
 {
-    public partial class UserControlBaoCaoThongKe : UserControl
+    public partial class PageQuanLyDangVienDuBi : UserControl
     {
-        public UserControlBaoCaoThongKe()
+        public PageQuanLyDangVienDuBi()
         {
             InitializeComponent();
-           
         }
+
+       
     }
 }

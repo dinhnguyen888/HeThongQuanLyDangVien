@@ -8,14 +8,18 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace QuanLyDangVien
+namespace QuanLyDangVien.Pages
 {
-    public partial class UserControlBaoCaoThongKe : UserControl
+    public partial class PageKhenThuong : UserControl
     {
-        public UserControlBaoCaoThongKe()
+        public PageKhenThuong()
         {
             InitializeComponent();
-           
+        }
+
+        private void metroLabel2_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

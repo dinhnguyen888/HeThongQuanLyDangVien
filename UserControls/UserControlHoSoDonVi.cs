@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QuanLyDangVien.Pages;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -15,16 +16,25 @@ namespace QuanLyDangVien
         public UserControlHoSoDonVi()
         {
             InitializeComponent();
-            if (string.IsNullOrEmpty(TimTb.Text))
-            {
-                TimTb.Text = " ";
-                TimTb.Text = "";
-            }
+            var ucDanhSachChiBo = new PageDanhSachChiBo();
+            ucDanhSachChiBo.Dock = DockStyle.Fill;
+            Panel.Controls.Add(ucDanhSachChiBo);
         }
 
-        private void TimKiemBtn_Click(object sender, EventArgs e)
+        private void DanhSachChiBo_Click(object sender, EventArgs e)
         {
+            Panel.Controls.Clear();
+            var ucDanhSachChibo = new PageDanhSachChiBo();
+            ucDanhSachChibo.Dock = DockStyle.Fill;
+            Panel.Controls.Add(ucDanhSachChibo);
+        }
 
+        private void SinhHoatChiBo_Click(object sender, EventArgs e)
+        {
+            Panel.Controls.Clear();
+            var ucSinhHoatChiBo = new PageSinhHoatChiBo();
+            ucSinhHoatChiBo.Dock = DockStyle.Fill;
+            Panel.Controls.Add(ucSinhHoatChiBo);
         }
     }
 }

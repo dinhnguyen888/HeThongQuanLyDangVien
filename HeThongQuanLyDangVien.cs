@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QuanLyDangVien.UserControls;
+using System;
 using System.Windows.Forms;
 
 namespace QuanLyDangVien
@@ -11,6 +12,7 @@ namespace QuanLyDangVien
         private TabPage tabChuyenSinhHoatDang;
         private TabPage tabThiDuaKhenThuong;
         private TabPage tabCongTacPhatTrienDang;
+        private TabPage tabTaiLieu;
         private TabPage tabBaoCaoThongKe;
         private TabPage tabQuanTriHeThong;
 
@@ -24,6 +26,7 @@ namespace QuanLyDangVien
             tabChuyenSinhHoatDang = new TabPage("Chuyển Sinh Hoạt Đảng") { Name = "ChuyenSinhHoatDang" };
             tabThiDuaKhenThuong = new TabPage("Thi Đua Khen Thưởng") { Name = "ThiDuaKhenThuong" };
             tabCongTacPhatTrienDang = new TabPage("Công Tác Phát Triển Đảng") { Name = "CongTacPhatTrienDang" };
+            tabTaiLieu = new TabPage("Tài Liệu") { Name = "TaiLieu" };
             tabBaoCaoThongKe = new TabPage("Báo Cáo - Thống Kê") { Name = "BaoCaoThongKe" };
             tabQuanTriHeThong = new TabPage("Quản Trị Hệ Thống") { Name = "QuanTriHeThong" };
 
@@ -85,6 +88,11 @@ namespace QuanLyDangVien
                     ucPhatTrien.Dock = DockStyle.Fill;
                     MainPn.Controls.Add(ucPhatTrien);
                     break;
+                case "TaiLieu":
+                    var ucTaiLieu = new UserControlTaiLieu();
+                    ucTaiLieu.Dock = DockStyle.Fill;
+                    MainPn.Controls.Add(ucTaiLieu);
+                    break;
 
                 case "BaoCaoThongKe":
                     var ucThongKe = new UserControlBaoCaoThongKe();
@@ -113,8 +121,10 @@ namespace QuanLyDangVien
                 TabControl.TabPages.Add(tabChuyenSinhHoatDang);
                 TabControl.TabPages.Add(tabThiDuaKhenThuong);
                 TabControl.TabPages.Add(tabCongTacPhatTrienDang);
+      
                 TabControl.TabPages.Add(tabBaoCaoThongKe);
                 TabControl.TabPages.Add(tabQuanTriHeThong);
+                TabControl.TabPages.Add(tabTaiLieu);
             }
         }
 
