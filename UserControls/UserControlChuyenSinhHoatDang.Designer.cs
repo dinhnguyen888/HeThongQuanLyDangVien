@@ -54,7 +54,7 @@
             this.TimBtn.Name = "TimBtn";
             this.TimBtn.Size = new System.Drawing.Size(127, 35);
             this.TimBtn.TabIndex = 6;
-            this.TimBtn.Text = "Tìm kiến";
+            this.TimBtn.Text = "Tìm kiếm";
             // 
             // TimTb
             // 

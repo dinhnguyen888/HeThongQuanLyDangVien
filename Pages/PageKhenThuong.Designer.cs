@@ -400,7 +400,7 @@
             this.metroRadioButton6.Size = new System.Drawing.Size(137, 17);
             this.metroRadioButton6.TabIndex = 5;
             this.metroRadioButton6.TabStop = true;
-            this.metroRadioButton6.Text = "metroRadioButton6";
+            this.metroRadioButton6.Text = "Danh hiệu";
             this.metroRadioButton6.UseVisualStyleBackColor = true;
             // 
             // metroRadioButton5
@@ -411,7 +411,7 @@
             this.metroRadioButton5.Size = new System.Drawing.Size(134, 17);
             this.metroRadioButton5.TabIndex = 4;
             this.metroRadioButton5.TabStop = true;
-            this.metroRadioButton5.Text = "metroRadioButton5";
+            this.metroRadioButton5.Text = "Thư khen";
             this.metroRadioButton5.UseVisualStyleBackColor = true;
             // 
             // metroRadioButton4
@@ -422,7 +422,7 @@
             this.metroRadioButton4.Size = new System.Drawing.Size(137, 17);
             this.metroRadioButton4.TabIndex = 3;
             this.metroRadioButton4.TabStop = true;
-            this.metroRadioButton4.Text = "metroRadioButton4";
+            this.metroRadioButton4.Text = "Huy chương";
             this.metroRadioButton4.UseVisualStyleBackColor = true;
             // 
             // metroRadioButton3
@@ -433,7 +433,7 @@
             this.metroRadioButton3.Size = new System.Drawing.Size(134, 17);
             this.metroRadioButton3.TabIndex = 2;
             this.metroRadioButton3.TabStop = true;
-            this.metroRadioButton3.Text = "metroRadioButton3";
+            this.metroRadioButton3.Text = "Huân chương";
             this.metroRadioButton3.UseVisualStyleBackColor = true;
             // 
             // metroRadioButton1
@@ -444,7 +444,7 @@
             this.metroRadioButton1.Size = new System.Drawing.Size(126, 17);
             this.metroRadioButton1.TabIndex = 0;
             this.metroRadioButton1.TabStop = true;
-            this.metroRadioButton1.Text = "metroRadioButton1";
+            this.metroRadioButton1.Text = "Giấy khen";
             this.metroRadioButton1.UseVisualStyleBackColor = true;
             // 
             // metroRadioButton2
@@ -455,7 +455,7 @@
             this.metroRadioButton2.Size = new System.Drawing.Size(126, 17);
             this.metroRadioButton2.TabIndex = 1;
             this.metroRadioButton2.TabStop = true;
-            this.metroRadioButton2.Text = "metroRadioButton2";
+            this.metroRadioButton2.Text = "Bằng khen";
             this.metroRadioButton2.UseVisualStyleBackColor = true;
             // 
             // metroTile2

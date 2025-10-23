@@ -40,9 +40,19 @@
             this.metroComboBox2 = new MetroFramework.Controls.MetroComboBox();
             this.metroComboBox1 = new MetroFramework.Controls.MetroComboBox();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.button2 = new System.Windows.Forms.Button();
+            this.metroLabel1 = new MetroFramework.Controls.MetroLabel();
+            this.button1 = new System.Windows.Forms.Button();
+            this.XoaBtn = new System.Windows.Forms.Button();
+            this.ThemBtn = new System.Windows.Forms.Button();
+            this.XuatBtn = new System.Windows.Forms.Button();
+            this.metroTile3 = new MetroFramework.Controls.MetroTile();
             this.panel4 = new System.Windows.Forms.Panel();
-            this.panel8 = new System.Windows.Forms.Panel();
+            this.metroLabel2 = new MetroFramework.Controls.MetroLabel();
+            this.SoluongCb = new MetroFramework.Controls.MetroComboBox();
             this.DangVienGridView = new System.Windows.Forms.DataGridView();
+            this.ChucNang = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.dangVienIDDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.hoTenDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.soTheDangVienDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -53,32 +63,14 @@
             this.ngayChinhThucDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.loaiDangVienDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.trangThaiDataGridViewCheckBoxColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.ChucNang = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.dangVienBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.panel5 = new System.Windows.Forms.Panel();
-            this.panel7 = new System.Windows.Forms.Panel();
-            this.metroLabel2 = new MetroFramework.Controls.MetroLabel();
-            this.panel6 = new System.Windows.Forms.Panel();
-            this.SoluongCb = new MetroFramework.Controls.MetroComboBox();
-            this.panel3 = new System.Windows.Forms.Panel();
-            this.metroLabel1 = new MetroFramework.Controls.MetroLabel();
-            this.button1 = new System.Windows.Forms.Button();
-            this.XoaBtn = new System.Windows.Forms.Button();
-            this.ThemBtn = new System.Windows.Forms.Button();
-            this.XuatBtn = new System.Windows.Forms.Button();
-            this.metroTile3 = new MetroFramework.Controls.MetroTile();
-            this.button2 = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
+            this.panel3.SuspendLayout();
             this.panel4.SuspendLayout();
-            this.panel8.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DangVienGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dangVienBindingSource)).BeginInit();
-            this.panel5.SuspendLayout();
-            this.panel7.SuspendLayout();
-            this.panel6.SuspendLayout();
-            this.panel3.SuspendLayout();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -211,197 +203,15 @@
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.DangVienGridView);
             this.panel2.Controls.Add(this.panel4);
+            this.panel2.Controls.Add(this.panel3);
+            this.panel2.Controls.Add(this.metroTile3);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(3, 91);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(1120, 357);
             this.panel2.TabIndex = 1;
-            // 
-            // panel4
-            // 
-            this.panel4.Controls.Add(this.panel8);
-            this.panel4.Controls.Add(this.panel5);
-            this.panel4.Controls.Add(this.panel3);
-            this.panel4.Controls.Add(this.metroTile3);
-            this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel4.Location = new System.Drawing.Point(0, 0);
-            this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(1120, 357);
-            this.panel4.TabIndex = 2;
-            // 
-            // panel8
-            // 
-            this.panel8.Controls.Add(this.DangVienGridView);
-            this.panel8.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel8.Location = new System.Drawing.Point(0, 158);
-            this.panel8.Name = "panel8";
-            this.panel8.Size = new System.Drawing.Size(1120, 199);
-            this.panel8.TabIndex = 7;
-            // 
-            // DangVienGridView
-            // 
-            this.DangVienGridView.AllowUserToOrderColumns = true;
-            this.DangVienGridView.AutoGenerateColumns = false;
-            this.DangVienGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.DangVienGridView.BackgroundColor = System.Drawing.SystemColors.ActiveCaption;
-            this.DangVienGridView.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.DangVienGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.DangVienGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.dangVienIDDataGridViewTextBoxColumn,
-            this.hoTenDataGridViewTextBoxColumn,
-            this.soTheDangVienDataGridViewTextBoxColumn,
-            this.ngaySinhDataGridViewTextBoxColumn,
-            this.gioiTinhDataGridViewTextBoxColumn,
-            this.soCCCDDataGridViewTextBoxColumn,
-            this.ngayVaoDangDataGridViewTextBoxColumn,
-            this.ngayChinhThucDataGridViewTextBoxColumn,
-            this.loaiDangVienDataGridViewTextBoxColumn,
-            this.trangThaiDataGridViewCheckBoxColumn,
-            this.ChucNang});
-            this.DangVienGridView.DataSource = this.dangVienBindingSource;
-            this.DangVienGridView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.DangVienGridView.Location = new System.Drawing.Point(0, 0);
-            this.DangVienGridView.Name = "DangVienGridView";
-            this.DangVienGridView.RowHeadersWidth = 51;
-            this.DangVienGridView.RowTemplate.Height = 24;
-            this.DangVienGridView.Size = new System.Drawing.Size(1120, 199);
-            this.DangVienGridView.TabIndex = 6;
-            // 
-            // dangVienIDDataGridViewTextBoxColumn
-            // 
-            this.dangVienIDDataGridViewTextBoxColumn.DataPropertyName = "DangVienID";
-            this.dangVienIDDataGridViewTextBoxColumn.HeaderText = "STT";
-            this.dangVienIDDataGridViewTextBoxColumn.MinimumWidth = 6;
-            this.dangVienIDDataGridViewTextBoxColumn.Name = "dangVienIDDataGridViewTextBoxColumn";
-            // 
-            // hoTenDataGridViewTextBoxColumn
-            // 
-            this.hoTenDataGridViewTextBoxColumn.DataPropertyName = "HoTen";
-            this.hoTenDataGridViewTextBoxColumn.HeaderText = "Họ Tên";
-            this.hoTenDataGridViewTextBoxColumn.MinimumWidth = 6;
-            this.hoTenDataGridViewTextBoxColumn.Name = "hoTenDataGridViewTextBoxColumn";
-            // 
-            // soTheDangVienDataGridViewTextBoxColumn
-            // 
-            this.soTheDangVienDataGridViewTextBoxColumn.DataPropertyName = "SoTheDangVien";
-            this.soTheDangVienDataGridViewTextBoxColumn.HeaderText = "Số thẻ Đảng viên";
-            this.soTheDangVienDataGridViewTextBoxColumn.MinimumWidth = 6;
-            this.soTheDangVienDataGridViewTextBoxColumn.Name = "soTheDangVienDataGridViewTextBoxColumn";
-            // 
-            // ngaySinhDataGridViewTextBoxColumn
-            // 
-            this.ngaySinhDataGridViewTextBoxColumn.DataPropertyName = "NgaySinh";
-            this.ngaySinhDataGridViewTextBoxColumn.HeaderText = "Ngày sinh";
-            this.ngaySinhDataGridViewTextBoxColumn.MinimumWidth = 6;
-            this.ngaySinhDataGridViewTextBoxColumn.Name = "ngaySinhDataGridViewTextBoxColumn";
-            // 
-            // gioiTinhDataGridViewTextBoxColumn
-            // 
-            this.gioiTinhDataGridViewTextBoxColumn.DataPropertyName = "GioiTinh";
-            this.gioiTinhDataGridViewTextBoxColumn.HeaderText = "Giới tính";
-            this.gioiTinhDataGridViewTextBoxColumn.MinimumWidth = 6;
-            this.gioiTinhDataGridViewTextBoxColumn.Name = "gioiTinhDataGridViewTextBoxColumn";
-            // 
-            // soCCCDDataGridViewTextBoxColumn
-            // 
-            this.soCCCDDataGridViewTextBoxColumn.DataPropertyName = "SoCCCD";
-            this.soCCCDDataGridViewTextBoxColumn.HeaderText = "CCCD";
-            this.soCCCDDataGridViewTextBoxColumn.MinimumWidth = 6;
-            this.soCCCDDataGridViewTextBoxColumn.Name = "soCCCDDataGridViewTextBoxColumn";
-            // 
-            // ngayVaoDangDataGridViewTextBoxColumn
-            // 
-            this.ngayVaoDangDataGridViewTextBoxColumn.DataPropertyName = "NgayVaoDang";
-            this.ngayVaoDangDataGridViewTextBoxColumn.HeaderText = "Ngày vào Đảng";
-            this.ngayVaoDangDataGridViewTextBoxColumn.MinimumWidth = 6;
-            this.ngayVaoDangDataGridViewTextBoxColumn.Name = "ngayVaoDangDataGridViewTextBoxColumn";
-            // 
-            // ngayChinhThucDataGridViewTextBoxColumn
-            // 
-            this.ngayChinhThucDataGridViewTextBoxColumn.DataPropertyName = "NgayChinhThuc";
-            this.ngayChinhThucDataGridViewTextBoxColumn.HeaderText = "Ngày chính thức";
-            this.ngayChinhThucDataGridViewTextBoxColumn.MinimumWidth = 6;
-            this.ngayChinhThucDataGridViewTextBoxColumn.Name = "ngayChinhThucDataGridViewTextBoxColumn";
-            // 
-            // loaiDangVienDataGridViewTextBoxColumn
-            // 
-            this.loaiDangVienDataGridViewTextBoxColumn.DataPropertyName = "LoaiDangVien";
-            this.loaiDangVienDataGridViewTextBoxColumn.HeaderText = "Loại Đảng Viên";
-            this.loaiDangVienDataGridViewTextBoxColumn.MinimumWidth = 6;
-            this.loaiDangVienDataGridViewTextBoxColumn.Name = "loaiDangVienDataGridViewTextBoxColumn";
-            // 
-            // trangThaiDataGridViewCheckBoxColumn
-            // 
-            this.trangThaiDataGridViewCheckBoxColumn.DataPropertyName = "TrangThai";
-            this.trangThaiDataGridViewCheckBoxColumn.HeaderText = "Trạng thái";
-            this.trangThaiDataGridViewCheckBoxColumn.MinimumWidth = 6;
-            this.trangThaiDataGridViewCheckBoxColumn.Name = "trangThaiDataGridViewCheckBoxColumn";
-            // 
-            // ChucNang
-            // 
-            this.ChucNang.HeaderText = "Chức năng";
-            this.ChucNang.Items.AddRange(new object[] {
-            "Chi Tiết Đảng Viên",
-            "Sửa Thông Tin ",
-            "Xóa Đảng Viên"});
-            this.ChucNang.MinimumWidth = 6;
-            this.ChucNang.Name = "ChucNang";
-            // 
-            // dangVienBindingSource
-            // 
-            this.dangVienBindingSource.DataSource = typeof(QuanLyDangVien.Models.DangVien);
-            // 
-            // panel5
-            // 
-            this.panel5.Controls.Add(this.panel7);
-            this.panel5.Controls.Add(this.panel6);
-            this.panel5.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel5.Location = new System.Drawing.Point(0, 121);
-            this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(1120, 37);
-            this.panel5.TabIndex = 6;
-            // 
-            // panel7
-            // 
-            this.panel7.Controls.Add(this.metroLabel2);
-            this.panel7.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel7.Location = new System.Drawing.Point(722, 0);
-            this.panel7.Name = "panel7";
-            this.panel7.Size = new System.Drawing.Size(198, 37);
-            this.panel7.TabIndex = 1;
-            // 
-            // metroLabel2
-            // 
-            this.metroLabel2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.metroLabel2.AutoSize = true;
-            this.metroLabel2.FontSize = MetroFramework.MetroLabelSize.Tall;
-            this.metroLabel2.Location = new System.Drawing.Point(123, 9);
-            this.metroLabel2.Name = "metroLabel2";
-            this.metroLabel2.Size = new System.Drawing.Size(71, 25);
-            this.metroLabel2.TabIndex = 5;
-            this.metroLabel2.Text = "Hiển thị";
-            // 
-            // panel6
-            // 
-            this.panel6.Controls.Add(this.SoluongCb);
-            this.panel6.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel6.Location = new System.Drawing.Point(920, 0);
-            this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(200, 37);
-            this.panel6.TabIndex = 0;
-            // 
-            // SoluongCb
-            // 
-            this.SoluongCb.Dock = System.Windows.Forms.DockStyle.Top;
-            this.SoluongCb.FontSize = MetroFramework.MetroLinkSize.Tall;
-            this.SoluongCb.FormattingEnabled = true;
-            this.SoluongCb.ItemHeight = 29;
-            this.SoluongCb.Location = new System.Drawing.Point(0, 0);
-            this.SoluongCb.Name = "SoluongCb";
-            this.SoluongCb.Size = new System.Drawing.Size(200, 35);
-            this.SoluongCb.TabIndex = 6;
-            this.SoluongCb.SelectedIndexChanged += new System.EventHandler(this.SoluongCb_SelectedIndexChanged);
             // 
             // panel3
             // 
@@ -416,6 +226,15 @@
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(1120, 91);
             this.panel3.TabIndex = 1;
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(697, 6);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(183, 35);
+            this.button2.TabIndex = 21;
+            this.button2.Text = "Chuyển sinh hoạt Đảng";
+            this.button2.UseVisualStyleBackColor = true;
             // 
             // metroLabel1
             // 
@@ -491,14 +310,151 @@
             this.metroTile3.TileTextFontSize = MetroFramework.MetroTileTextSize.Tall;
             this.metroTile3.TileTextFontWeight = MetroFramework.MetroTileTextWeight.Regular;
             // 
-            // button2
+            // panel4
             // 
-            this.button2.Location = new System.Drawing.Point(697, 6);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(183, 35);
-            this.button2.TabIndex = 21;
-            this.button2.Text = "Chuyển sinh hoạt Đảng";
-            this.button2.UseVisualStyleBackColor = true;
+            this.panel4.Controls.Add(this.metroLabel2);
+            this.panel4.Controls.Add(this.SoluongCb);
+            this.panel4.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel4.Location = new System.Drawing.Point(0, 121);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(1120, 36);
+            this.panel4.TabIndex = 0;
+            // 
+            // metroLabel2
+            // 
+            this.metroLabel2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.metroLabel2.AutoSize = true;
+            this.metroLabel2.FontSize = MetroFramework.MetroLabelSize.Tall;
+            this.metroLabel2.Location = new System.Drawing.Point(840, 8);
+            this.metroLabel2.Name = "metroLabel2";
+            this.metroLabel2.Size = new System.Drawing.Size(71, 25);
+            this.metroLabel2.TabIndex = 7;
+            this.metroLabel2.Text = "Hiển thị";
+            // 
+            // SoluongCb
+            // 
+            this.SoluongCb.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.SoluongCb.FontSize = MetroFramework.MetroLinkSize.Tall;
+            this.SoluongCb.FormattingEnabled = true;
+            this.SoluongCb.ItemHeight = 29;
+            this.SoluongCb.Location = new System.Drawing.Point(918, 1);
+            this.SoluongCb.Name = "SoluongCb";
+            this.SoluongCb.Size = new System.Drawing.Size(200, 35);
+            this.SoluongCb.TabIndex = 8;
+            this.SoluongCb.SelectedIndexChanged += new System.EventHandler(this.SoluongCb_SelectedIndexChanged_1);
+            // 
+            // DangVienGridView
+            // 
+            this.DangVienGridView.AllowUserToOrderColumns = true;
+            this.DangVienGridView.AutoGenerateColumns = false;
+            this.DangVienGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.DangVienGridView.BackgroundColor = System.Drawing.SystemColors.ActiveCaption;
+            this.DangVienGridView.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.DangVienGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.DangVienGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.dangVienIDDataGridViewTextBoxColumn,
+            this.hoTenDataGridViewTextBoxColumn,
+            this.soTheDangVienDataGridViewTextBoxColumn,
+            this.ngaySinhDataGridViewTextBoxColumn,
+            this.gioiTinhDataGridViewTextBoxColumn,
+            this.soCCCDDataGridViewTextBoxColumn,
+            this.ngayVaoDangDataGridViewTextBoxColumn,
+            this.ngayChinhThucDataGridViewTextBoxColumn,
+            this.loaiDangVienDataGridViewTextBoxColumn,
+            this.trangThaiDataGridViewCheckBoxColumn,
+            this.ChucNang});
+            this.DangVienGridView.DataSource = this.dangVienBindingSource;
+            this.DangVienGridView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.DangVienGridView.Location = new System.Drawing.Point(0, 157);
+            this.DangVienGridView.Name = "DangVienGridView";
+            this.DangVienGridView.RowHeadersWidth = 51;
+            this.DangVienGridView.RowTemplate.Height = 24;
+            this.DangVienGridView.Size = new System.Drawing.Size(1120, 200);
+            this.DangVienGridView.TabIndex = 7;
+            // 
+            // ChucNang
+            // 
+            this.ChucNang.HeaderText = "Chức năng";
+            this.ChucNang.Items.AddRange(new object[] {
+            "Chi Tiết Đảng Viên",
+            "Sửa Thông Tin ",
+            "Xóa Đảng Viên"});
+            this.ChucNang.MinimumWidth = 6;
+            this.ChucNang.Name = "ChucNang";
+            // 
+            // dangVienIDDataGridViewTextBoxColumn
+            // 
+            this.dangVienIDDataGridViewTextBoxColumn.DataPropertyName = "DangVienID";
+            this.dangVienIDDataGridViewTextBoxColumn.HeaderText = "STT";
+            this.dangVienIDDataGridViewTextBoxColumn.MinimumWidth = 6;
+            this.dangVienIDDataGridViewTextBoxColumn.Name = "dangVienIDDataGridViewTextBoxColumn";
+            // 
+            // hoTenDataGridViewTextBoxColumn
+            // 
+            this.hoTenDataGridViewTextBoxColumn.DataPropertyName = "HoTen";
+            this.hoTenDataGridViewTextBoxColumn.HeaderText = "Họ Tên";
+            this.hoTenDataGridViewTextBoxColumn.MinimumWidth = 6;
+            this.hoTenDataGridViewTextBoxColumn.Name = "hoTenDataGridViewTextBoxColumn";
+            // 
+            // soTheDangVienDataGridViewTextBoxColumn
+            // 
+            this.soTheDangVienDataGridViewTextBoxColumn.DataPropertyName = "SoTheDangVien";
+            this.soTheDangVienDataGridViewTextBoxColumn.HeaderText = "Số thẻ Đảng viên";
+            this.soTheDangVienDataGridViewTextBoxColumn.MinimumWidth = 6;
+            this.soTheDangVienDataGridViewTextBoxColumn.Name = "soTheDangVienDataGridViewTextBoxColumn";
+            // 
+            // ngaySinhDataGridViewTextBoxColumn
+            // 
+            this.ngaySinhDataGridViewTextBoxColumn.DataPropertyName = "NgaySinh";
+            this.ngaySinhDataGridViewTextBoxColumn.HeaderText = "Ngày sinh";
+            this.ngaySinhDataGridViewTextBoxColumn.MinimumWidth = 6;
+            this.ngaySinhDataGridViewTextBoxColumn.Name = "ngaySinhDataGridViewTextBoxColumn";
+            // 
+            // gioiTinhDataGridViewTextBoxColumn
+            // 
+            this.gioiTinhDataGridViewTextBoxColumn.DataPropertyName = "GioiTinh";
+            this.gioiTinhDataGridViewTextBoxColumn.HeaderText = "Giới tính";
+            this.gioiTinhDataGridViewTextBoxColumn.MinimumWidth = 6;
+            this.gioiTinhDataGridViewTextBoxColumn.Name = "gioiTinhDataGridViewTextBoxColumn";
+            // 
+            // soCCCDDataGridViewTextBoxColumn
+            // 
+            this.soCCCDDataGridViewTextBoxColumn.DataPropertyName = "SoCCCD";
+            this.soCCCDDataGridViewTextBoxColumn.HeaderText = "CCCD";
+            this.soCCCDDataGridViewTextBoxColumn.MinimumWidth = 6;
+            this.soCCCDDataGridViewTextBoxColumn.Name = "soCCCDDataGridViewTextBoxColumn";
+            // 
+            // ngayVaoDangDataGridViewTextBoxColumn
+            // 
+            this.ngayVaoDangDataGridViewTextBoxColumn.DataPropertyName = "NgayVaoDang";
+            this.ngayVaoDangDataGridViewTextBoxColumn.HeaderText = "Ngày vào Đảng";
+            this.ngayVaoDangDataGridViewTextBoxColumn.MinimumWidth = 6;
+            this.ngayVaoDangDataGridViewTextBoxColumn.Name = "ngayVaoDangDataGridViewTextBoxColumn";
+            // 
+            // ngayChinhThucDataGridViewTextBoxColumn
+            // 
+            this.ngayChinhThucDataGridViewTextBoxColumn.DataPropertyName = "NgayChinhThuc";
+            this.ngayChinhThucDataGridViewTextBoxColumn.HeaderText = "Ngày chính thức";
+            this.ngayChinhThucDataGridViewTextBoxColumn.MinimumWidth = 6;
+            this.ngayChinhThucDataGridViewTextBoxColumn.Name = "ngayChinhThucDataGridViewTextBoxColumn";
+            // 
+            // loaiDangVienDataGridViewTextBoxColumn
+            // 
+            this.loaiDangVienDataGridViewTextBoxColumn.DataPropertyName = "LoaiDangVien";
+            this.loaiDangVienDataGridViewTextBoxColumn.HeaderText = "Loại Đảng Viên";
+            this.loaiDangVienDataGridViewTextBoxColumn.MinimumWidth = 6;
+            this.loaiDangVienDataGridViewTextBoxColumn.Name = "loaiDangVienDataGridViewTextBoxColumn";
+            // 
+            // trangThaiDataGridViewCheckBoxColumn
+            // 
+            this.trangThaiDataGridViewCheckBoxColumn.DataPropertyName = "TrangThai";
+            this.trangThaiDataGridViewCheckBoxColumn.HeaderText = "Trạng thái";
+            this.trangThaiDataGridViewCheckBoxColumn.MinimumWidth = 6;
+            this.trangThaiDataGridViewCheckBoxColumn.Name = "trangThaiDataGridViewCheckBoxColumn";
+            // 
+            // dangVienBindingSource
+            // 
+            this.dangVienBindingSource.DataSource = typeof(QuanLyDangVien.Models.DangVien);
             // 
             // UserControlQuanLyDangVien
             // 
@@ -510,16 +466,12 @@
             this.tableLayoutPanel1.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
-            this.panel4.ResumeLayout(false);
-            this.panel8.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.DangVienGridView)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dangVienBindingSource)).EndInit();
-            this.panel5.ResumeLayout(false);
-            this.panel7.ResumeLayout(false);
-            this.panel7.PerformLayout();
-            this.panel6.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
+            this.panel4.ResumeLayout(false);
+            this.panel4.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.DangVienGridView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dangVienBindingSource)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -536,7 +488,6 @@
         private MetroFramework.Controls.MetroComboBox metroComboBox3;
         private MetroFramework.Controls.MetroComboBox metroComboBox2;
         private MetroFramework.Controls.MetroComboBox metroComboBox1;
-        private System.Windows.Forms.Panel panel4;
         private MetroFramework.Controls.MetroTile metroTile3;
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Button button1;
@@ -544,9 +495,9 @@
         private System.Windows.Forms.Button ThemBtn;
         private System.Windows.Forms.Button XuatBtn;
         private MetroFramework.Controls.MetroLabel metroLabel1;
-        private System.Windows.Forms.Panel panel8;
         private System.Windows.Forms.BindingSource dangVienBindingSource;
         private MetroFramework.Controls.MetroTile metroTile1;
+        private System.Windows.Forms.Button button2;
         private System.Windows.Forms.DataGridView DangVienGridView;
         private System.Windows.Forms.DataGridViewTextBoxColumn dangVienIDDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn hoTenDataGridViewTextBoxColumn;
@@ -559,11 +510,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn loaiDangVienDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewCheckBoxColumn trangThaiDataGridViewCheckBoxColumn;
         private System.Windows.Forms.DataGridViewComboBoxColumn ChucNang;
-        private System.Windows.Forms.Panel panel5;
-        private System.Windows.Forms.Panel panel7;
+        private System.Windows.Forms.Panel panel4;
         private MetroFramework.Controls.MetroLabel metroLabel2;
-        private System.Windows.Forms.Panel panel6;
         private MetroFramework.Controls.MetroComboBox SoluongCb;
-        private System.Windows.Forms.Button button2;
     }
 }
