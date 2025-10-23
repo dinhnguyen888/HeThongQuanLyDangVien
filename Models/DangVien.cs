@@ -1,18 +1,19 @@
 ﻿using System;
 using QuanLyDangVien.Attributes;
+
 namespace QuanLyDangVien.Models
 {
     public class DangVien
     {
         [DisplayName("Mã Đảng viên")]
-        [ReadOnlyField] // không cho sửa khi edit
+        [ReadOnlyField]
         public int DangVienID { get; set; }
 
         [DisplayName("Đơn vị")]
         [ControlType(ControlInputType.ComboBox)]
-        [ComboBoxData("Chi bộ 1", "Chi bộ 2", "Chi bộ 3")]
+        //[ComboBoxData(1, "Chi bộ 1", 2, "Chi bộ 2", 3, "Chi bộ 3")]
         [Required]
-        public string DonViID { get; set; }
+        public int DonViID { get; set; }
 
         [DisplayName("Họ tên")]
         [Required]
@@ -24,7 +25,7 @@ namespace QuanLyDangVien.Models
 
         [DisplayName("Giới tính")]
         [ControlType(ControlInputType.ComboBox)]
-        [ComboBoxData("Nam", "Nữ", "Khác")]
+        [ComboBoxData("Nam", "Nam", "Nữ", "Nữ")]
         public string GioiTinh { get; set; }
 
         [DisplayName("Số CCCD")]
@@ -50,7 +51,7 @@ namespace QuanLyDangVien.Models
 
         [DisplayName("Loại Đảng viên")]
         [ControlType(ControlInputType.ComboBox)]
-        [ComboBoxData("Chính thức", "Dự bị")]
+        [ComboBoxData("Chính thức", "Chính thức", "Dự bị", "Dự bị")]
         public string LoaiDangVien { get; set; }
 
         [DisplayName("Đối tượng")]
@@ -58,7 +59,7 @@ namespace QuanLyDangVien.Models
 
         [DisplayName("Cấp bậc")]
         [ControlType(ControlInputType.ComboBox)]
-        [ComboBoxData("Đảng viên", "Bí thư", "Phó bí thư", "Ủy viên")]
+        [ComboBoxData(1, "Đảng viên", 2, "Bí thư", 3, "Phó bí thư", 4, "Ủy viên")]
         public string CapBac { get; set; }
 
         [DisplayName("Chức vụ")]
@@ -70,7 +71,7 @@ namespace QuanLyDangVien.Models
 
         [DisplayName("Trình độ học vấn")]
         [ControlType(ControlInputType.ComboBox)]
-        [ComboBoxData("Đại học", "Cao học", "Tiến sĩ", "Khác")]
+        [ComboBoxData(1, "Đại học", 2, "Cao học", 3, "Tiến sĩ", 4, "Khác")]
         public string TrinhDo { get; set; }
 
         [DisplayName("Ảnh đại diện")]
