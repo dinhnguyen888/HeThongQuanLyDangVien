@@ -163,6 +163,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Services\DangVienService.cs" />
+    <Compile Include="Models\DonVi.cs" />
+    <Compile Include="Services\DonViService.cs" />
     <Compile Include="Services\NguoiDungService.cs" />
     <Compile Include="UserControls\UserControlDangNhap.cs">
       <SubType>UserControl</SubType>
