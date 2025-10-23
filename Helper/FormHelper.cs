@@ -131,7 +131,15 @@ namespace QuanLyDangVien.Helper
                 }
                 else if (control is ComboBox comboBox)
                 {
-                    comboBox.SelectedItem = value;
+                    // Kiểm tra nếu ComboBox có ValueMember (được bind từ ControlFactory)
+                    if (!string.IsNullOrEmpty(comboBox.ValueMember))
+                    {
+                        comboBox.SelectedValue = value;
+                    }
+                    else
+                    {
+                        comboBox.SelectedItem = value;
+                    }
                 }
                 else if (control is NumericUpDown numericUpDown)
                 {
@@ -188,7 +196,15 @@ namespace QuanLyDangVien.Helper
                     }
                     else if (control is ComboBox comboBox)
                     {
-                        value = comboBox.SelectedItem;
+                        // Kiểm tra nếu ComboBox có ValueMember (được bind từ ControlFactory)
+                        if (!string.IsNullOrEmpty(comboBox.ValueMember))
+                        {
+                            value = comboBox.SelectedValue;
+                        }
+                        else
+                        {
+                            value = comboBox.SelectedItem;
+                        }
                     }
                     else if (control is NumericUpDown numericUpDown)
                     {
