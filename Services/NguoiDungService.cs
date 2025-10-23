@@ -25,20 +25,19 @@ namespace QuanLyDangVien.Services
                     commandType: CommandType.StoredProcedure
                 ).FirstOrDefault();
 
-                if (user != null)
-                {
-                    // Call SaveInfo method to save user info to local file
-                    SaveInforHelper.SaveInfo(
-                        user.Email,
-                        user.TenDangNhap,
-                        user.VaiTro ?? "Chưa có vai trò",
-                        user.TrangThai ? "Hoạt động" : "Khóa"
-                    );
-                }
-                else return false;
+                if (user == null)
+                    return false;
 
-                return true; 
+                SaveInforHelper.SaveInfo(
+                    user.Email,
+                    user.TenDangNhap,
+                    user.VaiTro ?? "Chưa có vai trò",
+                    user.TrangThai ? "Hoạt động" : "Khóa"
+                );
+
+                return true;
             }
         }
+
     }
 }
