@@ -1,8 +1,11 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Dapper;
+using QuanLyDangVien.Helper;
+using System.Data;
 
 namespace QuanLyDangVien.Attributes
 {
@@ -35,11 +38,37 @@ namespace QuanLyDangVien.Attributes
     [AttributeUsage(AttributeTargets.Property)]
     public class ComboBoxDataAttribute : Attribute
     {
-        public object[] Items { get; set; }
+        public ComboBoxItem[] Items { get; }
+
         public ComboBoxDataAttribute(params object[] items)
         {
-            Items = items;
+            // Cho phép truyền vào theo cặp key-value
+            if (items.Length % 2 != 0)
+                throw new ArgumentException("Phải truyền theo cặp key - value");
+
+            var list = new List<ComboBoxItem>();
+            for (int i = 0; i < items.Length; i += 2)
+            {
+                list.Add(new ComboBoxItem(items[i], items[i + 1]));
+            }
+
+            Items = list.ToArray();
         }
+    }
+
+
+    public class ComboBoxItem
+    {
+        public object Key { get; set; }
+        public object Value { get; set; }
+
+        public ComboBoxItem(object key, object value)
+        {
+            Key = key;
+            Value = value;
+        }
+
+        public override string ToString() => Value?.ToString() ?? "";
     }
 
     // Attribute để chỉ định tên hiển thị
@@ -74,5 +103,8 @@ namespace QuanLyDangVien.Attributes
             IsReadOnly = isReadOnly;
         }
     }
+
+  
+ 
 
 }
