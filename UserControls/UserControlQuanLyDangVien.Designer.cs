@@ -174,6 +174,7 @@
             this.DangVienGridView.BackgroundColor = System.Drawing.SystemColors.ActiveCaption;
             this.DangVienGridView.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.DangVienGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.DangVienGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.DangVienGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.dangVienIDDataGridViewTextBoxColumn,
             this.hoTenDataGridViewTextBoxColumn,
@@ -332,8 +333,9 @@
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(243, 35);
             this.button1.TabIndex = 19;
-            this.button1.Text = "Xem tài liệu Hồ Sơ Đảng Viên";
+            this.button1.Text = "Thêm hồ sơ đảng viên";
             this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // XoaNhieuBtn
             // 

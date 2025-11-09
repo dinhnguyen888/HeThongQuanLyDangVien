@@ -193,6 +193,13 @@
     <Compile Include="Services\QuanNhanService.cs" />
     <Compile Include="Services\ReportService.cs" />
     <Compile Include="Services\SinhHoatChiBoService.cs" />
+    <Compile Include="Services\TaiLieuHoSoService.cs" />
+    <Compile Include="Forms\FormChonTaiLieu.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormChonTaiLieu.Designer.cs">
+      <DependentUpon>FormChonTaiLieu.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\MultiLineDataGridViewCell.cs" />
     <Compile Include="UserControls\UserControlDanhSachQuanNhan.cs">
       <SubType>UserControl</SubType>
@@ -262,6 +269,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormXemChiTiet.resx">
       <DependentUpon>FormXemChiTiet.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormChonTaiLieu.resx">
+      <DependentUpon>FormChonTaiLieu.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HeThongQuanLyDangVien.resx">
       <DependentUpon>HeThongQuanLyDangVien.cs</DependentUpon>

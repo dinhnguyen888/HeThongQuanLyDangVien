@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,6 +21,7 @@ namespace QuanLyDangVien
     {
         private DangVienService _dangVienService;
         private DonViService _donViService;
+        private TaiLieuHoSoService _taiLieuHoSoService;
         private List<DangVienDTO> _danhSachDangVien;
         private List<DangVienDTO> _hienThiDangVien; // Danh sách hiển thị tạm thời
 
@@ -28,6 +30,7 @@ namespace QuanLyDangVien
             InitializeComponent();
             _dangVienService = new DangVienService();
             _donViService = new DonViService();
+            _taiLieuHoSoService = new TaiLieuHoSoService();
             _danhSachDangVien = new List<DangVienDTO>();
             _hienThiDangVien = new List<DangVienDTO>();
 
@@ -65,12 +68,14 @@ namespace QuanLyDangVien
             col.Items.Add("Xem chi tiết");
             col.Items.Add("Sửa thông tin");
             col.Items.Add("Xóa đảng viên");
+            col.Items.Add("Xem hồ sơ");
 
             DangVienGridView.EditingControlShowing += DangVienGridView_EditingControlShowing;
             DangVienGridView.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
             DangVienGridView.ColumnHeadersDefaultCellStyle.Font = new Font("Arial", 10);
             DangVienGridView.DefaultCellStyle.Font = new Font("Arial", 12);
             DangVienGridView.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+            DangVienGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect; // Chọn cả hàng khi click
         }
 
         private void LoadData()
@@ -245,6 +250,44 @@ namespace QuanLyDangVien
                             MessageBox.Show("Xóa thành công!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         }
                         break;
+
+                    case "Xem hồ sơ":
+                        var taiLieuList = _taiLieuHoSoService.GetByDangVienID(dangVienID);
+                        if (taiLieuList == null || taiLieuList.Count == 0)
+                        {
+                            MessageBox.Show("Đảng viên này chưa có tài liệu hồ sơ nào!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            return;
+                        }
+
+                        // Nếu có nhiều file, hiển thị dialog để chọn
+                        if (taiLieuList.Count == 1)
+                        {
+                            // Chỉ có 1 file, mở trực tiếp
+                            var filePath = taiLieuList[0].DuongDan;
+                            if (!FileHelper.OpenFile(filePath))
+                            {
+                                MessageBox.Show("Không thể mở file. Vui lòng kiểm tra lại đường dẫn file!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                        }
+                        else
+                        {
+                            // Có nhiều file, hiển thị form chọn file
+                            using (var formChonFile = new FormChonTaiLieu(taiLieuList))
+                            {
+                                if (formChonFile.ShowDialog() == DialogResult.OK)
+                                {
+                                    var selectedFile = formChonFile.SelectedTaiLieu;
+                                    if (selectedFile != null)
+                                    {
+                                        if (!FileHelper.OpenFile(selectedFile.DuongDan))
+                                        {
+                                            MessageBox.Show("Không thể mở file. Vui lòng kiểm tra lại đường dẫn file!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        break;
                 }
             }
             catch (Exception ex)
@@ -253,6 +296,84 @@ namespace QuanLyDangVien
             }
 
             comboBox.SelectedIndex = -1;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Kiểm tra xem có đảng viên nào được chọn không
+                if (DangVienGridView.SelectedRows.Count == 0)
+                {
+                    MessageBox.Show("Vui lòng chọn đảng viên cần thêm hồ sơ!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                var selectedRow = DangVienGridView.SelectedRows[0];
+                var idObj = selectedRow.Cells["dangVienIDDataGridViewTextBoxColumn"].Value;
+                if (idObj == null || !int.TryParse(idObj.ToString(), out int dangVienID))
+                {
+                    MessageBox.Show("Không thể xác định đảng viên!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                // Lấy thông tin đảng viên
+                var dangVien = _dangVienService.GetById(dangVienID);
+                if (dangVien == null)
+                {
+                    MessageBox.Show("Không tìm thấy thông tin đảng viên!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                // Mở dialog chọn file
+                using (OpenFileDialog openFileDialog = new OpenFileDialog())
+                {
+                    openFileDialog.Filter = "Tất cả các file|*.*|PDF Files|*.pdf|Word Documents|*.doc;*.docx|Image Files|*.jpg;*.jpeg;*.png;*.bmp";
+                    openFileDialog.FilterIndex = 1;
+                    openFileDialog.RestoreDirectory = true;
+
+                    if (openFileDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        try
+                        {
+                            // Lưu file vào thư mục Server/HoSoDangVien
+                            string relativePath = FileHelper.SaveHoSoDangVienFile(openFileDialog.FileName);
+
+                            // Lấy thông tin file
+                            FileInfo fileInfo = new FileInfo(openFileDialog.FileName);
+                            string tenFile = fileInfo.Name;
+                            string loaiFile = fileInfo.Extension.TrimStart('.').ToUpper();
+                            long kichThuoc = fileInfo.Length;
+
+                            // Lưu thông tin vào database
+                            var result = _taiLieuHoSoService.Insert(
+                                dangVienID,
+                                tenFile,
+                                relativePath,
+                                loaiFile,
+                                kichThuoc,
+                                Environment.UserName
+                            );
+
+                            if (!string.IsNullOrEmpty(result.error))
+                            {
+                                MessageBox.Show($"Lỗi khi lưu thông tin file: {result.error}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                return;
+                            }
+
+                            MessageBox.Show("Thêm hồ sơ đảng viên thành công!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"Lỗi khi thêm hồ sơ: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi thêm hồ sơ đảng viên: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void TimKiemBtn_Click(object sender, EventArgs e)

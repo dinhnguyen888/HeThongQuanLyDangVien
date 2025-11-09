@@ -146,6 +146,85 @@ namespace QuanLyDangVien.Helper
         }
 
         /// <summary>
+        /// Lấy đường dẫn đầy đủ đến thư mục lưu file Hồ sơ đảng viên
+        /// </summary>
+        public static string GetHoSoDangVienFolder()
+        {
+            string serverBase = GetServerBaseFolder();
+            return Path.Combine(serverBase, "Server", "HoSoDangVien");
+        }
+
+        /// <summary>
+        /// Lưu file hồ sơ đảng viên vào thư mục
+        /// </summary>
+        /// <param name="sourceFilePath">Đường dẫn file nguồn</param>
+        /// <returns>Đường dẫn tương đối từ Server (ví dụ: Server\HoSoDangVien\filename.pdf)</returns>
+        public static string SaveHoSoDangVienFile(string sourceFilePath)
+        {
+            try
+            {
+                string folder = GetHoSoDangVienFolder();
+                
+                // Tạo thư mục nếu chưa có
+                if (!Directory.Exists(folder))
+                {
+                    Directory.CreateDirectory(folder);
+                }
+
+                // Tạo tên file mới với timestamp
+                string fileName = Path.GetFileName(sourceFilePath);
+                string fileExtension = Path.GetExtension(fileName);
+                string fileNameWithoutExt = Path.GetFileNameWithoutExtension(fileName);
+                string newFileName = $"{fileNameWithoutExt}_{DateTime.Now:yyyyMMdd_HHmmss}{fileExtension}";
+                string destinationPath = Path.Combine(folder, newFileName);
+
+                // Copy file
+                File.Copy(sourceFilePath, destinationPath, true);
+
+                // Trả về đường dẫn tương đối
+                return Path.Combine("Server", "HoSoDangVien", newFileName);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Lỗi khi lưu file hồ sơ đảng viên: {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
+        /// Mở file từ đường dẫn tương đối
+        /// </summary>
+        /// <param name="relativePath">Đường dẫn tương đối (ví dụ: Server\HoSoDangVien\file.pdf)</param>
+        /// <returns>True nếu mở thành công, False nếu có lỗi</returns>
+        public static bool OpenFile(string relativePath)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(relativePath))
+                {
+                    return false;
+                }
+
+                string fullPath = GetFullPath(relativePath);
+
+                if (File.Exists(fullPath))
+                {
+                    System.Diagnostics.Process.Start(fullPath);
+                    return true;
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine($"File không tồn tại: {fullPath}");
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Lỗi khi mở file {relativePath}: {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Xóa file đính kèm từ đường dẫn tương đối
         /// </summary>
         /// <param name="relativePath">Đường dẫn tương đối (ví dụ: Server\KhenThuong\file.pdf hoặc Server\KyLuat\file.pdf)</param>
