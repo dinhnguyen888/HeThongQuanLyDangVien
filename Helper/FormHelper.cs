@@ -157,6 +157,7 @@ namespace QuanLyDangVien.Helper
                 }
                 else if (control is Panel panel)
                 {
+                    // Kiểm tra nếu là PictureBox
                     PictureBox pictureBox = panel.Controls.OfType<PictureBox>().FirstOrDefault();
                     if (pictureBox != null)
                     {
@@ -198,6 +199,40 @@ namespace QuanLyDangVien.Helper
                             pictureBox.Tag = null;
                         }
                     }
+                    // Kiểm tra nếu là FileDialog (LinkLabel)
+                    else
+                    {
+                        LinkLabel linkLabel = panel.Controls.OfType<LinkLabel>().FirstOrDefault();
+                        if (linkLabel != null && value is string filePath)
+                        {
+                            // Lấy thông tin read-only từ Tag của panel
+                            bool isReadOnlyMode = panel.Tag != null && panel.Tag is bool && (bool)panel.Tag;
+                            
+                            if (!string.IsNullOrWhiteSpace(filePath))
+                            {
+                                // Nếu là đường dẫn tương đối (Server\...), hiển thị tên file
+                                // Nếu là đường dẫn đầy đủ, hiển thị tên file
+                                string fileName = Path.GetFileName(filePath);
+                                if (string.IsNullOrEmpty(fileName))
+                                {
+                                    fileName = filePath;
+                                }
+                                
+                                linkLabel.Text = fileName;
+                                
+                                // Lưu đường dẫn và thông tin read-only vào Tag (sử dụng anonymous object)
+                                linkLabel.Tag = new { FilePath = filePath, IsReadOnly = isReadOnlyMode };
+                                linkLabel.ForeColor = Color.FromArgb(0, 174, 219);
+                                linkLabel.LinkColor = Color.FromArgb(0, 174, 219);
+                            }
+                            else
+                            {
+                                linkLabel.Text = "Chưa chọn file";
+                                linkLabel.Tag = new { FilePath = (string)null, IsReadOnly = isReadOnlyMode };
+                                linkLabel.ForeColor = Color.Gray;
+                            }
+                        }
+                    }
                 }
 
             }
@@ -232,10 +267,24 @@ namespace QuanLyDangVien.Helper
                 {
                     if (control is TextBox textBox)
                     {
-                        // Nếu TextBox có Tag và là read-only, sử dụng giá trị từ Tag (từ ComboBox đã bị thay thế)
+                        // Nếu TextBox có Tag và là read-only, sử dụng giá trị từ Tag (từ ComboBox đã bị thay thế hoặc DangVienID)
                         if (textBox.ReadOnly && textBox.Tag != null)
                         {
-                            value = textBox.Tag;
+                            // Lấy giá trị từ Tag và convert sang đúng kiểu của property
+                            object tagValue = textBox.Tag;
+                            if (tagValue != null)
+                            {
+                                // Nếu kiểu của Tag khớp với property type, sử dụng trực tiếp
+                                if (property.PropertyType.IsAssignableFrom(tagValue.GetType()))
+                                {
+                                    value = tagValue;
+                                }
+                                else
+                                {
+                                    // Convert sang đúng kiểu
+                                    value = ConvertValue(tagValue.ToString(), property.PropertyType);
+                                }
+                            }
                         }
                         // Xử lý trường hợp string rỗng cho các trường không bắt buộc
                         else if (string.IsNullOrWhiteSpace(textBox.Text) && property.PropertyType == typeof(string))
@@ -337,6 +386,7 @@ namespace QuanLyDangVien.Helper
                     }
                     else if (control is Panel panel)
                     {
+                        // Kiểm tra nếu là PictureBox
                         PictureBox pictureBox = panel.Controls.OfType<PictureBox>().FirstOrDefault();
                         if (pictureBox != null && pictureBox.Tag != null)
                         {
@@ -353,9 +403,41 @@ namespace QuanLyDangVien.Helper
                                 value = new byte[0]; // Mảng byte rỗng thay vì null
                             }
                         }
+                        // Kiểm tra nếu là FileDialog (LinkLabel)
                         else
                         {
-                            value = new byte[0]; // Mảng byte rỗng cho trường hợp không có ảnh
+                            LinkLabel linkLabel = panel.Controls.OfType<LinkLabel>().FirstOrDefault();
+                            if (linkLabel != null)
+                            {
+                                // Lấy đường dẫn file từ Tag
+                                if (linkLabel.Tag != null)
+                                {
+                                    // Kiểm tra xem Tag có phải là anonymous object với FilePath không
+                                    var filePathProperty = linkLabel.Tag.GetType().GetProperty("FilePath");
+                                    if (filePathProperty != null)
+                                    {
+                                        string filePath = filePathProperty.GetValue(linkLabel.Tag) as string;
+                                        value = filePath; // Lưu đường dẫn file (sẽ được xử lý bởi service để copy file)
+                                    }
+                                    // Tương thích ngược: nếu Tag là string
+                                    else if (linkLabel.Tag is string filePathStr)
+                                    {
+                                        value = filePathStr;
+                                    }
+                                    else
+                                    {
+                                        value = null; // Không có file
+                                    }
+                                }
+                                else
+                                {
+                                    value = null; // Không có file
+                                }
+                            }
+                            else
+                            {
+                                value = null; // Không có file cho FileDialog
+                            }
                         }
                     }
 
@@ -430,6 +512,7 @@ namespace QuanLyDangVien.Helper
 
                     case ControlInputType.CheckBox:
                     case ControlInputType.DateTimePicker:
+                    case ControlInputType.FileDialog:
                         otherLeftList.Add(property);
                         break;
 
@@ -489,8 +572,8 @@ namespace QuanLyDangVien.Helper
                 }
                 fieldContainer.Controls.Add(label);
 
-                // Tạo control
-                Control inputControl = ControlFactory.CreateControl(property);
+                // Tạo control (truyền thông tin read-only cho FileDialog)
+                Control inputControl = ControlFactory.CreateControl(property, fieldIsReadOnly);
                 inputControl.Location = new Point(0, 30);
                 inputControl.Name = property.Name;
 
@@ -500,10 +583,21 @@ namespace QuanLyDangVien.Helper
                     inputControl.Size = new Size(controlWidth - 10, 400);
                     fieldContainer.Height = 460;
                 }
-                else if (inputControl is Panel) // PictureBox container
+                else if (inputControl is Panel) // PictureBox container hoặc FileDialog
                 {
-                    inputControl.Size = new Size(controlWidth - 10, 200);
-                    fieldContainer.Height = 260;
+                    // Kiểm tra xem có phải là PictureBox không
+                    PictureBox pictureBox = inputControl.Controls.OfType<PictureBox>().FirstOrDefault();
+                    if (pictureBox != null)
+                    {
+                        inputControl.Size = new Size(controlWidth - 10, 200);
+                        fieldContainer.Height = 260;
+                    }
+                    else
+                    {
+                        // FileDialog - chỉ cần chiều cao vừa đủ
+                        inputControl.Size = new Size(controlWidth - 10, 30);
+                        fieldContainer.Height = 65;
+                    }
                 }
                 else
                 {
@@ -524,16 +618,24 @@ namespace QuanLyDangVien.Helper
                         richTextBox.ReadOnly = true;
                         if (isReadOnly) richTextBox.BackColor = Color.FromArgb(245, 245, 245);
                     }
-                    else if (inputControl is Panel picturePanel && isReadOnly)
+                    else if (inputControl is Panel inputPanel)
                     {
-                        // Ẩn các button chọn/xóa ảnh trong view-only mode
-                        foreach (Control ctrl in picturePanel.Controls)
+                        // Kiểm tra nếu là PictureBox
+                        PictureBox pictureBox = inputPanel.Controls.OfType<PictureBox>().FirstOrDefault();
+                        if (pictureBox != null && isReadOnly)
                         {
-                            if (ctrl is Button)
+                            // Ẩn các button chọn/xóa ảnh trong view-only mode
+                            foreach (Control ctrl in inputPanel.Controls)
                             {
-                                ctrl.Visible = false;
+                                if (ctrl is Button)
+                                {
+                                    ctrl.Visible = false;
+                                }
                             }
                         }
+                        // Kiểm tra nếu là FileDialog (LinkLabel)
+                        // Trong chế độ xem, FileDialog link vẫn có thể click để mở file
+                        // Không cần disable vì logic trong ControlFactory đã xử lý việc mở file
                     }
                     else
                     {

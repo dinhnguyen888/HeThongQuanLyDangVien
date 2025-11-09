@@ -22,6 +22,7 @@ namespace QuanLyDangVien
         private DangVienService _dangVienService;
         private DonViService _donViService;
         private TaiLieuHoSoService _taiLieuHoSoService;
+        private ChuyenSinhHoatDangService _chuyenSinhHoatDangService;
         private List<DangVienDTO> _danhSachDangVien;
         private List<DangVienDTO> _hienThiDangVien; // Danh sách hiển thị tạm thời
 
@@ -31,6 +32,7 @@ namespace QuanLyDangVien
             _dangVienService = new DangVienService();
             _donViService = new DonViService();
             _taiLieuHoSoService = new TaiLieuHoSoService();
+            _chuyenSinhHoatDangService = new ChuyenSinhHoatDangService();
             _danhSachDangVien = new List<DangVienDTO>();
             _hienThiDangVien = new List<DangVienDTO>();
 
@@ -76,6 +78,37 @@ namespace QuanLyDangVien
             DangVienGridView.DefaultCellStyle.Font = new Font("Arial", 12);
             DangVienGridView.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
             DangVienGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect; // Chọn cả hàng khi click
+            DangVienGridView.CellDoubleClick += DangVienGridView_CellDoubleClick; // Thêm double-click event
+        }
+
+        private void DangVienGridView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            // Bỏ qua click vào header
+            if (e.RowIndex < 0) return;
+
+            try
+            {
+                var row = DangVienGridView.Rows[e.RowIndex];
+                var idObj = row.Cells["dangVienIDDataGridViewTextBoxColumn"].Value;
+                if (idObj == null || !int.TryParse(idObj.ToString(), out int dangVienID))
+                {
+                    return;
+                }
+
+                // Mở form xem chi tiết
+                var dangVien = _dangVienService.GetById(dangVienID);
+                if (dangVien != null)
+                {
+                    FormXemChiTiet formXem = new FormXemChiTiet(dangVien);
+                    var donViData = _donViService.GetDonViDataByDangVienId(dangVienID);
+                    RefreshDonViData(formXem, donViData);
+                    formXem.ShowDialog();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi xem chi tiết: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void LoadData()
@@ -481,15 +514,111 @@ namespace QuanLyDangVien
             BindDonViComboBoxes(form, donViData);
         }
 
+        /// <summary>
+        /// Set tên đảng viên vào TextBox DangVienID (read-only) và lưu DangVienID vào Tag
+        /// </summary>
+        private void SetDangVienNameToTextBox(Form form, string tenDangVien, int dangVienID)
+        {
+            try
+            {
+                // Tìm TextBox DangVienID trong form
+                TextBox txtDangVien = FindControlByName<TextBox>(form, "DangVienID");
+                if (txtDangVien != null)
+                {
+                    // Set tên đảng viên vào Text
+                    txtDangVien.Text = tenDangVien ?? $"Đảng viên ID: {dangVienID}";
+                    // Lưu DangVienID vào Tag để khi lấy data, có thể giữ nguyên
+                    txtDangVien.Tag = dangVienID;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Lỗi khi set tên đảng viên: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Set tên đơn vị đi vào TextBox DonViDi (read-only) và lưu DonViID vào Tag
+        /// </summary>
+        private void SetDonViDiNameToTextBox(Form form, int donViID)
+        {
+            try
+            {
+                if (donViID <= 0)
+                {
+                    System.Diagnostics.Debug.WriteLine("DonViID không hợp lệ");
+                    return;
+                }
+
+                // Lấy thông tin đơn vị từ service
+                var donVi = _donViService.GetById(donViID);
+                if (donVi == null)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Không tìm thấy đơn vị với ID: {donViID}");
+                    return;
+                }
+
+                // Tìm TextBox DonViDi trong form
+                TextBox txtDonViDi = FindControlByName<TextBox>(form, "DonViDi");
+                if (txtDonViDi != null)
+                {
+                    // Set tên đơn vị vào Text
+                    txtDonViDi.Text = donVi.TenDonVi ?? $"Đơn vị ID: {donViID}";
+                    // Lưu DonViID vào Tag để khi lấy data, có thể giữ nguyên
+                    txtDonViDi.Tag = donViID;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Lỗi khi set tên đơn vị đi: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Tìm control theo tên trong form (recursive)
+        /// </summary>
+        private T FindControlByName<T>(Control parent, string name) where T : Control
+        {
+            if (parent == null) return null;
+            
+            if (parent.Name == name && parent is T)
+            {
+                return parent as T;
+            }
+            
+            foreach (Control control in parent.Controls)
+            {
+                if (control.Name == name && control is T)
+                {
+                    return control as T;
+                }
+                
+                // Tìm đệ quy trong các control con
+                T found = FindControlByName<T>(control, name);
+                if (found != null)
+                {
+                    return found;
+                }
+            }
+            
+            return null;
+        }
+
         private void BindDonViComboBoxes(Control parent, List<DonViSimplified> donViData)
         {
             foreach (Control control in parent.Controls)
             {
-                if (control is ComboBox comboBox && comboBox.Name == "DonViID")
+                if (control is ComboBox comboBox)
                 {
-                    comboBox.DataSource = donViData;
-                    comboBox.DisplayMember = "TenDonVi";
-                    comboBox.ValueMember = "DonViID";
+                    // Chỉ bind ComboBox DonViDen (Đơn vị đến), không bind DonViDi nữa vì nó là TextBox read-only
+                    // DonViID vẫn được bind cho các form khác
+                    if (comboBox.Name == "DonViID" || comboBox.Name == "DonViDen")
+                    {
+                        comboBox.DataSource = donViData;
+                        comboBox.DisplayMember = "TenDonVi";
+                        comboBox.ValueMember = "DonViID";
+                    }
+                    // DonViDi không còn là ComboBox nữa, bỏ qua
                 }
 
                 if (control.HasChildren)
@@ -500,6 +629,119 @@ namespace QuanLyDangVien
         private void DoiTuongCb_SelectedIndexChanged(object sender, EventArgs e)
         {
             // TODO: Lọc theo loại đối tượng nếu cần
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Lấy row được chọn - ưu tiên SelectedRows, nếu không có thì lấy CurrentRow
+                DataGridViewRow selectedRow = null;
+                if (DangVienGridView.SelectedRows.Count > 0)
+                {
+                    selectedRow = DangVienGridView.SelectedRows[0];
+                }
+                else if (DangVienGridView.CurrentRow != null && DangVienGridView.CurrentRow.Index >= 0)
+                {
+                    selectedRow = DangVienGridView.CurrentRow;
+                }
+
+                if (selectedRow == null)
+                {
+                    MessageBox.Show("Vui lòng chọn đảng viên cần chuyển sinh hoạt!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                var idObj = selectedRow.Cells["dangVienIDDataGridViewTextBoxColumn"].Value;
+                if (idObj == null || !int.TryParse(idObj.ToString(), out int dangVienID))
+                {
+                    MessageBox.Show("Không thể xác định đảng viên! Vui lòng chọn một đảng viên từ danh sách.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                // Lấy thông tin đảng viên
+                var dangVien = _dangVienService.GetById(dangVienID);
+                if (dangVien == null)
+                {
+                    MessageBox.Show("Không tìm thấy thông tin đảng viên!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                // Tạo form thêm chuyển sinh hoạt với đảng viên đã chọn
+                var chuyenSinhHoat = new Models.ChuyenSinhHoatDang
+                {
+                    DangVienID = dangVienID,
+                    DonViDi = dangVien.DonViID, // Đơn vị hiện tại của đảng viên
+                    NgayChuyen = DateTime.Now,
+                    TrangThai = "Chờ duyệt",
+                    NguoiTao = Environment.UserName
+                };
+
+                FormThem formThem = new FormThem(typeof(Models.ChuyenSinhHoatDang));
+                
+                // Bind đơn vị cho ComboBox trước
+                var donViData = _donViService.GetDonViData();
+                RefreshDonViData(formThem, donViData);
+                
+                // Load dữ liệu vào form sau khi bind ComboBox
+                formThem.LoadData(chuyenSinhHoat);
+                
+                // Set tên đảng viên vào TextBox DangVienID (read-only)
+                SetDangVienNameToTextBox(formThem, dangVien.HoTen, dangVienID);
+                
+                // Set tên đơn vị đi vào TextBox DonViDi (read-only) từ thông tin đảng viên
+                SetDonViDiNameToTextBox(formThem, dangVien.DonViID);
+
+                if (formThem.ShowDialog() == DialogResult.OK)
+                {
+                    var newChuyenSinhHoat = formThem.GetData() as Models.ChuyenSinhHoatDang;
+                    
+                    // Đảm bảo DangVienID và DonViDi được set đúng (từ Tag của TextBox hoặc từ giá trị gốc)
+                    // FormHelper đã xử lý việc lấy từ Tag nếu TextBox là read-only
+                    // Nhưng để đảm bảo, ta vẫn set lại từ giá trị gốc
+                    newChuyenSinhHoat.DangVienID = dangVienID;
+                    newChuyenSinhHoat.DonViDi = dangVien.DonViID; // Đơn vị đi luôn lấy từ thông tin đảng viên
+                    
+                    // Xử lý file quyết định: nếu FileQuyetDinh là đường dẫn file hợp lệ, lưu file
+                    if (!string.IsNullOrWhiteSpace(newChuyenSinhHoat.FileQuyetDinh))
+                    {
+                        // Kiểm tra xem có phải là đường dẫn file đầy đủ không (người dùng vừa chọn file mới)
+                        if (File.Exists(newChuyenSinhHoat.FileQuyetDinh))
+                        {
+                            try
+                            {
+                                // Copy file vào thư mục Server/ChuyenSinhHoat
+                                string relativePath = FileHelper.SaveChuyenSinhHoatFile(newChuyenSinhHoat.FileQuyetDinh);
+                                newChuyenSinhHoat.FileQuyetDinh = relativePath;
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show($"Lỗi khi lưu file quyết định: {ex.Message}", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                return;
+                            }
+                        }
+                        // Nếu không phải đường dẫn file hợp lệ, có thể là đường dẫn tương đối đã được lưu trước đó, giữ nguyên
+                    }
+                    
+                    newChuyenSinhHoat.NguoiTao = Environment.UserName;
+                    
+                    var (id, error) = _chuyenSinhHoatDangService.Insert(newChuyenSinhHoat);
+                    if (!string.IsNullOrEmpty(error))
+                    {
+                        MessageBox.Show(error, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    MessageBox.Show("Thêm chuyển sinh hoạt đảng thành công!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    
+                    // Cập nhật DonViID của đảng viên sang DonViDen (nếu cần)
+                    // Note: Theo requirement, việc cập nhật DonViID của đảng viên có thể được thực hiện sau khi duyệt
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi thêm chuyển sinh hoạt đảng: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

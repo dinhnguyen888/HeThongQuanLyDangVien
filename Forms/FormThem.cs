@@ -32,6 +32,18 @@ namespace QuanLyDangVien
             InitializeForm();
         }
 
+        /// <summary>
+        /// Load dữ liệu vào form (sau khi form đã được khởi tạo)
+        /// </summary>
+        public void LoadData(object dataObject)
+        {
+            if (dataObject != null && dataObject.GetType() == _dataType)
+            {
+                _dataObject = dataObject;
+                FormHelper.LoadDataToControls(_dataObject, _controlsDictionary, _propertiesDictionary);
+            }
+        }
+
         private void InitializeForm()
         {
             _controlsDictionary = new Dictionary<string, Control>();

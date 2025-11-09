@@ -20,7 +20,8 @@ namespace QuanLyDangVien.Attributes
         DateTimePicker,
         CheckBox,
         PictureBox,
-        NumericUpDown
+        NumericUpDown,
+        FileDialog
     }
 
     // Attribute để chỉ định kiểu control

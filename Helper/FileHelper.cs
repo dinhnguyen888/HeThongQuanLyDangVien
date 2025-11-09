@@ -155,6 +155,51 @@ namespace QuanLyDangVien.Helper
         }
 
         /// <summary>
+        /// Lấy đường dẫn đầy đủ đến thư mục lưu file Chuyển sinh hoạt đảng
+        /// </summary>
+        public static string GetChuyenSinhHoatFolder()
+        {
+            string serverBase = GetServerBaseFolder();
+            return Path.Combine(serverBase, "Server", "ChuyenSinhHoat");
+        }
+
+        /// <summary>
+        /// Lưu file quyết định chuyển sinh hoạt đảng vào thư mục
+        /// </summary>
+        /// <param name="sourceFilePath">Đường dẫn file nguồn</param>
+        /// <returns>Đường dẫn tương đối từ Server (ví dụ: Server\ChuyenSinhHoat\filename.pdf)</returns>
+        public static string SaveChuyenSinhHoatFile(string sourceFilePath)
+        {
+            try
+            {
+                string folder = GetChuyenSinhHoatFolder();
+                
+                // Tạo thư mục nếu chưa có
+                if (!Directory.Exists(folder))
+                {
+                    Directory.CreateDirectory(folder);
+                }
+
+                // Tạo tên file mới với timestamp
+                string fileName = Path.GetFileName(sourceFilePath);
+                string fileExtension = Path.GetExtension(fileName);
+                string fileNameWithoutExt = Path.GetFileNameWithoutExtension(fileName);
+                string newFileName = $"{fileNameWithoutExt}_{DateTime.Now:yyyyMMdd_HHmmss}{fileExtension}";
+                string destinationPath = Path.Combine(folder, newFileName);
+
+                // Copy file
+                File.Copy(sourceFilePath, destinationPath, true);
+
+                // Trả về đường dẫn tương đối
+                return Path.Combine("Server", "ChuyenSinhHoat", newFileName);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Lỗi khi lưu file chuyển sinh hoạt: {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
         /// Lưu file hồ sơ đảng viên vào thư mục
         /// </summary>
         /// <param name="sourceFilePath">Đường dẫn file nguồn</param>

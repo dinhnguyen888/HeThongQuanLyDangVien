@@ -15,7 +15,7 @@ namespace QuanLyDangVien.Helper
         /// <summary>
         /// Tạo control dựa trên PropertyInfo và attribute
         /// </summary>
-        public static Control CreateControl(PropertyInfo property)
+        public static Control CreateControl(PropertyInfo property, bool isReadOnly = false)
         {
             var controlTypeAttr = property.GetCustomAttribute<ControlTypeAttribute>();
 
@@ -40,6 +40,9 @@ namespace QuanLyDangVien.Helper
 
                     case ControlInputType.DateTimePicker:
                         return CreateDateTimePicker();
+
+                    case ControlInputType.FileDialog:
+                        return CreateFileDialogControl(property, isReadOnly);
 
                     default:
                         return CreateTextBox();
@@ -211,6 +214,137 @@ namespace QuanLyDangVien.Helper
             dtp.CustomFormat = "dd/MM/yyyy";
             dtp.Font = new Font("Segoe UI", 10);
             return dtp;
+        }
+
+        /// <summary>
+        /// Tạo FileDialog control (LinkLabel với OpenFileDialog)
+        /// </summary>
+        public static Panel CreateFileDialogControl(PropertyInfo property, bool isReadOnly = false)
+        {
+            Panel panel = new Panel();
+            panel.BorderStyle = BorderStyle.None;
+            panel.AutoSize = true;
+            // Lưu thông tin read-only vào Tag của panel
+            panel.Tag = isReadOnly;
+
+            LinkLabel linkLabel = new LinkLabel();
+            linkLabel.Text = "Chưa chọn file";
+            linkLabel.Location = new Point(0, 0);
+            linkLabel.AutoSize = true;
+            linkLabel.Font = new Font("Segoe UI", 10);
+            linkLabel.ForeColor = Color.Gray;
+            linkLabel.LinkColor = Color.FromArgb(0, 174, 219);
+            linkLabel.VisitedLinkColor = Color.FromArgb(0, 174, 219);
+            linkLabel.Name = property.Name;
+            
+            // Lưu đường dẫn file vào một dictionary riêng để tránh conflict với Tag của panel
+            // Sử dụng một đối tượng để lưu cả đường dẫn file và thông tin read-only
+            var fileInfo = new { FilePath = (string)null, IsReadOnly = isReadOnly };
+            linkLabel.Tag = fileInfo;
+            
+            // Event click để mở OpenFileDialog hoặc mở file
+            linkLabel.Click += (s, e) =>
+            {
+                // Lấy thông tin từ Tag
+                var tagInfo = linkLabel.Tag;
+                string existingPath = null;
+                bool allowFileSelection = true;
+                
+                if (tagInfo != null)
+                {
+                    // Kiểm tra xem Tag có phải là object với FilePath không
+                    var filePathProperty = tagInfo.GetType().GetProperty("FilePath");
+                    var isReadOnlyProperty = tagInfo.GetType().GetProperty("IsReadOnly");
+                    
+                    if (filePathProperty != null)
+                    {
+                        existingPath = filePathProperty.GetValue(tagInfo) as string;
+                    }
+                    if (isReadOnlyProperty != null)
+                    {
+                        allowFileSelection = !(bool)isReadOnlyProperty.GetValue(tagInfo);
+                    }
+                    // Nếu Tag là string (tương thích ngược)
+                    else if (tagInfo is string)
+                    {
+                        existingPath = tagInfo as string;
+                        allowFileSelection = true;
+                    }
+                }
+                
+                // Nếu đã có file, mở file
+                if (!string.IsNullOrWhiteSpace(existingPath))
+                {
+                    string fullPath = existingPath;
+                    
+                    // Nếu là đường dẫn tương đối (Server\...), lấy full path
+                    if (!Path.IsPathRooted(existingPath))
+                    {
+                        try
+                        {
+                            fullPath = FileHelper.GetFullPath(existingPath);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"Lỗi khi lấy đường dẫn file: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+                    }
+                    
+                    // Kiểm tra file có tồn tại không
+                    if (File.Exists(fullPath))
+                    {
+                        try
+                        {
+                            System.Diagnostics.Process.Start(fullPath);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"Lỗi khi mở file: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                        return;
+                    }
+                    else
+                    {
+                        // File không tồn tại
+                        if (!allowFileSelection)
+                        {
+                            // Trong chế độ read-only, chỉ thông báo
+                            MessageBox.Show("File không tồn tại!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            return;
+                        }
+                    }
+                }
+
+                // Nếu cho phép chọn file mới (không phải read-only mode), mở OpenFileDialog
+                if (allowFileSelection)
+                {
+                    using (OpenFileDialog openFileDialog = new OpenFileDialog())
+                    {
+                        openFileDialog.Filter = "Tất cả files (*.*)|*.*|PDF (*.pdf)|*.pdf|Word (*.doc;*.docx)|*.doc;*.docx|Ảnh (*.jpg;*.jpeg;*.png;*.gif)|*.jpg;*.jpeg;*.png;*.gif";
+                        openFileDialog.FilterIndex = 1;
+                        openFileDialog.RestoreDirectory = true;
+                        openFileDialog.Title = "Chọn file";
+
+                        if (openFileDialog.ShowDialog() == DialogResult.OK)
+                        {
+                            // Lưu đường dẫn file vào Tag và hiển thị tên file
+                            linkLabel.Tag = new { FilePath = openFileDialog.FileName, IsReadOnly = isReadOnly };
+                            linkLabel.Text = Path.GetFileName(openFileDialog.FileName);
+                            linkLabel.ForeColor = Color.FromArgb(0, 174, 219);
+                            linkLabel.LinkColor = Color.FromArgb(0, 174, 219);
+                        }
+                    }
+                }
+                else
+                {
+                    // Trong chế độ read-only và chưa có file, thông báo
+                    MessageBox.Show("Chưa có file được đính kèm.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            };
+
+            panel.Controls.Add(linkLabel);
+            return panel;
         }
 
         /// <summary>

@@ -187,6 +187,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Services\AwardsDisciplineService.cs" />
+    <Compile Include="Services\ChuyenSinhHoatDangService.cs" />
     <Compile Include="Services\DangVienService.cs" />
     <Compile Include="Services\DonViService.cs" />
     <Compile Include="Services\NguoiDungService.cs" />

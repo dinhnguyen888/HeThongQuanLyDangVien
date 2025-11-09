@@ -217,12 +217,14 @@ namespace QuanLyDangVien.Models
         public int ChuyenSinhHoatID { get; set; }
 
         [DisplayName("Đảng viên")]
-        [ControlType(ControlInputType.ComboBox)]
+        [ControlType(ControlInputType.TextBox)]
+        [ReadOnlyField]
         [Required]
         public int DangVienID { get; set; }
 
         [DisplayName("Đơn vị đi")]
-        [ControlType(ControlInputType.ComboBox)]
+        [ControlType(ControlInputType.TextBox)]
+        [ReadOnlyField]
         [Required]
         public int DonViDi { get; set; }
 
@@ -245,6 +247,7 @@ namespace QuanLyDangVien.Models
         public string GhiChu { get; set; }
 
         [DisplayName("File quyết định")]
+        [ControlType(ControlInputType.FileDialog)]
         public string FileQuyetDinh { get; set; }
 
         [DisplayName("Trạng thái")]
