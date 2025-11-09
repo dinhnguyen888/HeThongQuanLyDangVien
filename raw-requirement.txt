@@ -1,0 +1,101 @@
+🟢 Tổng hợp nội dung phần mềm quản lý đảng viên
+1.	Danh sách quân nhân: TT, Họ tên, Ngày tháng năm sinh, SHSQ, Số thẻ BHYT, Số CCCD, Cấp bậc, Chức vụ, Đơn vị, Nhập ngũ, Ngày vào đảng, Số thẻ Đảng, Đoàn, Dân tộc, Tôn giáo, Sức khỏe, Nhóm máu, Họ tên cha-năm sinh, Họ tên mẹ-năm sinh, Họ tên vợ, con-năm sinh, Nghề nghiệp cha mẹ, Mấy anh chị em, Quê quán, Nơi ở hiện nay, Khi cần báo tin, Ghi chú.
+
+ 
+
+Form Danh sách quân nhân:  Xuất ra file tổng hợp, in
+Với datagridView sẽ được bố trí theo các cột theo thứ tự gộp lại như sau:
+•  TT (Số thứ tự) 
+•  Họ tên / Ngày tháng năm sinh SHSO / Số thẻ BHYT/ Số CCCD (Cột gộp nhiều thông tin cá nhân) 
+•  Cấp bậc / Chức vụ / Đơn vị 
+•  Nhập ngũ / Ngày vào đảng / Số thẻ Đảng/ Đoàn 
+•  Dân tộc / Tôn giáo 
+•  Trình độ văn hóa 
+•  Sức khỏe / Nhóm máu 
+•  Họ tên cha năm sinh / Họ tên mẹ năm sinh / Họ tên vợ, con năm sinh 
+•  Nghề nghiệp 
+•  Mấy anh chị em 
+•  Quê quán / Nơi ở hiện nay 
+•  Khi cần báo tin 
+•  Ghi chú
+2. Quản lý hồ sơ đảng viên
+•	Form Danh sách đảng viên :
+•	Bộ lọc tìm kiếm: Đơn vị, Họ và tên, cấp bậc, chức vụ, Số thẻ đảng viên, số CCCD, Đối Tượng( SQ, QNCN, HSQ-BS, LĐHĐ, CNVCQP), Tuổi Đảng, Quê quán, trình độ, Tuổi Đời.
+•	Bảng danh sách (Có khung ảnh đại diện để tải file ảnh kích thước 3x4, hay 4x6 lên) gồm có: STT, Họ và tên, Ngày, tháng, năm sinh, Số thẻ đảng viên, Số LL Đ.viên, số CCCD, số điện thoại, cấp bậc, chức vụ, Đơn vị, Chính thức Hay dự Bị(Lựa chọn), Giới tính, nhập ngũ, Vào Đảng, Chính thức, Đối Tượng( SQ, QNCN, HSQ-BS, LĐHĐ, CNVCQP cái này lựa chọn), Tuổi Đảng, Quê quán, trình độ , Tuổi Đời, Quá trình công tác ( Viết dài), Hồ sơ gia đình, Hồ sơ khen thưởng – kỷ luật, Tài liệu Hồ sơ Đảng viên (File Word, ảnh, PDF Thêm vào Theo Thư mục).
+•	Xuất ra file word in, báo cáo
+ Form Thêm/Sửa, lưu, xóa, cập nhật, đảng viên
+•	Form Mẫu T63: Nhập theo form T63 mẫu file word, xuất ra in ra file word
+________________________________________
+2. Quản lý Hồ Sơ đơn vị
+•	Form Danh sách chi bộ, đơn vị: STT, Danh sách Đơn vị, Tổng số đảng viên, Cấp ủy ( Bí thư, Phó Bí Thư, ủy viên là ai), Khen thưởng, kỷ luật, ghi chú.
+•	Bộ lọc tìm kiếm: Đơn vị
+•	Form Chi tiết chi bộ: Lấy từ Form Danh sách đảng viên xếp theo từng chi bộ của đơn vị.
+•	Form Sinh hoạt chi bộ: Lịch sinh hoạt (tạo lịch, nhắc nhở, điểm danh), Biên bản sinh hoạt (ghi chép nội dung, nghị quyết).
+•	Form Thêm/Sửa, lưu, xóa, cập nhật đơn vị theo các form
+________________________________________
+4. Chuyển sinh hoạt đảng
+•	Form Chuyển sinh hoạt sách: chọn Họ và tên đảng viên, Ngày sinh, cấp bấc, chức vụ, Vào Đảng, Chính thức, Số thẻ đảng viên, đơn vị đi – đơn vị đến, ngày chuyển, ghi chú, file quyết định.
+•	Form Lịch sử chuyển sinh hoạt (theo từng đảng viên / toàn hệ thống, năm, đơn vị).
+•	Form Thêm/Sửa, lưu, xóa, cập nhật.
+
+5. Thi đua - Khen thưởng 
+•	Form Khen thưởng cá nhân: chọn đảng viên, hình thức khen thưởng (Lựa chọn: - “Chiến sĩ thi đua toàn quốc”; “Chiến sĩ thi đua toàn quân”; “Chiến sĩ thi đua cơ sở”;“Chiến sĩ tiên tiến”, “Lao động tiên tiến”), ngày, Số quyết định, cấp quyết định, file đính kèm( Ảnh, file)
+•	Form Khen thưởng Đơn vị: chọn chi bộ, hình thức (Lựa chọn: Cờ thi đua của Chính phủ”;
+•	- “Cờ thi đua của Bộ Quốc phòng”;
+•	- Cờ thi đua của Bộ Tổng Tham mưu, Tổng cục Chính trị, tổng cục, quân khu, quân đoàn, quân chủng, binh chủng và tương đương trực thuộc Bộ Quốc phòng, Ban Cơ yếu Chính phủ; “Đơn vị Quyết thắng”, “Tập thể lao động xuất sắc”; “Đơn vị tiên tiến”, “Tập thể lao động tiên tiến”; Đơn vị vững mạnh toàn diện “Mẫu mực, tiêu biểu”; “Đơn vị huấn luyện giỏi”; “Đơn vị văn hóa tiêu biểu”, ngày, Số quyết định, cấp quyết định. file đính kèm.
+•	Form Kỷ luật cá nhân: Chọn đảng viên, hình thức Kỷ luật Đối với đảng viên chính thức: (Khiển trách, cảnh cáo, cách chức, khai trừ);  Đối với đảng viên dự bị:(Khiển trách, cảnh cáo)
+•	Form Kỷ luật tổ chức đảng : chọn Đơn vị (Chi bộ, Đảng bộ), hình thức Kỷ luật (Đối với tổ chức đảng: Khiển trách, cảnh cáo, giải tán.), ngày, Số quyết định, cấp quyết định. Nội dung, ghi chú, file đính kèm( các quyết định hồ sơ liên quan)
+•	Form Bộ lọc tìm kiếm: Khen thưởng cá nhân, tổ chức đảng; Kỷ luật cá nhân, tổ chức đảng theo năm, theo hình thức
+•	Form Danh sách khen thưởng, Danh sách Kỷ luật (lọc theo năm,cá nhân, đơn vị)
+6. Công tác phát triển Đảng
+Form Quản lý đảng viên dự bị: STT, Họ và tên, Giới tính, Ngày sinh, Vào Đảng, Chính thức, Đơn vị, Chức vụ, Đối Tượng( SQ, QNCN, HSQ-BS, LĐHĐ, CNVCQP), Quê quán, trình độ, Tuổi Đời, Quá trình công tác, Hồ sơ gia đình,Tài liệu Hồ sơ Đảng viên (ảnh, PDF).
+Form Theo dõi chuyển chính thức: nhắc lịch, báo cáo và Form Bộ lọc tìm kiếm: Đơn vị, Họ và tên, cấp bậc, chức vụ, Đối Tượng( SQ, QNCN, HSQ-BS, LĐHĐ, CNVCQP), Quê quán, trình độ, Tuổi Đời.
+7. Tài Liệu
+- Các văn bản, Tài liệu hướng dẫn theo các foder, mục riêng
+- Các văn bản Lưu của Chi bộ, đảng bộ ( Có form chọn theo từng chi bộ, đảng bộ lưu các hồ sơ văn bản của đảng gửi cho chi bộ, đảng bộ)
+________________________________________
+8. Báo cáo – Thống kê
+- Báo cáo danh sách quân nhân
+- Báo cáo danh sách đảng viên, đơn vị
+- Báo cáo Thi đua, khen thưởng, Kỷ luật
+- Báo cáo Chuyển sinh hoạt đảng
+- Báo cáo phát triển đảng viên
+Form Báo cáo tổng hợp theo năm:
+o	Tổng số đảng viên ( theo từng Đối Tượng :SQ, QNCN, HSQ-BS, LĐHĐ, CNVCQP)
+o	Số kết nạp mới, số chuyển đi/đến.
+o	Chính thức, dự bị.
+o	Tuổi đảng:  
++ Tuổi đời
+o	Từ 18 - 30 tuổi
+o	Từ 41 đến 50
+o	Tuổi Bình quân
++ Tuổi đảng
+o	 Từ 30 đến dưới 40 tuổi đảng
+o	 Từ 50 năm tuổi đảng trở lên
+-	Số khen thưởng, số kỷ luật.
+o	Form Biểu đồ thống kê: Đơn vị, phân tích Tổng hợp Tổng số đảng viên, theo giới tính, Quê quán, tuổi, chức vụ, trình độ. Số kết nạp mới, số chuyển đi/đến. Chính thức, dự bị.
+•	Form Xuất báo cáo, xem trực tiếp trên ứng dụng: Excel, PDF, Word (theo mẫu).
+9. Quản trị hệ thống
+•	Form Quản lý người dùng: tài khoản, phân quyền (Admin có quyền truy cập, sủa, tất cả các nội dung; Bí thư các chi bộ, đảng bộ  có quyền xem, thêm sửa xóa các nội dung của cá nhân, chi bộ, đảng bộ đó; Văn phòng các tài khoản khác chỉ Xem báo cáo, xem danh sách đảng viên chi bộ, đảng bộ, bao cáo tổng hợp số lượng,…).
+•	Phân quyền cơ bản: Admin, Bí thư, Văn phòng.Chi tiết hóa phân quyền theo chức năng (CRUD: Create, Read, Update, Delete) trên từng module/form. Ví dụ: Văn phòng chỉ được "Xem" và "Xuất Báo cáo" nhưng không được "Sửa" hồ sơ đảng viên.
+•	Form Nhật ký hệ thống (Audit Log): ghi lại thao tác thêm/sửa/xóa, cập nhật của các tài khoản
+Form Cấu hình hệ thống: Tự động sao lưu (backup DB hàng ngày)., phân quyền chức năng. Mã hóa dữ liệu nhạy cảm (số điện thoại, hồ sơ kỷ luật) 🛡️ Bảo mật dữ liệu
+🟢 Hình ảnh demo (UI Mockup)
+Mình sẽ dựng mockup giao diện demo cơ bản:
+1.	Màn hình Dashboard – hiển thị số liệu tổng quan, các form để chọn, giao điện đẹp có các ảnh của đơn vị
+2.	Màn hình Danh sách Quân nhân– tìm kiếm, danh sách, nút thao tác, thông tin của đảng viên, khen thưởng, kỷ luật
+3.	Màn hình Danh sách đảng viên – tìm kiếm, danh sách, nút thao tác, thông tin của đảng viên, khen thưởng, kỷ luật
+4.	Màn hình Hồ Sơ Đơn vị – có các Đơn vị để chọn và thông tin hồ sơ của từng đơn vị kết nối với danh sách đảng viên + khen thưởng/kỷ luật.
+5.	Chuyển sinh hoạt đảng: Kết nối các thông tin với danh sách đảng viên ( Chỉ có form chọn, tìm kiếm)
+6.	Thi đua - Khen thưởng: các dữ liệu của đảng viên đều được kết nối với nhau
+7.	Công tác phát triển Đảng
+8.	Màn hình Báo cáo tổng hợp – biểu đồ + xuất file báo cáo, xem trực tiếp
+
+Mẫu file word được lưu trữ trong /Word
+yêu cầu sử dụng các thư viện sau:
+SQL server cho database
+.net winform cho frontend
+dapper cho micro orm
+query bằng Dapper SQL thuần phía frontend
+không sử dụng proceduce
+dùng Microsoft.Office.Interop.Word để xuất và mở file báo cáo

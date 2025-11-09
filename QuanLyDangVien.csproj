@@ -77,12 +77,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\WinformAttribute.cs" />
-    <Compile Include="Forms\FormThaoTacDulieu.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormThaoTacDulieu.Designer.cs">
-      <DependentUpon>FormThaoTacDulieu.cs</DependentUpon>
-    </Compile>
+    <Compile Include="DTOs\CommonDTOs.cs" />
     <Compile Include="Forms\FormThem.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -104,6 +99,7 @@
     <Compile Include="Helper\CheckStatus.cs" />
     <Compile Include="Helper\ControlFactory.cs" />
     <Compile Include="Helper\DbHelper.cs" />
+    <Compile Include="Helper\FileHelper.cs" />
     <Compile Include="Helper\FormHelper.cs" />
     <Compile Include="Helper\SaveInforHelper.cs" />
     <Compile Include="HeThongQuanLyDangVien.cs">
@@ -112,8 +108,17 @@
     <Compile Include="HeThongQuanLyDangVien.Designer.cs">
       <DependentUpon>HeThongQuanLyDangVien.cs</DependentUpon>
     </Compile>
+    <Compile Include="Models\AdditionalModels.cs" />
     <Compile Include="Models\DangVien.cs" />
+    <Compile Include="Models\DonVi.cs" />
     <Compile Include="Models\NguoiDung.cs" />
+    <Compile Include="Models\QuanNhan.cs" />
+    <Compile Include="Pages\PageDanhSachQuanNhan.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Pages\PageDanhSachQuanNhan.Designer.cs">
+      <DependentUpon>PageDanhSachQuanNhan.cs</DependentUpon>
+    </Compile>
     <Compile Include="Pages\PageDanhSachChiBo.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -137,6 +142,24 @@
     </Compile>
     <Compile Include="Pages\PageKyLuat.Designer.cs">
       <DependentUpon>PageKyLuat.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\PageKyLuatToChuc.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Pages\PageKyLuatToChuc.Designer.cs">
+      <DependentUpon>PageKyLuatToChuc.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\PageKhenThuongDonVi.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Pages\PageKhenThuongDonVi.Designer.cs">
+      <DependentUpon>PageKhenThuongDonVi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\PageQuanLyDonVi.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Pages\PageQuanLyDonVi.Designer.cs">
+      <DependentUpon>PageQuanLyDonVi.cs</DependentUpon>
     </Compile>
     <Compile Include="Pages\PageSinhHoatChiBo.cs">
       <SubType>UserControl</SubType>
@@ -163,10 +186,20 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Services\AwardsDisciplineService.cs" />
     <Compile Include="Services\DangVienService.cs" />
-    <Compile Include="Models\DonVi.cs" />
     <Compile Include="Services\DonViService.cs" />
     <Compile Include="Services\NguoiDungService.cs" />
+    <Compile Include="Services\QuanNhanService.cs" />
+    <Compile Include="Services\ReportService.cs" />
+    <Compile Include="Services\SinhHoatChiBoService.cs" />
+    <Compile Include="UserControls\MultiLineDataGridViewCell.cs" />
+    <Compile Include="UserControls\UserControlDanhSachQuanNhan.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\UserControlDanhSachQuanNhan.Designer.cs">
+      <DependentUpon>UserControlDanhSachQuanNhan.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\UserControlDangNhap.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -221,9 +254,6 @@
     <Compile Include="UserControls\UserControlCongTacPhatTrienDang.Designer.cs">
       <DependentUpon>UserControlCongTacPhatTrienDang.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="Forms\FormThaoTacDulieu.resx">
-      <DependentUpon>FormThaoTacDulieu.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormThem.resx">
       <DependentUpon>FormThem.cs</DependentUpon>
     </EmbeddedResource>
@@ -236,6 +266,9 @@
     <EmbeddedResource Include="HeThongQuanLyDangVien.resx">
       <DependentUpon>HeThongQuanLyDangVien.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Pages\PageDanhSachQuanNhan.resx">
+      <DependentUpon>PageDanhSachQuanNhan.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Pages\PageDanhSachChiBo.resx">
       <DependentUpon>PageDanhSachChiBo.cs</DependentUpon>
     </EmbeddedResource>
@@ -245,8 +278,17 @@
     <EmbeddedResource Include="Pages\PageKhenThuong.resx">
       <DependentUpon>PageKhenThuong.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Pages\PageKhenThuongDonVi.resx">
+      <DependentUpon>PageKhenThuongDonVi.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Pages\PageKyLuat.resx">
       <DependentUpon>PageKyLuat.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Pages\PageKyLuatToChuc.resx">
+      <DependentUpon>PageKyLuatToChuc.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Pages\PageQuanLyDonVi.resx">
+      <DependentUpon>PageQuanLyDonVi.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Pages\PageSinhHoatChiBo.resx">
       <DependentUpon>PageSinhHoatChiBo.cs</DependentUpon>
@@ -270,6 +312,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\UserControlCongTacPhatTrienDang.resx">
       <DependentUpon>UserControlCongTacPhatTrienDang.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\UserControlDanhSachQuanNhan.resx">
+      <DependentUpon>UserControlDanhSachQuanNhan.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\UserControlDangNhap.resx">
       <DependentUpon>UserControlDangNhap.cs</DependentUpon>

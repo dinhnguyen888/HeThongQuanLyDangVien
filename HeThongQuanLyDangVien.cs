@@ -7,6 +7,7 @@ namespace QuanLyDangVien
     public partial class HeThongQuanLyDangVien : MetroFramework.Forms.MetroForm
     {
         private TabPage tabDangNhap;
+        private TabPage tabQuanLyQuanNhan;
         private TabPage tabHoSoDangVien;
         private TabPage tabHoSoDonVi;
         private TabPage tabChuyenSinhHoatDang;
@@ -21,6 +22,7 @@ namespace QuanLyDangVien
             InitializeComponent();
 
             tabDangNhap = new TabPage("Đăng nhập") { Name = "DangNhap" };
+            tabQuanLyQuanNhan = new TabPage("Quản lý Quân nhân") { Name = "QuanLyQuanNhan" };
             tabHoSoDangVien = new TabPage("Hồ sơ Đảng Viên") { Name = "HoSoDangVien" };
             tabHoSoDonVi = new TabPage("Hồ sơ Đơn Vị") { Name = "HoSoDonVi" };
             tabChuyenSinhHoatDang = new TabPage("Chuyển Sinh Hoạt Đảng") { Name = "ChuyenSinhHoatDang" };
@@ -59,6 +61,12 @@ namespace QuanLyDangVien
 
             switch (TabControl.SelectedTab.Name)
             {
+                case "QuanLyQuanNhan":
+                    var ucQuanNhan = new UserControlDanhSachQuanNhan();
+                    ucQuanNhan.Dock = DockStyle.Fill;
+                    MainPn.Controls.Add(ucQuanNhan);
+                    break;
+
                 case "HoSoDangVien":
                     var ucDangVien = new UserControlQuanLyDangVien();
                     ucDangVien.Dock = DockStyle.Fill;
@@ -116,6 +124,7 @@ namespace QuanLyDangVien
             if (!TabControl.TabPages.Contains(tabHoSoDangVien))
             {
                 TabControl.TabPages.Clear();
+                TabControl.TabPages.Add(tabQuanLyQuanNhan);
                 TabControl.TabPages.Add(tabHoSoDangVien);
                 TabControl.TabPages.Add(tabHoSoDonVi);
                 TabControl.TabPages.Add(tabChuyenSinhHoatDang);
@@ -138,7 +147,7 @@ namespace QuanLyDangVien
         {
             ShowAllTabs();
             this.WindowState = FormWindowState.Maximized;
-            TabControl.SelectedTab = tabHoSoDangVien; // tự động bật tab "Hồ sơ Đảng Viên"
+            TabControl.SelectedTab = tabQuanLyQuanNhan; // tự động bật tab "Quản lý Quân nhân"
             TabControl_SelectedIndexChanged(null, null); // hiển thị UserControl tương ứng
         }
     }

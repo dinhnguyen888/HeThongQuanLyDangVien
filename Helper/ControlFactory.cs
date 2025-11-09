@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -94,7 +94,11 @@ namespace QuanLyDangVien.Helper
             var comboDataAttr = property.GetCustomAttribute<ComboBoxDataAttribute>();
             if (comboDataAttr != null && comboDataAttr.Items != null)
             {
-                cb.Items.AddRange(comboDataAttr.Items);
+                // Xử lý ComboBoxItem để bind đúng cách
+                var dataList = comboDataAttr.Items.Select(item => new { Key = item.Key, Value = item.Value }).ToList();
+                cb.DisplayMember = "Value";
+                cb.ValueMember = "Key";
+                cb.DataSource = dataList;
             }
             else if (property.PropertyType.IsEnum ||
                      (Nullable.GetUnderlyingType(property.PropertyType)?.IsEnum ?? false))
@@ -192,6 +196,8 @@ namespace QuanLyDangVien.Helper
             nud.Maximum = 1000000;
             nud.Minimum = 0;
             nud.Font = new Font("Segoe UI", 10);
+            nud.DecimalPlaces = 0; // Chỉ cho phép số nguyên
+            nud.AllowDrop = false;
             return nud;
         }
 

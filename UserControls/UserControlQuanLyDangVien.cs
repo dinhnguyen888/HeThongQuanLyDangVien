@@ -3,6 +3,7 @@ using QuanLyDangVien.Attributes;
 using QuanLyDangVien.Helper;
 using QuanLyDangVien.Models;
 using QuanLyDangVien.Services;
+using QuanLyDangVien.DTOs;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -18,30 +19,53 @@ namespace QuanLyDangVien
     public partial class UserControlQuanLyDangVien : UserControl
     {
         private DangVienService _dangVienService;
-        private List<DangVien> _danhSachDangVien;
+        private DonViService _donViService;
+        private List<DangVienDTO> _danhSachDangVien;
+        private List<DangVienDTO> _hienThiDangVien; // Danh sách hiển thị tạm thời
 
         public UserControlQuanLyDangVien()
         {
             InitializeComponent();
             _dangVienService = new DangVienService();
-            _danhSachDangVien = new List<DangVien>();
-            
+            _donViService = new DonViService();
+            _danhSachDangVien = new List<DangVienDTO>();
+            _hienThiDangVien = new List<DangVienDTO>();
+
             LoadData();
             SetupUI();
+
+            // Setup số lượng hiển thị
+            SoluongCb.Items.AddRange(new object[] { "10", "20", "50", "Tất cả" });
+            SoluongCb.SelectedIndex = 3;
+            SoluongCb.SelectedIndexChanged += SoluongCb_SelectedIndexChanged;
+
+            // Set DoiTuongComboBox
+            DoiTuongCb.Items.AddRange(new object[] {
+                new KeyValuePair<string, string>("Tất cả", "---Chọn Đối Tượng---"),
+                new KeyValuePair<string, string>("SQ", "Đảng viên sĩ quan"),
+                new KeyValuePair<string, string>("QNCN", "Đảng viên quân nhân chuyên nghiệp"),
+                new KeyValuePair<string, string>("HSQ-BS", "Đảng viên hợp đồng binh sĩ"),
+                new KeyValuePair<string, string>("LĐHĐ", "Đảng viên lao động hợp đồng"),
+                new KeyValuePair<string, string>("CNVCQP", "Công nhân viên chức quốc phòng")
+            });
+            DoiTuongCb.DisplayMember = "Value";
+            DoiTuongCb.ValueMember = "Key";
+            DoiTuongCb.SelectedIndex = 0;
         }
 
         private void SetupUI()
         {
             if (string.IsNullOrEmpty(TimTb.Text))
             {
-                TimTb.Text = " ";
                 TimTb.Text = "";
             }
+
             var col = DangVienGridView.Columns["ChucNang"] as DataGridViewComboBoxColumn;
             col.Items.Clear();
             col.Items.Add("Xem chi tiết");
             col.Items.Add("Sửa thông tin");
             col.Items.Add("Xóa đảng viên");
+
             DangVienGridView.EditingControlShowing += DangVienGridView_EditingControlShowing;
             DangVienGridView.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
             DangVienGridView.ColumnHeadersDefaultCellStyle.Font = new Font("Arial", 10);
@@ -54,7 +78,7 @@ namespace QuanLyDangVien
             try
             {
                 _danhSachDangVien = _dangVienService.GetAll();
-                BindDataToGrid();
+                CapNhatHienThi();
             }
             catch (Exception ex)
             {
@@ -62,90 +86,40 @@ namespace QuanLyDangVien
             }
         }
 
-        private void BindDataToGrid()
+        /// <summary>
+        /// Cập nhật danh sách hiển thị theo số lượng được chọn
+        /// </summary>
+        private void CapNhatHienThi()
         {
-            DangVienGridView.DataSource = _danhSachDangVien;
+            if (SoluongCb.SelectedItem == null)
+                return;
+
+            string selected = SoluongCb.SelectedItem.ToString();
+
+            if (selected == "Tất cả")
+            {
+                // Hiển thị toàn bộ danh sách
+                _hienThiDangVien = _danhSachDangVien.ToList();
+            }
+            else if (int.TryParse(selected, out int soLuong))
+            {
+                // Giới hạn số lượng hiển thị
+                _hienThiDangVien = _danhSachDangVien.Take(soLuong).ToList();
+            }
+            else
+            {
+                // Mặc định: hiển thị tất cả nếu có lỗi
+                _hienThiDangVien = _danhSachDangVien.ToList();
+            }
+
+            DangVienGridView.DataSource = null;
+            DangVienGridView.DataSource = _hienThiDangVien;
         }
 
-        /// <summary>
-        /// Refresh dữ liệu đơn vị cho tất cả ComboBox có DonViID
-        /// </summary>
-        public void RefreshDonViData(Form form)
+        private void SoluongCb_SelectedIndexChanged(object sender, EventArgs e)
         {
-            try
-            {
-                if (form == null)
-                    return;
-
-                BindDonViComboBoxes(form);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Lỗi khi refresh dữ liệu đơn vị: {ex.Message}");
-            }
+            CapNhatHienThi();
         }
-
-        /// <summary>
-        /// Duyệt qua tất cả controls trong form để tìm ComboBox DonViID và bind dữ liệu
-        /// </summary>
-        private void BindDonViComboBoxes(Control parent)
-        {
-            foreach (Control control in parent.Controls)
-            {
-                if (control is ComboBox comboBox && comboBox.Name == "DonViID")
-                {
-                    // Lấy dữ liệu đơn vị từ service
-                    var donViData = DonViService.GetDonViData();
-
-                    comboBox.DataSource = donViData;
-                    comboBox.DisplayMember = "TenDonVi";
-                    comboBox.ValueMember = "DonViID";
-                }
-
-                // Đệ quy duyệt vào các control con
-                if (control.HasChildren)
-                {
-                    BindDonViComboBoxes(control);
-                }
-            }
-        }
-
-
-        /// <summary>
-        /// Recursively refresh ComboBoxes trong control và các child controls
-        /// </summary>
-        /// 
-
-        /// <summary>
-        /// Duyệt qua tất cả controls trong form để tìm ComboBox DonViID và bind dữ liệu
-        /// </summary>
- 
-        //private void RefreshComboBoxesInControl(Form parent)
-        //{
-        //    foreach (Control control in parent.Controls)
-        //    {
-        //        if (control is ComboBox comboBox)
-        //        {
-        //            // Kiểm tra xem ComboBox này có tên "DonViID" không
-        //            if (comboBox.Name == "DonViID")
-        //            {
-        //                // using DonViSwervice to get data
-        //                var donViData = DonViService.GetDonViData();
-        //                // phân tích donviDât thanh DonViID và TenDonVi
-        //                comboBox.DataSource = donViData;
-        //                comboBox.DisplayMember = "TenDonVi";
-        //                comboBox.ValueMember = "DonViID";
-
-        //            }
-        //        }
-                
-        //        // Recursively check child controls
-        //        if (control.HasChildren)
-        //        {
-        //            RefreshComboBoxesInControl(control);
-        //        }
-        //    }
-        //}
 
         private void DangVienGridView_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
@@ -159,17 +133,12 @@ namespace QuanLyDangVien
         private void ChucNang_SelectedIndexChanged(object sender, EventArgs e)
         {
             var comboBox = sender as ComboBox;
-            if (comboBox == null) return;
-            if (comboBox.SelectedItem == null)
-                return;
+            if (comboBox == null || comboBox.SelectedItem == null) return;
 
             string selectedAction = comboBox.SelectedItem.ToString();
-
-            // Lấy dòng hiện tại
             var row = DangVienGridView.CurrentRow;
             if (row == null) return;
 
-            // Lấy ID đảng viên
             var id = row.Cells["dangVienIDDataGridViewTextBoxColumn"].Value?.ToString();
             if (string.IsNullOrEmpty(id) || !int.TryParse(id, out int dangVienID))
             {
@@ -186,46 +155,94 @@ namespace QuanLyDangVien
                         if (dangVienXem != null)
                         {
                             FormXemChiTiet formXem = new FormXemChiTiet(dangVienXem);
+                            var donViData = _donViService.GetDonViDataByDangVienId(dangVienID);
+                            RefreshDonViData(formXem, donViData);
                             formXem.ShowDialog();
                         }
                         else
-                        {
                             MessageBox.Show("Không tìm thấy thông tin đảng viên!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
                         break;
 
                     case "Sửa thông tin":
-                        var dangVienSua = _dangVienService.GetById(dangVienID);
-                        if (dangVienSua != null)
+                        var dangVienDetails = _dangVienService.GetById(dangVienID);
+                        if (dangVienDetails != null)
                         {
+                            // Convert DangVienDTO thành DangVien để sử dụng với FormSua
+                            var dangVienSua = new DangVien
+                            {
+                                DangVienID = dangVienDetails.DangVienID,
+                                DonViID = dangVienDetails.DonViID,
+                                HoTen = dangVienDetails.HoTen,
+                                NgaySinh = dangVienDetails.NgaySinh,
+                                GioiTinh = dangVienDetails.GioiTinh,
+                                SoCCCD = dangVienDetails.SoCCCD,
+                                SoDienThoai = dangVienDetails.SoDienThoai,
+                                SoTheDangVien = dangVienDetails.SoTheDangVien,
+                                SoLyLichDangVien = dangVienDetails.SoLyLichDangVien,
+                                NgayVaoDang = dangVienDetails.NgayVaoDang,
+                                NgayChinhThuc = dangVienDetails.NgayChinhThuc,
+                                LoaiDangVien = dangVienDetails.LoaiDangVien,
+                                DoiTuong = dangVienDetails.DoiTuong,
+                                CapBac = dangVienDetails.CapBac,
+                                ChucVu = dangVienDetails.ChucVu,
+                                QueQuan = dangVienDetails.QueQuan,
+                                DiaChi = dangVienDetails.DiaChi,
+                                DanToc = dangVienDetails.DanToc,
+                                TonGiao = dangVienDetails.TonGiao,
+                                NgheNghiep = dangVienDetails.NgheNghiep,
+                                TrinhDoHocVan = dangVienDetails.TrinhDoHocVan,
+                                TrinhDoChuyenMon = dangVienDetails.TrinhDoChuyenMon,
+                                LyLuanChinhTri = dangVienDetails.LyLuanChinhTri,
+                                NgoaiNgu = dangVienDetails.NgoaiNgu,
+                                TinHoc = dangVienDetails.TinHoc,
+                                AnhDaiDien = dangVienDetails.AnhDaiDien,
+                                QuaTrinhCongTac = dangVienDetails.QuaTrinhCongTac,
+                                HoSoGiaDinh = dangVienDetails.HoSoGiaDinh,
+                                TrangThai = dangVienDetails.TrangThai,
+                                NgayTao = dangVienDetails.NgayTao,
+                                NguoiTao = dangVienDetails.NguoiTao
+                            };
+                            
                             FormSua formSua = new FormSua(dangVienSua);
+                            var donViData = _donViService.GetDonViData();
+                            RefreshDonViData(formSua, donViData);
+
                             if (formSua.ShowDialog() == DialogResult.OK)
                             {
-                                // Reload data sau khi sửa
+                                var updatedDangVien = formSua.GetData() as DangVien;
+                                
+                                // **QUAN TRỌNG: Đảm bảo DangVienID được giữ nguyên**
+                                if (updatedDangVien.DangVienID == 0)
+                                {
+                                    updatedDangVien.DangVienID = dangVienDetails.DangVienID;
+                                }
+                                
+                                var (success, error) = _dangVienService.Update(updatedDangVien);
+                                if (!string.IsNullOrEmpty(error))
+                                {
+                                    MessageBox.Show(error, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    return;
+                                }
                                 LoadData();
-                                MessageBox.Show("Cập nhật thông tin đảng viên thành công!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                MessageBox.Show("Cập nhật thành công!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             }
                         }
                         else
-                        {
                             MessageBox.Show("Không tìm thấy thông tin đảng viên!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
                         break;
 
                     case "Xóa đảng viên":
                         if (MessageBox.Show($"Bạn có chắc muốn xóa đảng viên {dangVienID}?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
                         {
-                            bool result = _dangVienService.Delete(dangVienID, "admin"); // TODO: Lấy từ session
-                            if (result)
+                            var (success, error) = _dangVienService.Delete(dangVienID);
+                            if (!string.IsNullOrEmpty(error))
                             {
-                                LoadData();
-                                MessageBox.Show("Xóa đảng viên thành công!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                MessageBox.Show(error, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                return;
                             }
-                            else
-                            {
-                                MessageBox.Show("Xóa đảng viên thất bại!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                            }
+                            LoadData();
+                            MessageBox.Show("Xóa thành công!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         }
                         break;
                 }
@@ -235,10 +252,8 @@ namespace QuanLyDangVien
                 MessageBox.Show($"Lỗi khi xử lý: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-            // Sau khi xử lý xong thì reset chọn trong ComboBox
             comboBox.SelectedIndex = -1;
         }
-
 
         private void TimKiemBtn_Click(object sender, EventArgs e)
         {
@@ -251,20 +266,20 @@ namespace QuanLyDangVien
                     return;
                 }
 
-                // Tìm kiếm theo họ tên hoặc CCCD
-                _danhSachDangVien = _dangVienService.GetAll(hoTen: searchText);
-                if (_danhSachDangVien.Count == 0)
-                {
-                    // Nếu không tìm thấy theo họ tên, thử tìm theo CCCD
-                    _danhSachDangVien = _dangVienService.GetAll(soCCCD: searchText);
-                }
+                // Sử dụng các tham số mới từ DangVienService
+                _danhSachDangVien = _dangVienService.GetAll(
+                    hoTen: searchText,
+                    soCCCD: searchText,
+                    capBac: null,
+                    chucVu: null,
+                    queQuan: null,
+                    trinhDo: null
+                );
 
-                BindDataToGrid();
-                
+                CapNhatHienThi();
+
                 if (_danhSachDangVien.Count == 0)
-                {
                     MessageBox.Show("Không tìm thấy đảng viên nào!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
             }
             catch (Exception ex)
             {
@@ -277,14 +292,21 @@ namespace QuanLyDangVien
             try
             {
                 FormThem form = new FormThem(typeof(DangVien));
-
-                // Gọi hàm refresh trước khi hiển thị form
-                RefreshDonViData(form);
+                var donViData = _donViService.GetDonViData();
+                RefreshDonViData(form, donViData);
 
                 if (form.ShowDialog() == DialogResult.OK)
                 {
-                    LoadData();
+                    var newDangVien = form.GetData() as DangVien;
+                    var (id, error) = _dangVienService.Insert(newDangVien);
+                    if (!string.IsNullOrEmpty(error))
+                    {
+                        MessageBox.Show(error, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
                     MessageBox.Show("Thêm đảng viên thành công!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LoadData();
                 }
             }
             catch (Exception ex)
@@ -293,58 +315,70 @@ namespace QuanLyDangVien
             }
         }
 
-        private void SoluongCb_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            // TODO: Implement pagination if needed
-        }
-
-        private void XoaBtn_Click(object sender, EventArgs e)
+        private void XoaNhieuBtn_Click(object sender, EventArgs e)
         {
             try
             {
                 if (DangVienGridView.SelectedRows.Count == 0)
                 {
-                    MessageBox.Show("Vui lòng chọn đảng viên cần xóa!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("Vui lòng chọn ít nhất một đảng viên để xóa!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                var selectedRow = DangVienGridView.SelectedRows[0];
-                var id = selectedRow.Cells["dangVienIDDataGridViewTextBoxColumn"].Value?.ToString();
-                
-                if (string.IsNullOrEmpty(id) || !int.TryParse(id, out int dangVienID))
+                if (MessageBox.Show($"Bạn có chắc muốn xóa {DangVienGridView.SelectedRows.Count} đảng viên đã chọn?",
+                                    "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
                 {
-                    MessageBox.Show("Không thể xác định đảng viên!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
-                if (MessageBox.Show($"Bạn có chắc muốn xóa đảng viên đã chọn?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                int successCount = 0, failCount = 0;
+                foreach (DataGridViewRow row in DangVienGridView.SelectedRows)
                 {
-                    bool result = _dangVienService.Delete(dangVienID, "admin"); // TODO: Lấy từ session
-                    if (result)
+                    var idObj = row.Cells["dangVienIDDataGridViewTextBoxColumn"].Value;
+                    if (idObj != null && int.TryParse(idObj.ToString(), out int dangVienID))
                     {
-                        LoadData();
-                        MessageBox.Show("Xóa đảng viên thành công!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        var result = _dangVienService.Delete(dangVienID);
+                        if (result.Item1) successCount++; else failCount++;
                     }
-                    else
-                    {
-                        MessageBox.Show("Xóa đảng viên thất bại!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
+                    else failCount++;
                 }
+
+                LoadData();
+                MessageBox.Show($"Đã xóa thành công {successCount} đảng viên.\nKhông thể xóa {failCount} đảng viên.",
+                                "Kết quả", MessageBoxButtons.OK,
+                                successCount > 0 ? MessageBoxIcon.Information : MessageBoxIcon.Error);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Lỗi khi xóa đảng viên: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Lỗi khi xóa: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        private void DangVienGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        public void RefreshDonViData(Form form, List<DonViSimplified> donViData)
         {
-
+            if (form == null) return;
+            BindDonViComboBoxes(form, donViData);
         }
 
-        private void SoluongCb_SelectedIndexChanged_1(object sender, EventArgs e)
+        private void BindDonViComboBoxes(Control parent, List<DonViSimplified> donViData)
         {
+            foreach (Control control in parent.Controls)
+            {
+                if (control is ComboBox comboBox && comboBox.Name == "DonViID")
+                {
+                    comboBox.DataSource = donViData;
+                    comboBox.DisplayMember = "TenDonVi";
+                    comboBox.ValueMember = "DonViID";
+                }
 
+                if (control.HasChildren)
+                    BindDonViComboBoxes(control, donViData);
+            }
+        }
+
+        private void DoiTuongCb_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // TODO: Lọc theo loại đối tượng nếu cần
         }
     }
 }

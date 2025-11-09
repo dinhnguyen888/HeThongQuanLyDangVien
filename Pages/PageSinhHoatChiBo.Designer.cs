@@ -32,10 +32,8 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.metroButton4 = new MetroFramework.Controls.MetroButton();
             this.metroButton3 = new MetroFramework.Controls.MetroButton();
-            this.NhacNhoCaNhan = new MetroFramework.Controls.MetroButton();
             this.metroButton2 = new MetroFramework.Controls.MetroButton();
             this.metroButton1 = new MetroFramework.Controls.MetroButton();
-            this.NhacNho = new MetroFramework.Controls.MetroTile();
             this.panel2 = new System.Windows.Forms.Panel();
             this.metroTile1 = new MetroFramework.Controls.MetroTile();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
@@ -66,10 +64,8 @@
             // 
             this.panel1.Controls.Add(this.metroButton4);
             this.panel1.Controls.Add(this.metroButton3);
-            this.panel1.Controls.Add(this.NhacNhoCaNhan);
             this.panel1.Controls.Add(this.metroButton2);
             this.panel1.Controls.Add(this.metroButton1);
-            this.panel1.Controls.Add(this.NhacNho);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(3, 3);
             this.panel1.Name = "panel1";
@@ -83,6 +79,7 @@
             this.metroButton4.Size = new System.Drawing.Size(247, 46);
             this.metroButton4.TabIndex = 6;
             this.metroButton4.Text = "Up file nghị quyết cho buổi sinh hoạt";
+            this.metroButton4.Click += new System.EventHandler(this.metroButton4_Click);
             // 
             // metroButton3
             // 
@@ -91,23 +88,16 @@
             this.metroButton3.Size = new System.Drawing.Size(229, 46);
             this.metroButton3.TabIndex = 5;
             this.metroButton3.Text = "Thêm nội dung cho Buổi sinh hoạt";
-            // 
-            // NhacNhoCaNhan
-            // 
-            this.NhacNhoCaNhan.Location = new System.Drawing.Point(120, 76);
-            this.NhacNhoCaNhan.Name = "NhacNhoCaNhan";
-            this.NhacNhoCaNhan.Size = new System.Drawing.Size(137, 46);
-            this.NhacNhoCaNhan.TabIndex = 4;
-            this.NhacNhoCaNhan.Text = "Nhắc nhở cá nhân";
-            this.NhacNhoCaNhan.Click += new System.EventHandler(this.NhacNhoCaNhan_Click);
+            this.metroButton3.Click += new System.EventHandler(this.metroButton3_Click);
             // 
             // metroButton2
             // 
-            this.metroButton2.Location = new System.Drawing.Point(290, 76);
+            this.metroButton2.Location = new System.Drawing.Point(120, 76);
             this.metroButton2.Name = "metroButton2";
             this.metroButton2.Size = new System.Drawing.Size(151, 46);
             this.metroButton2.TabIndex = 3;
             this.metroButton2.Text = "Điểm Danh";
+            this.metroButton2.Click += new System.EventHandler(this.metroButton2_Click);
             // 
             // metroButton1
             // 
@@ -117,18 +107,6 @@
             this.metroButton1.TabIndex = 2;
             this.metroButton1.Text = "Tạo lịch";
             this.metroButton1.Click += new System.EventHandler(this.metroButton1_Click);
-            // 
-            // NhacNho
-            // 
-            this.NhacNho.Dock = System.Windows.Forms.DockStyle.Top;
-            this.NhacNho.Location = new System.Drawing.Point(0, 0);
-            this.NhacNho.Name = "NhacNho";
-            this.NhacNho.Size = new System.Drawing.Size(968, 30);
-            this.NhacNho.TabIndex = 1;
-            this.NhacNho.Text = "Thông báo: sắp đến buổi họp sinh hoạt chi bộ với tiêu đề:  ";
-            this.NhacNho.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.NhacNho.TileTextFontSize = MetroFramework.MetroTileTextSize.Tall;
-            this.NhacNho.TileTextFontWeight = MetroFramework.MetroTileTextWeight.Regular;
             // 
             // panel2
             // 
@@ -161,6 +139,8 @@
             this.dataGridView1.RowTemplate.Height = 24;
             this.dataGridView1.Size = new System.Drawing.Size(968, 372);
             this.dataGridView1.TabIndex = 4;
+            this.dataGridView1.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellDoubleClick);
+            this.dataGridView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dataGridView1_KeyDown);
             // 
             // PageSinhHoatChiBo
             // 
@@ -181,8 +161,6 @@
 
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Panel panel1;
-        private MetroFramework.Controls.MetroTile NhacNho;
-        private MetroFramework.Controls.MetroButton NhacNhoCaNhan;
         private MetroFramework.Controls.MetroButton metroButton2;
         private MetroFramework.Controls.MetroButton metroButton1;
         private MetroFramework.Controls.MetroButton metroButton4;

@@ -1,4 +1,4 @@
-using QuanLyDangVien.Attributes;
+﻿using QuanLyDangVien.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -143,22 +143,66 @@ namespace QuanLyDangVien.Helper
                 }
                 else if (control is NumericUpDown numericUpDown)
                 {
-                    numericUpDown.Value = Convert.ToDecimal(value);
+                    // Xử lý nullable int - nếu value null thì set về 0
+                    if (value == null)
+                    {
+                        numericUpDown.Value = 0;
+                    }
+                    else
+                    {
+                        // Convert sang int trước rồi sang decimal
+                        int intValue = Convert.ToInt32(value);
+                        numericUpDown.Value = intValue;
+                    }
                 }
                 else if (control is Panel panel)
                 {
                     PictureBox pictureBox = panel.Controls.OfType<PictureBox>().FirstOrDefault();
-                    if (pictureBox != null && value is string imagePath && !string.IsNullOrEmpty(imagePath))
+                    if (pictureBox != null)
                     {
-                        if (File.Exists(imagePath))
+                        if (value is byte[] imageBytes && imageBytes != null && imageBytes.Length > 0)
                         {
-                            pictureBox.Image = Image.FromFile(imagePath);
-                            pictureBox.Tag = imagePath;
+                            try
+                            {
+                                // Dispose ảnh cũ trước khi load ảnh mới
+                                if (pictureBox.Image != null)
+                                {
+                                    var oldImage = pictureBox.Image;
+                                    pictureBox.Image = null;
+                                    oldImage.Dispose();
+                                }
+
+                                using (var ms = new MemoryStream(imageBytes))
+                                {
+                                    pictureBox.Image = Image.FromStream(ms);
+                                }
+                                pictureBox.Tag = imageBytes; // Lưu byte[] vào Tag luôn
+                            }
+                            catch (Exception ex)
+                            {
+                                // Nếu không load được ảnh, clear ảnh và log lỗi
+                                pictureBox.Image = null;
+                                pictureBox.Tag = null;
+                                System.Diagnostics.Debug.WriteLine($"Lỗi load ảnh: {ex.Message}");
+                            }
+                        }
+                        else
+                        {
+                            // Nếu không có ảnh hoặc ảnh rỗng, clear ảnh và tag
+                            if (pictureBox.Image != null)
+                            {
+                                var oldImage = pictureBox.Image;
+                                pictureBox.Image = null;
+                                oldImage.Dispose();
+                            }
+                            pictureBox.Tag = null;
                         }
                     }
                 }
+
             }
         }
+        
 
         /// <summary>
         /// Lưu dữ liệu từ controls vào object
@@ -173,6 +217,14 @@ namespace QuanLyDangVien.Helper
                 PropertyInfo property = propertiesDictionary[propertyName];
 
                 if (!property.CanWrite) continue;
+                
+                // KIỂM TRA TRƯỜNG READONLY - GIỮ NGUYÊN GIÁ TRỊ GỐC
+                var readOnlyAttr = property.GetCustomAttribute<ReadOnlyFieldAttribute>();
+                if (readOnlyAttr != null && readOnlyAttr.IsReadOnly)
+                {
+                    // Bỏ qua việc cập nhật từ control, giữ nguyên giá trị hiện tại
+                    continue;
+                }
 
                 object value = null;
 
@@ -180,11 +232,40 @@ namespace QuanLyDangVien.Helper
                 {
                     if (control is TextBox textBox)
                     {
-                        value = ConvertValue(textBox.Text, property.PropertyType);
+                        // Nếu TextBox có Tag và là read-only, sử dụng giá trị từ Tag (từ ComboBox đã bị thay thế)
+                        if (textBox.ReadOnly && textBox.Tag != null)
+                        {
+                            value = textBox.Tag;
+                        }
+                        // Xử lý trường hợp string rỗng cho các trường không bắt buộc
+                        else if (string.IsNullOrWhiteSpace(textBox.Text) && property.PropertyType == typeof(string))
+                        {
+                            var requiredAttr = property.GetCustomAttribute<RequiredAttribute>();
+                            if (requiredAttr == null || !requiredAttr.IsRequired)
+                            {
+                                value = null; // Trường không bắt buộc có thể null
+                            }
+                            else
+                            {
+                                value = ConvertValue(textBox.Text, property.PropertyType);
+                            }
+                        }
+                        else
+                        {
+                            value = ConvertValue(textBox.Text, property.PropertyType);
+                        }
                     }
                     else if (control is RichTextBox richTextBox)
                     {
-                        value = richTextBox.Text;
+                        // Tương tự cho RichTextBox
+                        if (string.IsNullOrWhiteSpace(richTextBox.Text))
+                        {
+                            value = null;
+                        }
+                        else
+                        {
+                            value = richTextBox.Text;
+                        }
                     }
                     else if (control is CheckBox checkBox)
                     {
@@ -208,16 +289,76 @@ namespace QuanLyDangVien.Helper
                     }
                     else if (control is NumericUpDown numericUpDown)
                     {
-                        value = Convert.ChangeType(numericUpDown.Value, property.PropertyType);
+                        // Xử lý nullable int - nếu value = 0 thì có thể là null
+                        if (property.PropertyType == typeof(int?))
+                        {
+                            if (numericUpDown.Value == 0)
+                            {
+                                value = null; // Cho phép null nếu không bắt buộc
+                            }
+                            else
+                            {
+                                // Convert decimal sang int trước
+                                int intValue = (int)numericUpDown.Value;
+                                value = (int?)intValue; // Cast sang int? trực tiếp
+                            }
+                        }
+                        else if (property.PropertyType == typeof(long?))
+                        {
+                            if (numericUpDown.Value == 0)
+                            {
+                                value = null; // Cho phép null nếu không bắt buộc
+                            }
+                            else
+                            {
+                                // Convert decimal sang long trước
+                                long longValue = (long)numericUpDown.Value;
+                                value = (long?)longValue; // Cast sang long? trực tiếp
+                            }
+                        }
+                        else if (property.PropertyType == typeof(int))
+                        {
+                            // Convert decimal sang int trước
+                            int intValue = (int)numericUpDown.Value;
+                            value = intValue;
+                        }
+                        else if (property.PropertyType == typeof(long))
+                        {
+                            // Convert decimal sang long trước
+                            long longValue = (long)numericUpDown.Value;
+                            value = longValue;
+                        }
+                        else
+                        {
+                            // Fallback cho các kiểu khác
+                            int intValue = (int)numericUpDown.Value;
+                            value = Convert.ChangeType(intValue, property.PropertyType);
+                        }
                     }
                     else if (control is Panel panel)
                     {
                         PictureBox pictureBox = panel.Controls.OfType<PictureBox>().FirstOrDefault();
                         if (pictureBox != null && pictureBox.Tag != null)
                         {
-                            value = pictureBox.Tag.ToString();
+                            if (pictureBox.Tag is byte[] bytes)
+                            {
+                                value = bytes;
+                            }
+                            else if (pictureBox.Tag is string path && File.Exists(path))
+                            {
+                                value = File.ReadAllBytes(path);
+                            }
+                            else
+                            {
+                                value = new byte[0]; // Mảng byte rỗng thay vì null
+                            }
+                        }
+                        else
+                        {
+                            value = new byte[0]; // Mảng byte rỗng cho trường hợp không có ảnh
                         }
                     }
+
 
                     property.SetValue(dataObject, value);
                 }
@@ -270,6 +411,10 @@ namespace QuanLyDangVien.Helper
             rightGroup = new List<PropertyInfo>();
             bottomGroup = new List<PropertyInfo>();
 
+            // Tách riêng PictureBox để đặt đầu tiên
+            List<PropertyInfo> pictureBoxList = new List<PropertyInfo>();
+            List<PropertyInfo> otherLeftList = new List<PropertyInfo>();
+
             foreach (PropertyInfo property in properties)
             {
                 if (!property.CanWrite) continue;
@@ -280,9 +425,12 @@ namespace QuanLyDangVien.Helper
                 switch (inputType)
                 {
                     case ControlInputType.PictureBox:
+                        pictureBoxList.Add(property);
+                        break;
+
                     case ControlInputType.CheckBox:
                     case ControlInputType.DateTimePicker:
-                        leftGroup.Add(property);
+                        otherLeftList.Add(property);
                         break;
 
                     case ControlInputType.RichTextBox:
@@ -294,6 +442,10 @@ namespace QuanLyDangVien.Helper
                         break;
                 }
             }
+
+            // Sắp xếp lại leftGroup: PictureBox đứng đầu, sau đó là các controls khác
+            leftGroup.AddRange(pictureBoxList);
+            leftGroup.AddRange(otherLeftList);
         }
 
         /// <summary>

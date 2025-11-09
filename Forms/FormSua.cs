@@ -27,8 +27,19 @@ namespace QuanLyDangVien
         public FormSua(object existingData)
         {
             InitializeComponent();
+            
+            // Debug: Kiểm tra dữ liệu đầu vào
+            if (existingData == null)
+            {
+                System.Diagnostics.Debug.WriteLine("Error: existingData is null in FormSua constructor");
+                throw new ArgumentNullException(nameof(existingData), "Dữ liệu đầu vào không được null");
+            }
+            
             _dataObject = existingData;
             _dataType = existingData.GetType();
+            
+            System.Diagnostics.Debug.WriteLine($"FormSua initialized with object type: {_dataType.Name}");
+            
             InitializeForm();
         }
 
@@ -181,8 +192,19 @@ namespace QuanLyDangVien
                     return;
                 }
 
+                // Kiểm tra _dataObject có null không
+                if (_dataObject == null)
+                {
+                    MessageBox.Show("Lỗi: Đối tượng dữ liệu không tồn tại!", "Lỗi",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
                 // Save data from controls using FormHelper
                 FormHelper.SaveDataFromControls(_dataObject, _controlsDictionary, _propertiesDictionary);
+
+                // Debug: Kiểm tra dữ liệu sau khi save
+                System.Diagnostics.Debug.WriteLine($"Data saved successfully. Object type: {_dataObject.GetType().Name}");
 
                 this.DialogResult = DialogResult.OK;
                 this.Close();
@@ -196,7 +218,28 @@ namespace QuanLyDangVien
 
         public object GetData()
         {
+            // Kiểm tra _dataObject có null không
+            if (_dataObject == null)
+            {
+                System.Diagnostics.Debug.WriteLine("Warning: _dataObject is null in GetData()");
+                return null;
+            }
+
+            // Debug: Log thông tin về object
+            System.Diagnostics.Debug.WriteLine($"GetData() returning object of type: {_dataObject.GetType().Name}");
+            
             return _dataObject;
+        }
+
+        /// <summary>
+        /// Cập nhật control trong controlsDictionary (dùng khi thay thế ComboBox bằng TextBox)
+        /// </summary>
+        public void UpdateControlInDictionary(string controlName, Control newControl)
+        {
+            if (_controlsDictionary.ContainsKey(controlName))
+            {
+                _controlsDictionary[controlName] = newControl;
+            }
         }
     }
 }

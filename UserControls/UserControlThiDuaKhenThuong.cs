@@ -30,6 +30,14 @@ namespace QuanLyDangVien
             Panel.Controls.Add(ucKhenThuong);
         }
 
+        private void KhenThuongDonVi_Click(object sender, EventArgs e)
+        {
+            Panel.Controls.Clear();
+            var ucKhenThuongDonVi = new PageKhenThuongDonVi();
+            ucKhenThuongDonVi.Dock = DockStyle.Fill;
+            Panel.Controls.Add(ucKhenThuongDonVi);
+        }
+
         private void KyLuat_Click(object sender, EventArgs e)
         {
             Panel.Controls.Clear();
@@ -38,13 +46,20 @@ namespace QuanLyDangVien
             Panel.Controls.Add(ucKyLuat);
         }
 
+        private void KyLuatToChuc_Click(object sender, EventArgs e)
+        {
+            Panel.Controls.Clear();
+            var ucKyLuatToChuc = new PageKyLuatToChuc();
+            ucKyLuatToChuc.Dock = DockStyle.Fill;
+            Panel.Controls.Add(ucKyLuatToChuc);
+        }
+
         private void DanhSach_Click(object sender, EventArgs e)
         {
             Panel.Controls.Clear();
             var ucDanhSachThiDua = new PageDanhSachKhenThuongKyLuat();
             ucDanhSachThiDua.Dock = DockStyle.Fill;
             Panel.Controls.Add(ucDanhSachThiDua);
-
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -15,21 +15,23 @@ using QuanLyDangVien.DTOs;
 
 namespace QuanLyDangVien.Pages
 {
-    public partial class PageKhenThuong : UserControl
+    public partial class PageKhenThuongDonVi : UserControl
     {
-        private KhenThuongCaNhanService _khenThuongService;
-        private DangVienService _dangVienService;
-        private List<DangVienDTO> _danhSachDangVien;
-        private DangVienDTO _dangVienSelected;
+        private KhenThuongDonViService _khenThuongService;
+        private DonViService _donViService;
+        private List<DonViSimplified> _danhSachDonVi;
+        private DonViSimplified _donViSelected;
+        private string _selectedHinhThuc = null;
 
-        // Danh sách hình thức khen thưởng
+        // Danh sách hình thức khen thưởng đơn vị theo requirement
         private List<string> _danhHieuThiDua = new List<string>
         {
-            "Chiến sĩ thi đua toàn quốc",
-            "Chiến sĩ thi đua cấp bộ, ngành, tỉnh, đoàn thể trung ương",
-            "Chiến sĩ thi đua cơ sở",
-            "Lao động tiên tiến",
-            "Chiến sĩ tiên tiến"
+            "Cờ thi đua của Chính phủ",
+            "Cờ thi đua cấp bộ, ngành, tỉnh, đoàn thể trung ương",
+            "Tập thể lao động xuất sắc",
+            "Đơn vị quyết thắng",
+            "Tập thể lao động tiên tiến",
+            "Đơn vị tiên tiến"
         };
 
         private List<string> _huanChuong = new List<string>
@@ -87,7 +89,7 @@ namespace QuanLyDangVien.Pages
             "Giấy khen"
         };
 
-        public PageKhenThuong()
+        public PageKhenThuongDonVi()
         {
             InitializeComponent();
             InitializeServices();
@@ -97,8 +99,8 @@ namespace QuanLyDangVien.Pages
 
         private void InitializeServices()
         {
-            _khenThuongService = new KhenThuongCaNhanService();
-            _dangVienService = new DangVienService();
+            _khenThuongService = new KhenThuongDonViService();
+            _donViService = new DonViService();
         }
 
         private void SetupUI()
@@ -109,16 +111,47 @@ namespace QuanLyDangVien.Pages
             SetupEvents();
         }
 
+        private void SetupEvents()
+        {
+            btnLuu.Click += BtnLuu_Click;
+            linkFileDinhKem.Click += LinkFileDinhKem_Click;
+            dgvDonVi.SelectionChanged += DgvDonVi_SelectionChanged;
+            btnTimKiem.Click += BtnTimKiem_Click;
+        }
+
+        private void LoadData()
+        {
+            LoadDonViData();
+        }
+
+        private void LoadDonViData()
+        {
+            try
+            {
+                _danhSachDonVi = _donViService.GetDonViData();
+                dgvDonVi.DataSource = _danhSachDonVi;
+
+                if (dgvDonVi.Columns.Count > 0)
+                {
+                    dgvDonVi.Columns[0].HeaderText = "Mã đơn vị";
+                    dgvDonVi.Columns[1].HeaderText = "Tên đơn vị";
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi tải danh sách đơn vị: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         private void LoadDonViComboBox()
         {
             try
             {
-                var donViService = new DonViService();
-                var donViList = donViService.GetDonViData();
-                cboLocTheo.DataSource = donViList;
-                cboLocTheo.DisplayMember = "TenDonVi";
-                cboLocTheo.ValueMember = "DonViID";
-                cboLocTheo.SelectedIndex = -1;
+                var donViList = _donViService.GetDonViData();
+                cboDonVi.DataSource = donViList;
+                cboDonVi.DisplayMember = "TenDonVi";
+                cboDonVi.ValueMember = "DonViID";
+                cboDonVi.SelectedIndex = -1;
             }
             catch (Exception ex)
             {
@@ -128,95 +161,46 @@ namespace QuanLyDangVien.Pages
 
         private void SetupDataGridView()
         {
-            dgvDangVien.AutoGenerateColumns = false;
-            dgvDangVien.AllowUserToAddRows = false;
-            dgvDangVien.AllowUserToDeleteRows = false;
-            dgvDangVien.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvDangVien.MultiSelect = false;
-            dgvDangVien.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-
-            dgvDangVien.Columns.Clear();
-            dgvDangVien.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                Name = "DangVienID",
-                HeaderText = "ID",
-                DataPropertyName = "DangVienID",
-                Visible = false
-            });
-            dgvDangVien.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                Name = "HoTen",
-                HeaderText = "Họ tên",
-                DataPropertyName = "HoTen",
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
-                FillWeight = 25
-            });
-            dgvDangVien.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                Name = "GioiTinh",
-                HeaderText = "Giới tính",
-                DataPropertyName = "GioiTinh",
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
-                FillWeight = 10
-            });
-            dgvDangVien.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                Name = "SoCCCD",
-                HeaderText = "Số CCCD",
-                DataPropertyName = "SoCCCD",
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
-                FillWeight = 15
-            });
-            dgvDangVien.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                Name = "SoTheDangVien",
-                HeaderText = "Số thẻ Đảng viên",
-                DataPropertyName = "SoTheDangVien",
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
-                FillWeight = 15
-            });
-            dgvDangVien.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                Name = "LoaiDangVien",
-                HeaderText = "Loại",
-                DataPropertyName = "LoaiDangVien",
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
-                FillWeight = 12
-            });
-            dgvDangVien.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                Name = "TenDonVi",
-                HeaderText = "Đơn vị",
-                DataPropertyName = "TenDonVi",
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
-                FillWeight = 23
-            });
+            dgvDonVi.AutoGenerateColumns = true;
+            dgvDonVi.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvDonVi.MultiSelect = false;
+            dgvDonVi.ReadOnly = true;
         }
 
         private void SetupHinhThucRadioButtons()
         {
-            panelHinhThuc.Controls.Clear();
-            
+            if (panelHinhThuc == null)
+            {
+                return;
+            }
+
+            try
+            {
+                panelHinhThuc.Controls.Clear();
+            }
+            catch
+            {
+                return;
+            }
+
             Font radioFont = new Font("Microsoft Sans Serif", 10F, FontStyle.Regular);
             Font labelFont = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold);
             int yPos = 10;
             int xPos = 10;
-            int maxWidth = panelHinhThuc.Width - 30;
-            int currentX = xPos;
             int lineHeight = 28;
-            
-            // Danh hiệu thi đua
+
+            // A. Danh hiệu thi đua đối với tập thể
             Label lblDanhHieu = new Label
             {
-                Text = "A. Danh hiệu thi đua:",
+                Text = "A. Danh hiệu thi đua đối với tập thể:",
                 Font = labelFont,
-                Location = new Point(currentX, yPos),
+                Location = new Point(xPos, yPos),
                 AutoSize = true
             };
             panelHinhThuc.Controls.Add(lblDanhHieu);
             yPos += lineHeight;
-            currentX = xPos + 20;
-            
+            int currentX = xPos + 20;
+
             foreach (var item in _danhHieuThiDua)
             {
                 RadioButton rb = new RadioButton
@@ -231,14 +215,25 @@ namespace QuanLyDangVien.Pages
                 panelHinhThuc.Controls.Add(rb);
                 yPos += lineHeight;
             }
-            
+
             yPos += 10;
             currentX = xPos;
-            
-            // Huân chương
+
+            // B. Hình thức khen thưởng tập thể
+            Label lblHinhThuc = new Label
+            {
+                Text = "B. Hình thức khen thưởng tập thể:",
+                Font = labelFont,
+                Location = new Point(currentX, yPos),
+                AutoSize = true
+            };
+            panelHinhThuc.Controls.Add(lblHinhThuc);
+            yPos += lineHeight;
+
+            // 1. Huân chương tập thể
             Label lblHuanChuong = new Label
             {
-                Text = "B. Huân chương:",
+                Text = "1. Huân chương tập thể:",
                 Font = labelFont,
                 Location = new Point(currentX, yPos),
                 AutoSize = true
@@ -246,7 +241,7 @@ namespace QuanLyDangVien.Pages
             panelHinhThuc.Controls.Add(lblHuanChuong);
             yPos += lineHeight;
             currentX = xPos + 20;
-            
+
             foreach (var item in _huanChuong)
             {
                 RadioButton rb = new RadioButton
@@ -261,22 +256,21 @@ namespace QuanLyDangVien.Pages
                 panelHinhThuc.Controls.Add(rb);
                 yPos += lineHeight;
             }
-            
+
             yPos += 10;
-            currentX = xPos;
-            
-            // Huy chương
+            currentX = xPos + 20;
+
+            // 2. Huy chương tập thể
             Label lblHuyChuong = new Label
             {
-                Text = "C. Huy chương:",
+                Text = "2. Huy chương tập thể:",
                 Font = labelFont,
                 Location = new Point(currentX, yPos),
                 AutoSize = true
             };
             panelHinhThuc.Controls.Add(lblHuyChuong);
             yPos += lineHeight;
-            currentX = xPos + 20;
-            
+
             foreach (var item in _huyChuong)
             {
                 RadioButton rb = new RadioButton
@@ -291,22 +285,20 @@ namespace QuanLyDangVien.Pages
                 panelHinhThuc.Controls.Add(rb);
                 yPos += lineHeight;
             }
-            
+
             yPos += 10;
-            currentX = xPos;
-            
-            // Danh hiệu vinh dự
+
+            // 3. Danh hiệu vinh dự nhà nước tập thể
             Label lblDanhHieuVinhDu = new Label
             {
-                Text = "D. Danh hiệu vinh dự nhà nước:",
+                Text = "3. Danh hiệu vinh dự nhà nước tập thể:",
                 Font = labelFont,
                 Location = new Point(currentX, yPos),
                 AutoSize = true
             };
             panelHinhThuc.Controls.Add(lblDanhHieuVinhDu);
             yPos += lineHeight;
-            currentX = xPos + 20;
-            
+
             foreach (var item in _danhHieuVinhDu)
             {
                 RadioButton rb = new RadioButton
@@ -321,22 +313,20 @@ namespace QuanLyDangVien.Pages
                 panelHinhThuc.Controls.Add(rb);
                 yPos += lineHeight;
             }
-            
+
             yPos += 10;
-            currentX = xPos;
-            
-            // Giải thưởng
+
+            // 4. Giải thưởng tập thể
             Label lblGiaiThuong = new Label
             {
-                Text = "E. Giải thưởng:",
+                Text = "4. Giải thưởng tập thể:",
                 Font = labelFont,
                 Location = new Point(currentX, yPos),
                 AutoSize = true
             };
             panelHinhThuc.Controls.Add(lblGiaiThuong);
             yPos += lineHeight;
-            currentX = xPos + 20;
-            
+
             foreach (var item in _giaiThuong)
             {
                 RadioButton rb = new RadioButton
@@ -351,22 +341,20 @@ namespace QuanLyDangVien.Pages
                 panelHinhThuc.Controls.Add(rb);
                 yPos += lineHeight;
             }
-            
+
             yPos += 10;
-            currentX = xPos;
-            
-            // Khác
+
+            // 5. Khác
             Label lblKhac = new Label
             {
-                Text = "F. Khác:",
+                Text = "5. Khác:",
                 Font = labelFont,
                 Location = new Point(currentX, yPos),
                 AutoSize = true
             };
             panelHinhThuc.Controls.Add(lblKhac);
             yPos += lineHeight;
-            currentX = xPos + 20;
-            
+
             foreach (var item in _khac)
             {
                 RadioButton rb = new RadioButton
@@ -382,9 +370,7 @@ namespace QuanLyDangVien.Pages
                 yPos += lineHeight;
             }
         }
-        
-        private string _selectedHinhThuc = null;
-        
+
         private void RadioButton_CheckedChanged(object sender, EventArgs e)
         {
             RadioButton rb = sender as RadioButton;
@@ -394,122 +380,67 @@ namespace QuanLyDangVien.Pages
             }
         }
 
-        private void SetupEvents()
+        private void DgvDonVi_SelectionChanged(object sender, EventArgs e)
         {
-            btnTimKiem.Click += BtnTimKiem_Click;
-            dgvDangVien.SelectionChanged += DgvDangVien_SelectionChanged;
-            dgvDangVien.CellDoubleClick += DgvDangVien_CellDoubleClick;
-            btnLuu.Click += BtnLuu_Click;
-            linkFileDinhKem.Click += LinkFileDinhKem_Click;
-            txtTimKiem.TextChanged += TxtTimKiem_TextChanged;
-        }
-
-        private void LoadData()
-        {
-            try
+            if (dgvDonVi.SelectedRows.Count > 0)
             {
-                _danhSachDangVien = _dangVienService.GetAll(trangThai: true);
-                RefreshDataGridView();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Lỗi khi tải dữ liệu: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void RefreshDataGridView()
-        {
-            dgvDangVien.DataSource = _danhSachDangVien;
-        }
-
-        private void BtnTimKiem_Click(object sender, EventArgs e)
-        {
-            FilterData();
-        }
-
-        private void TxtTimKiem_TextChanged(object sender, EventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(txtTimKiem.Text))
-            {
-                RefreshDataGridView();
-            }
-        }
-
-        private void FilterData()
-        {
-            try
-            {
-                string keyword = txtTimKiem.Text?.Trim().ToLower() ?? "";
-                int? donViID = null;
-
-                if (cboLocTheo.SelectedValue != null)
+                try
                 {
-                    if (cboLocTheo.SelectedValue is DonViSimplified donVi)
-                        donViID = donVi.DonViID;
-                    else if (cboLocTheo.SelectedValue is int id)
-                        donViID = id;
+                    var selectedRow = dgvDonVi.SelectedRows[0];
+                    if (selectedRow.Cells["DonViID"].Value == null)
+                    {
+                        _donViSelected = null;
+                        UpdateSelectedInfo();
+                        return;
+                    }
+
+                    int donViID = Convert.ToInt32(selectedRow.Cells["DonViID"].Value);
+                    _donViSelected = _danhSachDonVi.FirstOrDefault(dv => dv.DonViID == donViID);
+
+                    UpdateSelectedInfo();
                 }
-
-                _danhSachDangVien = _dangVienService.GetAll(donViID: donViID, trangThai: true);
-
-                if (!string.IsNullOrEmpty(keyword))
+                catch (Exception ex)
                 {
-                    _danhSachDangVien = _danhSachDangVien.Where(dv =>
-                        (dv.HoTen?.ToLower().Contains(keyword) ?? false) ||
-                        (dv.SoCCCD?.ToLower().Contains(keyword) ?? false) ||
-                        (dv.SoTheDangVien?.ToLower().Contains(keyword) ?? false) ||
-                        (dv.TenDonVi?.ToLower().Contains(keyword) ?? false)
-                    ).ToList();
+                    MessageBox.Show($"Lỗi khi chọn đơn vị: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
-
-                RefreshDataGridView();
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show($"Lỗi khi tìm kiếm: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void DgvDangVien_SelectionChanged(object sender, EventArgs e)
-        {
-            if (dgvDangVien.SelectedRows.Count > 0)
-            {
-                var selectedRow = dgvDangVien.SelectedRows[0];
-                int dangVienID = Convert.ToInt32(selectedRow.Cells["DangVienID"].Value);
-                _dangVienSelected = _danhSachDangVien.FirstOrDefault(dv => dv.DangVienID == dangVienID);
+                _donViSelected = null;
                 UpdateSelectedInfo();
-            }
-        }
-
-        private void DgvDangVien_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.RowIndex >= 0)
-            {
-                DgvDangVien_SelectionChanged(sender, e);
             }
         }
 
         private void UpdateSelectedInfo()
         {
-            if (_dangVienSelected != null)
+            if (_donViSelected != null)
             {
-                lblThongTinDangVien.Text = $"Đã chọn: {_dangVienSelected.HoTen} - {_dangVienSelected.TenDonVi}";
-                lblThongTinDangVien.ForeColor = Color.FromArgb(0, 174, 219);
+                lblThongTinDonVi.Text = $"Đơn vị: {_donViSelected.TenDonVi}";
+                lblThongTinDonVi.ForeColor = Color.FromArgb(0, 174, 219);
+                cboDonVi.SelectedValue = _donViSelected.DonViID;
             }
             else
             {
-                lblThongTinDangVien.Text = "Chưa chọn đảng viên";
-                lblThongTinDangVien.ForeColor = Color.Gray;
+                lblThongTinDonVi.Text = "Chưa chọn đơn vị";
+                lblThongTinDonVi.ForeColor = Color.Gray;
             }
+        }
+
+        private void BtnTimKiem_Click(object sender, EventArgs e)
+        {
+            // Implement search logic if needed
+            LoadDonViData();
         }
 
         private void BtnLuu_Click(object sender, EventArgs e)
         {
-            if (_dangVienSelected == null)
+            if (_donViSelected == null && cboDonVi.SelectedValue == null)
             {
-                MessageBox.Show("Vui lòng chọn đảng viên!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Vui lòng chọn đơn vị!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+
+            int donViID = _donViSelected != null ? _donViSelected.DonViID : Convert.ToInt32(cboDonVi.SelectedValue);
 
             if (string.IsNullOrEmpty(_selectedHinhThuc))
             {
@@ -533,9 +464,9 @@ namespace QuanLyDangVien.Pages
 
             try
             {
-                var khenThuong = new KhenThuongCaNhan
+                var khenThuong = new KhenThuongDonVi
                 {
-                    DangVienID = _dangVienSelected.DangVienID,
+                    DonViID = donViID,
                     HinhThuc = _selectedHinhThuc,
                     Ngay = dtpNgay.Value,
                     SoQuyetDinh = txtSoQuyetDinh.Text.Trim(),
@@ -552,7 +483,7 @@ namespace QuanLyDangVien.Pages
                     return;
                 }
 
-                MessageBox.Show($"Đã lưu khen thưởng thành công! ID: {id}", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show($"Đã lưu khen thưởng đơn vị thành công! ID: {id}", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 ClearForm();
             }
             catch (Exception ex)
@@ -573,7 +504,7 @@ namespace QuanLyDangVien.Pages
                 {
                     try
                     {
-                        // Sử dụng FileHelper để lưu file giống cách SaveInforHelper lưu data
+                        // Sử dụng FileHelper để lưu file - tạm thời dùng KhenThuong folder
                         string relativePath = FileHelper.SaveKhenThuongFile(openFileDialog.FileName);
                         lblFileDinhKem.Text = relativePath;
                         lblFileDinhKem.ForeColor = Color.FromArgb(0, 174, 219);
@@ -588,7 +519,6 @@ namespace QuanLyDangVien.Pages
 
         private void ClearForm()
         {
-            // Uncheck all radio buttons
             foreach (Control ctrl in panelHinhThuc.Controls)
             {
                 if (ctrl is RadioButton rb)
@@ -603,6 +533,10 @@ namespace QuanLyDangVien.Pages
             rtxtNoiDung.Clear();
             lblFileDinhKem.Text = "Chưa chọn file";
             lblFileDinhKem.ForeColor = Color.Gray;
+            cboDonVi.SelectedIndex = -1;
+            _donViSelected = null;
+            UpdateSelectedInfo();
         }
     }
 }
+
