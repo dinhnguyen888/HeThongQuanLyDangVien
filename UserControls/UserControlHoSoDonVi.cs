@@ -48,6 +48,7 @@ namespace QuanLyDangVien
             
             // Setup events
             dgvDonVi.SelectionChanged += DgvDonVi_SelectionChanged;
+            dgvDonVi.CellDoubleClick += DgvDonVi_CellDoubleClick;
             dgvDangVien.SelectionChanged += DgvDangVien_SelectionChanged;
             
             // Đơn vị buttons
@@ -74,7 +75,38 @@ namespace QuanLyDangVien
             dgvDonVi.ReadOnly = true;
             dgvDonVi.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvDonVi.MultiSelect = false;
+            dgvDonVi.RowHeadersVisible = false;
+            dgvDonVi.BackgroundColor = Color.White;
+            dgvDonVi.BorderStyle = BorderStyle.None;
+            dgvDonVi.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+            dgvDonVi.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+            dgvDonVi.EnableHeadersVisualStyles = false;
             dgvDonVi.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            
+            // Header styling
+            dgvDonVi.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(0, 174, 219);
+            dgvDonVi.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dgvDonVi.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            dgvDonVi.ColumnHeadersDefaultCellStyle.Padding = new Padding(10, 8, 10, 8);
+            dgvDonVi.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            dgvDonVi.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dgvDonVi.ColumnHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(0, 174, 219);
+            dgvDonVi.ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.White;
+            dgvDonVi.ColumnHeadersHeight = 60;
+            dgvDonVi.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            
+            // Row styling
+            dgvDonVi.RowsDefaultCellStyle.Font = new Font("Segoe UI", 9F);
+            dgvDonVi.RowsDefaultCellStyle.Padding = new Padding(10, 8, 10, 8);
+            dgvDonVi.RowsDefaultCellStyle.SelectionBackColor = Color.FromArgb(200, 230, 255);
+            dgvDonVi.RowsDefaultCellStyle.SelectionForeColor = Color.Black;
+            dgvDonVi.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(245, 245, 245);
+            dgvDonVi.AlternatingRowsDefaultCellStyle.SelectionBackColor = Color.FromArgb(200, 230, 255);
+            dgvDonVi.AlternatingRowsDefaultCellStyle.SelectionForeColor = Color.Black;
+            dgvDonVi.RowTemplate.Height = 40;
+            
+            // Allow column resizing
+            dgvDonVi.AllowUserToResizeColumns = true;
 
             // Add all columns for DonVi
             dgvDonVi.Columns.Add(new DataGridViewTextBoxColumn
@@ -134,14 +166,63 @@ namespace QuanLyDangVien
                 FillWeight = 16
             });
 
-            dgvDonVi.Columns.Add(new DataGridViewTextBoxColumn
+            var colNgayTao = new DataGridViewTextBoxColumn
             {
                 Name = "NgayTao",
                 DataPropertyName = "NgayTao",
                 HeaderText = "Ngày tạo",
                 FillWeight = 12,
                 DefaultCellStyle = new DataGridViewCellStyle { Format = "dd/MM/yyyy" }
-            });
+            };
+            dgvDonVi.Columns.Add(colNgayTao);
+            
+            // Format date column
+            dgvDonVi.CellFormatting += (s, e) =>
+            {
+                if (e.RowIndex < 0) return;
+                
+                try
+                {
+                    if (e.ColumnIndex == colNgayTao.Index)
+                    {
+                        if (e.Value != null && e.Value != DBNull.Value)
+                        {
+                            DateTime dateValue;
+                            if (e.Value is DateTime)
+                            {
+                                dateValue = (DateTime)e.Value;
+                            }
+                            else if (DateTime.TryParse(e.Value.ToString(), out dateValue))
+                            {
+                                // Parsed successfully
+                            }
+                            else
+                            {
+                                e.Value = "";
+                                e.FormattingApplied = true;
+                                return;
+                            }
+                            e.Value = dateValue.ToString("dd/MM/yyyy");
+                            e.FormattingApplied = true;
+                        }
+                        else
+                        {
+                            e.Value = "";
+                            e.FormattingApplied = true;
+                        }
+                    }
+                }
+                catch
+                {
+                    e.FormattingApplied = false;
+                }
+            };
+            
+            // Handle DataError to prevent dialog from showing
+            dgvDonVi.DataError += (s, e) =>
+            {
+                e.ThrowException = false;
+            };
         }
         private void RefreshData()
 {
@@ -163,11 +244,40 @@ namespace QuanLyDangVien
             dgvDangVien.ReadOnly = true;
             dgvDangVien.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvDangVien.MultiSelect = true; // Enable multi-select for batch operations
+            dgvDangVien.RowHeadersVisible = false;
+            dgvDangVien.BackgroundColor = Color.White;
+            dgvDangVien.BorderStyle = BorderStyle.None;
+            dgvDangVien.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+            dgvDangVien.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+            dgvDangVien.EnableHeadersVisualStyles = false;
             dgvDangVien.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgvDangVien.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
-            dgvDangVien.ColumnHeadersDefaultCellStyle.Font = new Font("Arial", 10);
-            dgvDangVien.DefaultCellStyle.Font = new Font("Arial", 12);
-            dgvDangVien.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+            
+            // Header styling
+            dgvDangVien.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(220, 53, 69);
+            dgvDangVien.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dgvDangVien.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            dgvDangVien.ColumnHeadersDefaultCellStyle.Padding = new Padding(10, 8, 10, 8);
+            dgvDangVien.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            dgvDangVien.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dgvDangVien.ColumnHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(220, 53, 69);
+            dgvDangVien.ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.White;
+            dgvDangVien.ColumnHeadersHeight = 60;
+            dgvDangVien.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            
+            // Row styling
+            dgvDangVien.DefaultCellStyle.Font = new Font("Segoe UI", 9F);
+            dgvDangVien.DefaultCellStyle.Padding = new Padding(10, 8, 10, 8);
+            dgvDangVien.DefaultCellStyle.SelectionBackColor = Color.FromArgb(255, 200, 200);
+            dgvDangVien.DefaultCellStyle.SelectionForeColor = Color.Black;
+            dgvDangVien.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(245, 245, 245);
+            dgvDangVien.AlternatingRowsDefaultCellStyle.SelectionBackColor = Color.FromArgb(255, 200, 200);
+            dgvDangVien.AlternatingRowsDefaultCellStyle.SelectionForeColor = Color.Black;
+            dgvDangVien.RowTemplate.Height = 60; // Tăng chiều cao để hiển thị hết nội dung
+            dgvDangVien.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells; // Tự động điều chỉnh chiều cao theo nội dung
+            
+            // Allow column resizing
+            dgvDangVien.AllowUserToResizeColumns = true;
 
             // Add important columns for DangVien
             dgvDangVien.Columns.Add(new DataGridViewTextBoxColumn
@@ -195,14 +305,15 @@ namespace QuanLyDangVien
                 FillWeight = 15
             });
 
-            dgvDangVien.Columns.Add(new DataGridViewTextBoxColumn
+            var colNgaySinh = new DataGridViewTextBoxColumn
             {
                 Name = "NgaySinh",
                 DataPropertyName = "NgaySinh",
                 HeaderText = "Ngày sinh",
                 FillWeight = 12,
                 DefaultCellStyle = new DataGridViewCellStyle { Format = "dd/MM/yyyy" }
-            });
+            };
+            dgvDangVien.Columns.Add(colNgaySinh);
 
             dgvDangVien.Columns.Add(new DataGridViewTextBoxColumn
             {
@@ -235,6 +346,54 @@ namespace QuanLyDangVien
                 HeaderText = "Đối tượng",
                 FillWeight = 13
             });
+            
+            // Format date column
+            dgvDangVien.CellFormatting += (s, e) =>
+            {
+                if (e.RowIndex < 0) return;
+                
+                try
+                {
+                    if (e.ColumnIndex == colNgaySinh.Index)
+                    {
+                        if (e.Value != null && e.Value != DBNull.Value)
+                        {
+                            DateTime dateValue;
+                            if (e.Value is DateTime)
+                            {
+                                dateValue = (DateTime)e.Value;
+                            }
+                            else if (DateTime.TryParse(e.Value.ToString(), out dateValue))
+                            {
+                                // Parsed successfully
+                            }
+                            else
+                            {
+                                e.Value = "";
+                                e.FormattingApplied = true;
+                                return;
+                            }
+                            e.Value = dateValue.ToString("dd/MM/yyyy");
+                            e.FormattingApplied = true;
+                        }
+                        else
+                        {
+                            e.Value = "";
+                            e.FormattingApplied = true;
+                        }
+                    }
+                }
+                catch
+                {
+                    e.FormattingApplied = false;
+                }
+            };
+            
+            // Handle DataError to prevent dialog from showing
+            dgvDangVien.DataError += (s, e) =>
+            {
+                e.ThrowException = false;
+            };
         }
 
         private void LoadDonViData()
@@ -315,6 +474,38 @@ namespace QuanLyDangVien
                 }
             }
             UpdateDonViButtonStates();
+        }
+
+        private void DgvDonVi_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                var selectedDonVi = GetSelectedDonVi();
+                if (selectedDonVi != null)
+                {
+                    try
+                    {
+                        // Lấy dữ liệu chi tiết từ database
+                        var donViDetail = _donViService.GetById(selectedDonVi.DonViID);
+                        if (donViDetail == null)
+                        {
+                            MessageBox.Show("Không tìm thấy thông tin đơn vị!", "Lỗi",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+
+                        using (var form = new FormXemChiTiet(donViDetail))
+                        {
+                            form.ShowDialog();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Lỗi khi xem chi tiết: {ex.Message}", "Lỗi",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
         }
 
         private void DgvDangVien_SelectionChanged(object sender, EventArgs e)

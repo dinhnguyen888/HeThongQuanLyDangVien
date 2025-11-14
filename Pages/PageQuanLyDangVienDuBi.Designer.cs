@@ -102,6 +102,7 @@
             this.TimKiemBtn.TabIndex = 38;
             this.TimKiemBtn.Text = "Tìm kiếm";
             this.TimKiemBtn.Theme = MetroFramework.MetroThemeStyle.Light;
+            this.TimKiemBtn.Click += new System.EventHandler(this.TimKiemBtn_Click);
             // 
             // TimTb
             // 
@@ -111,6 +112,7 @@
             this.TimTb.PromptText = "Nhập từ khóa tìm kiếm";
             this.TimTb.Size = new System.Drawing.Size(204, 35);
             this.TimTb.TabIndex = 37;
+            this.TimTb.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TimTb_KeyDown);
             // 
             // metroComboBox5
             // 
@@ -151,6 +153,19 @@
             this.metroComboBox1.Name = "metroComboBox1";
             this.metroComboBox1.Size = new System.Drawing.Size(158, 35);
             this.metroComboBox1.TabIndex = 32;
+            this.metroComboBox1.SelectedIndexChanged += new System.EventHandler(this.metroComboBox1_SelectedIndexChanged);
+            // 
+            // metroComboBox2
+            // 
+            this.metroComboBox2.SelectedIndexChanged += new System.EventHandler(this.metroComboBox2_SelectedIndexChanged);
+            // 
+            // metroComboBox4
+            // 
+            this.metroComboBox4.SelectedIndexChanged += new System.EventHandler(this.metroComboBox4_SelectedIndexChanged);
+            // 
+            // metroComboBox5
+            // 
+            this.metroComboBox5.SelectedIndexChanged += new System.EventHandler(this.metroComboBox5_SelectedIndexChanged);
             // 
             // PageQuanLyDangVienDuBi
             // 

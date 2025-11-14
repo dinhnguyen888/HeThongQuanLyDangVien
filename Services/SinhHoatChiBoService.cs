@@ -76,7 +76,7 @@ namespace QuanLyDangVien.Services
                 parameters.Add("@ChuTri", sinhHoat.ChuTri);
                 parameters.Add("@ThuKy", sinhHoat.ThuKy);
                 parameters.Add("@NoiDung", sinhHoat.NoiDung);
-                parameters.Add("@NghiQuyet", sinhHoat.NghiQuyet);
+                parameters.Add("@FileNghiQuyet", sinhHoat.FileNghiQuyet);
                 parameters.Add("@SoLuongThamGia", sinhHoat.SoLuongThamGia ?? 0);
                 parameters.Add("@NguoiTao", Environment.UserName);
                 parameters.Add("@SinhHoatID", dbType: DbType.Int32, direction: ParameterDirection.Output);
@@ -102,7 +102,7 @@ namespace QuanLyDangVien.Services
                 parameters.Add("@ChuTri", sinhHoat.ChuTri);
                 parameters.Add("@ThuKy", sinhHoat.ThuKy);
                 parameters.Add("@NoiDung", sinhHoat.NoiDung);
-                parameters.Add("@NghiQuyet", sinhHoat.NghiQuyet);
+                parameters.Add("@FileNghiQuyet", sinhHoat.FileNghiQuyet);
                 parameters.Add("@SoLuongThamGia", sinhHoat.SoLuongThamGia ?? 0);
                 parameters.Add("@TrangThai", sinhHoat.TrangThai);
 

@@ -48,8 +48,34 @@ namespace QuanLyDangVien.Pages
             dgvDonVi.ReadOnly = true;
             dgvDonVi.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvDonVi.MultiSelect = false;
+            dgvDonVi.RowHeadersVisible = false;
             dgvDonVi.BackgroundColor = Color.White;
-            dgvDonVi.BorderStyle = BorderStyle.Fixed3D;
+            dgvDonVi.BorderStyle = BorderStyle.None;
+            dgvDonVi.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+            dgvDonVi.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+            dgvDonVi.EnableHeadersVisualStyles = false;
+            
+            // Header styling
+            dgvDonVi.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(0, 174, 219);
+            dgvDonVi.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dgvDonVi.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            dgvDonVi.ColumnHeadersDefaultCellStyle.Padding = new Padding(10, 8, 10, 8);
+            dgvDonVi.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            dgvDonVi.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dgvDonVi.ColumnHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(0, 174, 219);
+            dgvDonVi.ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.White;
+            dgvDonVi.ColumnHeadersHeight = 60;
+            dgvDonVi.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            
+            // Row styling
+            dgvDonVi.RowsDefaultCellStyle.Font = new Font("Segoe UI", 9F);
+            dgvDonVi.RowsDefaultCellStyle.Padding = new Padding(10, 8, 10, 8);
+            dgvDonVi.RowsDefaultCellStyle.SelectionBackColor = Color.FromArgb(200, 230, 255);
+            dgvDonVi.RowsDefaultCellStyle.SelectionForeColor = Color.Black;
+            dgvDonVi.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(245, 245, 245);
+            dgvDonVi.AlternatingRowsDefaultCellStyle.SelectionBackColor = Color.FromArgb(200, 230, 255);
+            dgvDonVi.AlternatingRowsDefaultCellStyle.SelectionForeColor = Color.Black;
+            dgvDonVi.RowTemplate.Height = 40;
 
             // Thêm các cột
             dgvDonVi.Columns.Add(new DataGridViewTextBoxColumn
@@ -87,6 +113,14 @@ namespace QuanLyDangVien.Pages
 
             dgvDonVi.Columns.Add(new DataGridViewTextBoxColumn
             {
+                Name = "TenCapTren",
+                DataPropertyName = "TenCapTren",
+                HeaderText = "Cấp trên",
+                Width = 150
+            });
+
+            dgvDonVi.Columns.Add(new DataGridViewTextBoxColumn
+            {
                 Name = "TruongDonVi",
                 DataPropertyName = "TruongDonVi",
                 HeaderText = "Trưởng đơn vị",
@@ -111,12 +145,93 @@ namespace QuanLyDangVien.Pages
             });
 
             // Cột thống kê (nếu có)
-            dgvDonVi.Columns.Add(new DataGridViewTextBoxColumn
+            var colSoLuong = new DataGridViewTextBoxColumn
             {
                 Name = "SoLuongDangVien",
                 HeaderText = "Số ĐV",
-                Width = 80
-            });
+                Width = 80,
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    Alignment = DataGridViewContentAlignment.MiddleCenter
+                }
+            };
+            dgvDonVi.Columns.Add(colSoLuong);
+            
+            // Format date column
+            dgvDonVi.CellFormatting += (s, e) =>
+            {
+                if (e.RowIndex < 0) return;
+                
+                try
+                {
+                    if (e.ColumnIndex == dgvDonVi.Columns["NgayTao"].Index)
+                    {
+                        if (e.Value != null && e.Value != DBNull.Value)
+                        {
+                            DateTime dateValue;
+                            if (e.Value is DateTime)
+                            {
+                                dateValue = (DateTime)e.Value;
+                            }
+                            else if (DateTime.TryParse(e.Value.ToString(), out dateValue))
+                            {
+                                // Parsed successfully
+                            }
+                            else
+                            {
+                                e.Value = "";
+                                e.FormattingApplied = true;
+                                return;
+                            }
+                            e.Value = dateValue.ToString("dd/MM/yyyy");
+                            e.FormattingApplied = true;
+                        }
+                        else
+                        {
+                            e.Value = "";
+                            e.FormattingApplied = true;
+                        }
+                    }
+                    else if (e.ColumnIndex == colSoLuong.Index)
+                    {
+                        if (e.Value != null && e.Value != DBNull.Value)
+                        {
+                            int intValue;
+                            if (e.Value is int)
+                            {
+                                intValue = (int)e.Value;
+                            }
+                            else if (int.TryParse(e.Value.ToString(), out intValue))
+                            {
+                                // Parsed successfully
+                            }
+                            else
+                            {
+                                e.Value = "0";
+                                e.FormattingApplied = true;
+                                return;
+                            }
+                            e.Value = intValue.ToString();
+                            e.FormattingApplied = true;
+                        }
+                        else
+                        {
+                            e.Value = "0";
+                            e.FormattingApplied = true;
+                        }
+                    }
+                }
+                catch
+                {
+                    e.FormattingApplied = false;
+                }
+            };
+            
+            // Handle DataError to prevent dialog from showing
+            dgvDonVi.DataError += (s, e) =>
+            {
+                e.ThrowException = false;
+            };
         }
 
         private void LoadData()
@@ -139,6 +254,7 @@ namespace QuanLyDangVien.Pages
                                       donVi.MaDonVi,
                                       donVi.TenDonVi,
                                       donVi.CapBac,
+                                      donVi.TenCapTren,
                                       donVi.TruongDonVi,
                                       donVi.Email,
                                       donVi.NgayTao,
@@ -335,7 +451,8 @@ namespace QuanLyDangVien.Pages
             var filteredData = from donVi in _donViList
                               where donVi.TenDonVi.ToLower().Contains(keyword) ||
                                     donVi.MaDonVi.ToLower().Contains(keyword) ||
-                                    (donVi.TruongDonVi != null && donVi.TruongDonVi.ToLower().Contains(keyword))
+                                    (donVi.TruongDonVi != null && donVi.TruongDonVi.ToLower().Contains(keyword)) ||
+                                    (donVi.TenCapTren != null && donVi.TenCapTren.ToLower().Contains(keyword))
                               join thongKe in _thongKeList on donVi.DonViID equals thongKe.DonViID into gj
                               from subThongKe in gj.DefaultIfEmpty()
                               select new
@@ -344,6 +461,7 @@ namespace QuanLyDangVien.Pages
                                   donVi.MaDonVi,
                                   donVi.TenDonVi,
                                   donVi.CapBac,
+                                  donVi.TenCapTren,
                                   donVi.TruongDonVi,
                                   donVi.Email,
                                   donVi.NgayTao,

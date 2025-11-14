@@ -1,4 +1,4 @@
-namespace QuanLyDangVien.Pages
+﻿namespace QuanLyDangVien.Pages
 {
     partial class PageKhenThuongDonVi
     {

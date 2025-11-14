@@ -1,4 +1,5 @@
 ﻿using QuanLyDangVien.Attributes;
+using QuanLyDangVien.Services;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -131,10 +132,37 @@ namespace QuanLyDangVien.Helper
                 }
                 else if (control is ComboBox comboBox)
                 {
-                    // Kiểm tra nếu ComboBox có ValueMember (được bind từ ControlFactory)
+                    // Đặt về -1 trước để tránh tự chọn item đầu
+                    comboBox.SelectedIndex = -1;
+                    // Nếu ComboBox có ValueMember (bind từ ControlFactory)
                     if (!string.IsNullOrEmpty(comboBox.ValueMember))
                     {
                         comboBox.SelectedValue = value;
+                        // Nếu chưa match, thử tìm thủ công trong DataSource theo ValueMember
+                        if (comboBox.SelectedIndex == -1 && comboBox.DataSource is System.Collections.IEnumerable list)
+                        {
+                            int index = -1;
+                            int i = 0;
+                            string target = Convert.ToString(value);
+                            foreach (var item in list)
+                            {
+                                var prop = item.GetType().GetProperty(comboBox.ValueMember);
+                                if (prop != null)
+                                {
+                                    var val = prop.GetValue(item, null);
+                                    if (string.Equals(Convert.ToString(val), target, StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        index = i;
+                                        break;
+                                    }
+                                }
+                                i++;
+                            }
+                            if (index >= 0 && index < comboBox.Items.Count)
+                            {
+                                comboBox.SelectedIndex = index;
+                            }
+                        }
                     }
                     else
                     {
@@ -542,6 +570,22 @@ namespace QuanLyDangVien.Helper
 
             foreach (PropertyInfo property in properties)
             {
+                // Filter properties theo mode:
+                // - Form Thêm/Sửa (isReadOnly = false): Ẩn TenCapTren, DanhSachCapDuoi
+                // - Form Xem chi tiết (isReadOnly = true): Ẩn CapTrenID
+                if (isReadOnly)
+                {
+                    // Form xem chi tiết: Ẩn CapTrenID
+                    if (property.Name == "CapTrenID")
+                        continue;
+                }
+                else
+                {
+                    // Form Thêm/Sửa: Ẩn TenCapTren và DanhSachCapDuoi
+                    if (property.Name == "TenCapTren" || property.Name == "DanhSachCapDuoi")
+                        continue;
+                }
+
                 // Kiểm tra ReadOnly attribute (chỉ áp dụng khi isEditMode = true)
                 var readOnlyAttr = property.GetCustomAttribute<ReadOnlyFieldAttribute>();
                 bool fieldIsReadOnly = isReadOnly || (readOnlyAttr != null && readOnlyAttr.IsReadOnly && isEditMode);
@@ -648,6 +692,28 @@ namespace QuanLyDangVien.Helper
                 // Lưu vào dictionary
                 controlsDictionary[property.Name] = inputControl;
                 propertiesDictionary[property.Name] = property;
+
+                // Bind ComboBox cho CapTrenID với dữ liệu từ DonViService
+                if (inputControl is ComboBox comboBox && property.Name == "CapTrenID")
+                {
+                    try
+                    {
+                        var donViService = new DonViService();
+                        var donViList = donViService.GetDonViData();
+                        
+                        // Thêm option "Không có" (null)
+                        var dataList = new List<object> { new { Key = (int?)null, Value = "(Không có)" } };
+                        dataList.AddRange(donViList.Select(dv => new { Key = (int?)dv.DonViID, Value = dv.TenDonVi }));
+                        
+                        comboBox.DisplayMember = "Value";
+                        comboBox.ValueMember = "Key";
+                        comboBox.DataSource = dataList;
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Lỗi khi bind ComboBox cho {property.Name}: {ex.Message}");
+                    }
+                }
 
                 panel.Controls.Add(fieldContainer);
             }

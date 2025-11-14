@@ -32,13 +32,13 @@
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.metroTile1 = new MetroFramework.Controls.MetroTile();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.TimKiemBtn = new MetroFramework.Controls.MetroButton();
             this.TimTb = new MetroFramework.Controls.MetroTextBox();
             this.metroComboBox5 = new MetroFramework.Controls.MetroComboBox();
             this.metroComboBox4 = new MetroFramework.Controls.MetroComboBox();
             this.metroComboBox2 = new MetroFramework.Controls.MetroComboBox();
             this.metroComboBox1 = new MetroFramework.Controls.MetroComboBox();
-            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.panel3.SuspendLayout();
@@ -104,6 +104,7 @@
             this.TimKiemBtn.TabIndex = 38;
             this.TimKiemBtn.Text = "Tìm kiếm";
             this.TimKiemBtn.Theme = MetroFramework.MetroThemeStyle.Light;
+            this.TimKiemBtn.Click += new System.EventHandler(this.TimKiemBtn_Click);
             // 
             // TimTb
             // 
@@ -113,6 +114,7 @@
             this.TimTb.PromptText = "Nhập từ khóa tìm kiếm";
             this.TimTb.Size = new System.Drawing.Size(204, 35);
             this.TimTb.TabIndex = 37;
+            this.TimTb.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TimTb_KeyDown);
             // 
             // metroComboBox5
             // 
@@ -153,17 +155,19 @@
             this.metroComboBox1.Name = "metroComboBox1";
             this.metroComboBox1.Size = new System.Drawing.Size(158, 35);
             this.metroComboBox1.TabIndex = 32;
+            this.metroComboBox1.SelectedIndexChanged += new System.EventHandler(this.metroComboBox1_SelectedIndexChanged);
             // 
             // linkLabel1
             // 
             this.linkLabel1.AutoSize = true;
             this.linkLabel1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.linkLabel1.Location = new System.Drawing.Point(607, 50);
+            this.linkLabel1.Location = new System.Drawing.Point(607, 76);
             this.linkLabel1.Name = "linkLabel1";
             this.linkLabel1.Size = new System.Drawing.Size(113, 20);
             this.linkLabel1.TabIndex = 39;
             this.linkLabel1.TabStop = true;
             this.linkLabel1.Text = "Xuất Báo Cáo";
+            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
             // 
             // PageTheoDoiChuyenChinhThuc
             // 

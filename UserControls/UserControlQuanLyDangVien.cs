@@ -14,6 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ClosedXML.Excel;
 
 namespace QuanLyDangVien
 {
@@ -23,6 +24,8 @@ namespace QuanLyDangVien
         private DonViService _donViService;
         private TaiLieuHoSoService _taiLieuHoSoService;
         private ChuyenSinhHoatDangService _chuyenSinhHoatDangService;
+        private KhenThuongCaNhanService _khenThuongService;
+        private KyLuatCaNhanService _kyLuatService;
         private List<DangVienDTO> _danhSachDangVien;
         private List<DangVienDTO> _hienThiDangVien; // Danh sách hiển thị tạm thời
 
@@ -33,6 +36,8 @@ namespace QuanLyDangVien
             _donViService = new DonViService();
             _taiLieuHoSoService = new TaiLieuHoSoService();
             _chuyenSinhHoatDangService = new ChuyenSinhHoatDangService();
+            _khenThuongService = new KhenThuongCaNhanService();
+            _kyLuatService = new KyLuatCaNhanService();
             _danhSachDangVien = new List<DangVienDTO>();
             _hienThiDangVien = new List<DangVienDTO>();
 
@@ -44,18 +49,51 @@ namespace QuanLyDangVien
             SoluongCb.SelectedIndex = 3;
             SoluongCb.SelectedIndexChanged += SoluongCb_SelectedIndexChanged;
 
-            // Set DoiTuongComboBox
+            // Set DoiTuongComboBox - hiển thị viết tắt (không có "Tất cả")
             DoiTuongCb.Items.AddRange(new object[] {
-                new KeyValuePair<string, string>("Tất cả", "---Chọn Đối Tượng---"),
-                new KeyValuePair<string, string>("SQ", "Đảng viên sĩ quan"),
-                new KeyValuePair<string, string>("QNCN", "Đảng viên quân nhân chuyên nghiệp"),
-                new KeyValuePair<string, string>("HSQ-BS", "Đảng viên hợp đồng binh sĩ"),
-                new KeyValuePair<string, string>("LĐHĐ", "Đảng viên lao động hợp đồng"),
-                new KeyValuePair<string, string>("CNVCQP", "Công nhân viên chức quốc phòng")
+                "SQ",
+                "QNCN",
+                "HSQ-BS",
+                "LĐHĐ",
+                "CNVCQP"
             });
-            DoiTuongCb.DisplayMember = "Value";
-            DoiTuongCb.ValueMember = "Key";
-            DoiTuongCb.SelectedIndex = 0;
+            DoiTuongCb.SelectedIndex = -1; // Không chọn mặc định
+
+            // Set CapBacComboBox
+            CapBacCb.Items.AddRange(new object[] {
+                "Đảng viên",
+                "Bí thư",
+                "Phó Bí thư",
+                "Ủy viên"
+            });
+            CapBacCb.SelectedIndex = -1;
+
+            // Set TrinhDoComboBox
+            TrinhDoCb.Items.AddRange(new object[] {
+                "Tiểu học",
+                "Trung học cơ sở",
+                "Trung học phổ thông",
+                "Trung cấp",
+                "Cao đẳng",
+                "Đại học",
+                "Thạc sĩ",
+                "Tiến sĩ"
+            });
+            TrinhDoCb.SelectedIndex = -1;
+
+            // Set LoaiDangVienComboBox
+            LoaiDangVienCb.Items.AddRange(new object[] {
+                "Chính thức",
+                "Dự bị"
+            });
+            LoaiDangVienCb.SelectedIndex = -1;
+
+            // Set TrangThaiComboBox
+            TrangThaiCb.Items.AddRange(new object[] {
+                "Đang hoạt động",
+                "Không hoạt động"
+            });
+            TrangThaiCb.SelectedIndex = 0; // Mặc định chọn "Đang hoạt động"
         }
 
         private void SetupUI()
@@ -72,43 +110,54 @@ namespace QuanLyDangVien
             col.Items.Add("Xóa đảng viên");
             col.Items.Add("Xem hồ sơ");
 
-            DangVienGridView.EditingControlShowing += DangVienGridView_EditingControlShowing;
+            // Cải thiện giao diện DataGridView
+            DangVienGridView.RowHeadersVisible = false;
+            DangVienGridView.BackgroundColor = Color.White;
+            DangVienGridView.BorderStyle = BorderStyle.None;
+            DangVienGridView.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+            DangVienGridView.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+            DangVienGridView.EnableHeadersVisualStyles = false;
+            
+            // Header styling
+            DangVienGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(220, 53, 69);
+            DangVienGridView.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            DangVienGridView.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            DangVienGridView.ColumnHeadersDefaultCellStyle.Padding = new Padding(10, 8, 10, 8);
+            DangVienGridView.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            DangVienGridView.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            DangVienGridView.ColumnHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(220, 53, 69);
+            DangVienGridView.ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.White;
+            DangVienGridView.ColumnHeadersHeight = 60;
+            DangVienGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            
+            // Row styling
             DangVienGridView.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
-            DangVienGridView.ColumnHeadersDefaultCellStyle.Font = new Font("Arial", 10);
-            DangVienGridView.DefaultCellStyle.Font = new Font("Arial", 12);
-            DangVienGridView.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+            DangVienGridView.DefaultCellStyle.Font = new Font("Segoe UI", 9F);
+            DangVienGridView.DefaultCellStyle.Padding = new Padding(10, 8, 10, 8);
+            DangVienGridView.DefaultCellStyle.SelectionBackColor = Color.FromArgb(255, 200, 200);
+            DangVienGridView.DefaultCellStyle.SelectionForeColor = Color.Black;
+            DangVienGridView.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(245, 245, 245);
+            DangVienGridView.AlternatingRowsDefaultCellStyle.SelectionBackColor = Color.FromArgb(255, 200, 200);
+            DangVienGridView.AlternatingRowsDefaultCellStyle.SelectionForeColor = Color.Black;
+            DangVienGridView.RowTemplate.Height = 50;
+            DangVienGridView.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None; // Tắt auto size để tối ưu hiệu suất
+            
+            // Allow column resizing
+            DangVienGridView.AllowUserToResizeColumns = true;
+            DangVienGridView.ReadOnly = false; // Allow individual column ReadOnly settings
+            DangVienGridView.EditMode = DataGridViewEditMode.EditOnEnter; // Allow clicking to edit ComboBoxes
+
+            // Set tất cả các cột là ReadOnly trừ cột ChucNang
+            DangVienGridView.CellBeginEdit += DangVienGridView_CellBeginEdit;
+
+            DangVienGridView.EditingControlShowing += DangVienGridView_EditingControlShowing;
             DangVienGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect; // Chọn cả hàng khi click
-            DangVienGridView.CellDoubleClick += DangVienGridView_CellDoubleClick; // Thêm double-click event
-        }
-
-        private void DangVienGridView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
-        {
-            // Bỏ qua click vào header
-            if (e.RowIndex < 0) return;
-
-            try
+            
+            // Handle DataError to prevent dialog from showing
+            DangVienGridView.DataError += (s, e) =>
             {
-                var row = DangVienGridView.Rows[e.RowIndex];
-                var idObj = row.Cells["dangVienIDDataGridViewTextBoxColumn"].Value;
-                if (idObj == null || !int.TryParse(idObj.ToString(), out int dangVienID))
-                {
-                    return;
-                }
-
-                // Mở form xem chi tiết
-                var dangVien = _dangVienService.GetById(dangVienID);
-                if (dangVien != null)
-                {
-                    FormXemChiTiet formXem = new FormXemChiTiet(dangVien);
-                    var donViData = _donViService.GetDonViDataByDangVienId(dangVienID);
-                    RefreshDonViData(formXem, donViData);
-                    formXem.ShowDialog();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Lỗi khi xem chi tiết: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+                e.ThrowException = false;
+            };
         }
 
         private void LoadData()
@@ -152,11 +201,29 @@ namespace QuanLyDangVien
 
             DangVienGridView.DataSource = null;
             DangVienGridView.DataSource = _hienThiDangVien;
+            
+            // Set tất cả các cột là ReadOnly trừ cột ChucNang
+            foreach (DataGridViewColumn column in DangVienGridView.Columns)
+            {
+                if (column.Name != "ChucNang")
+                {
+                    column.ReadOnly = true;
+                }
+            }
         }
 
         private void SoluongCb_SelectedIndexChanged(object sender, EventArgs e)
         {
             CapNhatHienThi();
+        }
+
+        private void DangVienGridView_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
+        {
+            // Chỉ cho phép edit cột ChucNang (ComboBox), các cột khác không cho phép edit
+            if (DangVienGridView.Columns[e.ColumnIndex].Name != "ChucNang")
+            {
+                e.Cancel = true;
+            }
         }
 
         private void DangVienGridView_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
@@ -342,6 +409,13 @@ namespace QuanLyDangVien
                     return;
                 }
 
+                // Kiểm tra nếu chọn nhiều hàng
+                if (DangVienGridView.SelectedRows.Count > 1)
+                {
+                    MessageBox.Show("Vui lòng chỉ chọn một đảng viên để thêm hồ sơ!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
                 var selectedRow = DangVienGridView.SelectedRows[0];
                 var idObj = selectedRow.Cells["dangVienIDDataGridViewTextBoxColumn"].Value;
                 if (idObj == null || !int.TryParse(idObj.ToString(), out int dangVienID))
@@ -411,34 +485,202 @@ namespace QuanLyDangVien
 
         private void TimKiemBtn_Click(object sender, EventArgs e)
         {
+            PerformSearch();
+        }
+
+        private void PerformSearch()
+        {
             try
             {
                 string searchText = TimTb.Text?.Trim();
+                
+                // Nếu không có từ khóa, load tất cả
                 if (string.IsNullOrEmpty(searchText))
                 {
                     LoadData();
                     return;
                 }
 
-                // Sử dụng các tham số mới từ DangVienService
+                // Lấy các filter từ ComboBox
+                string doiTuong = GetSelectedValue(DoiTuongCb);
+                string capBac = GetSelectedValue(CapBacCb);
+                string trinhDo = GetSelectedValue(TrinhDoCb);
+                string loaiDangVien = GetSelectedValue(LoaiDangVienCb);
+                bool? trangThai = GetTrangThaiValue();
+
+                // Phân tích và tìm kiếm thông minh
+                var searchParams = AnalyzeSearchText(searchText);
+
+                // Nếu tìm kiếm theo số điện thoại hoặc số thẻ đảng viên, cần filter sau
+                bool needPostFilter = !string.IsNullOrEmpty(searchParams.SoDienThoai) || 
+                                     !string.IsNullOrEmpty(searchParams.SoTheDangVien);
+
+                // Ưu tiên sử dụng giá trị từ ComboBox, nếu không có thì dùng từ searchParams
+                string finalCapBac = !string.IsNullOrEmpty(capBac) ? capBac : searchParams.CapBac;
+                string finalTrinhDo = !string.IsNullOrEmpty(trinhDo) ? trinhDo : searchParams.TrinhDo;
+
+                // Gọi service với các tham số đã phân tích
                 _danhSachDangVien = _dangVienService.GetAll(
-                    hoTen: searchText,
-                    soCCCD: searchText,
-                    capBac: null,
-                    chucVu: null,
-                    queQuan: null,
-                    trinhDo: null
+                    donViID: null,
+                    hoTen: searchParams.HoTen,
+                    soCCCD: searchParams.SoCCCD,
+                    loaiDangVien: loaiDangVien,
+                    doiTuong: doiTuong,
+                    capBac: finalCapBac,
+                    chucVu: searchParams.ChucVu,
+                    queQuan: searchParams.QueQuan,
+                    trinhDo: finalTrinhDo,
+                    trangThai: trangThai ?? true // Mặc định là true nếu không chọn
                 );
+
+                // Filter thêm nếu cần (số điện thoại, số thẻ đảng viên)
+                if (needPostFilter)
+                {
+                    _danhSachDangVien = _danhSachDangVien.Where(dv =>
+                    {
+                        bool match = true;
+                        
+                        if (!string.IsNullOrEmpty(searchParams.SoDienThoai))
+                        {
+                            string phone = dv.SoDienThoai?.Replace(" ", "").Replace("-", "").Replace(".", "") ?? "";
+                            match = match && phone.Contains(searchParams.SoDienThoai);
+                        }
+                        
+                        if (!string.IsNullOrEmpty(searchParams.SoTheDangVien))
+                        {
+                            match = match && (dv.SoTheDangVien?.Contains(searchParams.SoTheDangVien) ?? false);
+                        }
+                        
+                        return match;
+                    }).ToList();
+                }
 
                 CapNhatHienThi();
 
+                // Hiển thị kết quả
                 if (_danhSachDangVien.Count == 0)
-                    MessageBox.Show("Không tìm thấy đảng viên nào!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                {
+                    MessageBox.Show($"Không tìm thấy đảng viên nào với từ khóa: \"{searchText}\"", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    // Có thể hiển thị số lượng kết quả ở đây nếu cần
+                    // MessageBox.Show($"Tìm thấy {_danhSachDangVien.Count} đảng viên", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Lỗi khi tìm kiếm: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        /// <summary>
+        /// Phân tích từ khóa tìm kiếm để xác định loại dữ liệu
+        /// </summary>
+        private SearchParams AnalyzeSearchText(string searchText)
+        {
+            var result = new SearchParams();
+
+            // Loại bỏ khoảng trắng thừa
+            searchText = searchText.Trim();
+
+            // Kiểm tra nếu là số CCCD (12 chữ số)
+            if (System.Text.RegularExpressions.Regex.IsMatch(searchText, @"^\d{12}$"))
+            {
+                result.SoCCCD = searchText;
+                return result;
+            }
+
+            // Kiểm tra nếu là số điện thoại (10-11 chữ số, có thể có dấu cách hoặc dấu gạch ngang)
+            string phonePattern = searchText.Replace(" ", "").Replace("-", "").Replace(".", "");
+            if (System.Text.RegularExpressions.Regex.IsMatch(phonePattern, @"^0\d{9,10}$"))
+            {
+                // Tìm kiếm theo số điện thoại (cần filter sau khi lấy dữ liệu)
+                result.SoDienThoai = phonePattern;
+                return result;
+            }
+
+            // Kiểm tra nếu là số thẻ đảng viên (có thể có chữ và số)
+            if (System.Text.RegularExpressions.Regex.IsMatch(searchText, @"^\d{6,12}$"))
+            {
+                result.SoTheDangVien = searchText;
+                return result;
+            }
+
+            // Nếu chứa từ khóa "cấp bậc" hoặc "cb:"
+            if (searchText.ToLower().Contains("cấp bậc:") || searchText.ToLower().StartsWith("cb:"))
+            {
+                var parts = searchText.Split(new[] { ':', '：' }, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length > 1)
+                {
+                    result.CapBac = parts[parts.Length - 1].Trim();
+                    return result;
+                }
+            }
+
+            // Nếu chứa từ khóa "chức vụ" hoặc "cv:"
+            if (searchText.ToLower().Contains("chức vụ:") || searchText.ToLower().StartsWith("cv:"))
+            {
+                var parts = searchText.Split(new[] { ':', '：' }, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length > 1)
+                {
+                    result.ChucVu = parts[parts.Length - 1].Trim();
+                    return result;
+                }
+            }
+
+            // Nếu chứa từ khóa "quê quán" hoặc "qq:"
+            if (searchText.ToLower().Contains("quê quán:") || searchText.ToLower().StartsWith("qq:"))
+            {
+                var parts = searchText.Split(new[] { ':', '：' }, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length > 1)
+                {
+                    result.QueQuan = parts[parts.Length - 1].Trim();
+                    return result;
+                }
+            }
+
+            // Nếu chứa từ khóa "trình độ" hoặc "td:"
+            if (searchText.ToLower().Contains("trình độ:") || searchText.ToLower().StartsWith("td:"))
+            {
+                var parts = searchText.Split(new[] { ':', '：' }, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length > 1)
+                {
+                    result.TrinhDo = parts[parts.Length - 1].Trim();
+                    return result;
+                }
+            }
+
+            // Mặc định: tìm kiếm theo tên (có thể tìm trong nhiều trường)
+            result.HoTen = searchText;
+            result.SoCCCD = searchText; // Cũng tìm trong CCCD nếu có
+            result.ChucVu = searchText; // Cũng tìm trong chức vụ
+            result.CapBac = searchText; // Cũng tìm trong cấp bậc
+            result.QueQuan = searchText; // Cũng tìm trong quê quán
+
+            return result;
+        }
+
+        /// <summary>
+        /// Class để lưu các tham số tìm kiếm
+        /// </summary>
+        private class SearchParams
+        {
+            public string HoTen { get; set; }
+            public string SoCCCD { get; set; }
+            public string SoDienThoai { get; set; }
+            public string SoTheDangVien { get; set; }
+            public string CapBac { get; set; }
+            public string ChucVu { get; set; }
+            public string QueQuan { get; set; }
+            public string TrinhDo { get; set; }
+        }
+
+        private void TimTb_TextChanged(object sender, EventArgs e)
+        {
+            // Tìm kiếm real-time khi người dùng gõ (với delay để tránh query quá nhiều)
+            // Có thể bật/tắt tính năng này tùy ý
+            // PerformSearch();
         }
 
         private void ThemBtn_Click(object sender, EventArgs e)
@@ -613,10 +855,10 @@ namespace QuanLyDangVien
                     // Chỉ bind ComboBox DonViDen (Đơn vị đến), không bind DonViDi nữa vì nó là TextBox read-only
                     // DonViID vẫn được bind cho các form khác
                     if (comboBox.Name == "DonViID" || comboBox.Name == "DonViDen")
-                    {
-                        comboBox.DataSource = donViData;
-                        comboBox.DisplayMember = "TenDonVi";
-                        comboBox.ValueMember = "DonViID";
+                {
+                    comboBox.DataSource = donViData;
+                    comboBox.DisplayMember = "TenDonVi";
+                    comboBox.ValueMember = "DonViID";
                     }
                     // DonViDi không còn là ComboBox nữa, bỏ qua
                 }
@@ -626,9 +868,107 @@ namespace QuanLyDangVien
             }
         }
 
+        /// <summary>
+        /// Lấy giá trị được chọn từ ComboBox (trả về null nếu không chọn)
+        /// </summary>
+        private string GetSelectedValue(MetroFramework.Controls.MetroComboBox comboBox)
+        {
+            if (comboBox.SelectedItem == null || comboBox.SelectedIndex == -1) return null;
+            return comboBox.SelectedItem.ToString();
+        }
+
+        /// <summary>
+        /// Lấy giá trị boolean từ ComboBox trạng thái
+        /// </summary>
+        private bool? GetTrangThaiValue()
+        {
+            if (TrangThaiCb.SelectedItem == null || TrangThaiCb.SelectedIndex == -1) return null;
+            string selected = TrangThaiCb.SelectedItem.ToString();
+            if (selected == "Đang hoạt động") return true;
+            if (selected == "Không hoạt động") return false;
+            return null;
+        }
+
         private void DoiTuongCb_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // TODO: Lọc theo loại đối tượng nếu cần
+            PerformFilter();
+        }
+
+        private void CapBacCb_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            PerformFilter();
+        }
+
+        private void TrinhDoCb_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            PerformFilter();
+        }
+
+        private void LoaiDangVienCb_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            PerformFilter();
+        }
+
+        private void TrangThaiCb_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            PerformFilter();
+        }
+
+        /// <summary>
+        /// Thực hiện lọc khi thay đổi ComboBox
+        /// </summary>
+        private void PerformFilter()
+        {
+            try
+            {
+                string searchText = TimTb.Text?.Trim();
+                
+                // Lấy các filter từ ComboBox
+                string doiTuong = GetSelectedValue(DoiTuongCb);
+                string capBac = GetSelectedValue(CapBacCb);
+                string trinhDo = GetSelectedValue(TrinhDoCb);
+                string loaiDangVien = GetSelectedValue(LoaiDangVienCb);
+                bool? trangThai = GetTrangThaiValue();
+
+                // Nếu có từ khóa tìm kiếm, gọi PerformSearch
+                if (!string.IsNullOrEmpty(searchText))
+                {
+                    PerformSearch();
+                    return;
+                }
+
+                // Nếu không có từ khóa, chỉ lọc theo ComboBox
+                bool hasFilter = !string.IsNullOrEmpty(doiTuong) || 
+                                !string.IsNullOrEmpty(capBac) || 
+                                !string.IsNullOrEmpty(trinhDo) || 
+                                !string.IsNullOrEmpty(loaiDangVien) ||
+                                trangThai.HasValue;
+
+                if (hasFilter)
+                {
+                    _danhSachDangVien = _dangVienService.GetAll(
+                        donViID: null,
+                        hoTen: null,
+                        soCCCD: null,
+                        loaiDangVien: loaiDangVien,
+                        doiTuong: doiTuong,
+                        capBac: capBac,
+                        chucVu: null,
+                        queQuan: null,
+                        trinhDo: trinhDo,
+                        trangThai: trangThai
+                    );
+                    CapNhatHienThi();
+                }
+                else
+                {
+                    LoadData();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi lọc dữ liệu: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -742,6 +1082,226 @@ namespace QuanLyDangVien
             {
                 MessageBox.Show($"Lỗi khi thêm chuyển sinh hoạt đảng: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void XuatBtn_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (_danhSachDangVien == null || _danhSachDangVien.Count == 0)
+                {
+                    MessageBox.Show("Không có dữ liệu để xuất!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                using (SaveFileDialog saveDialog = new SaveFileDialog())
+                {
+                    saveDialog.Filter = "Excel Files|*.xlsx";
+                    saveDialog.FileName = $"DanhSachDangVien_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
+                    saveDialog.DefaultExt = "xlsx";
+
+                    if (saveDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        ExportToExcel(_danhSachDangVien, saveDialog.FileName);
+                        MessageBox.Show("Xuất Excel thành công!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi xuất Excel: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Xuất danh sách đảng viên ra Excel theo format yêu cầu
+        /// </summary>
+        private void ExportToExcel(List<DangVienDTO> danhSachDangVien, string filePath)
+        {
+            using (var workbook = new XLWorkbook())
+            {
+                // Group by DonViID để tạo sheet riêng cho mỗi đơn vị
+                var groupedByDonVi = danhSachDangVien
+                    .Where(dv => dv.TrangThai == true) // Chỉ lấy đảng viên đang hoạt động
+                    .GroupBy(dv => new { dv.DonViID, dv.TenDonVi })
+                    .OrderBy(g => g.Key.TenDonVi);
+
+                foreach (var group in groupedByDonVi)
+                {
+                    // Tạo sheet với tên đơn vị (giới hạn 31 ký tự cho tên sheet Excel)
+                    string sheetName = group.Key.TenDonVi ?? $"DonVi_{group.Key.DonViID}";
+                    if (sheetName.Length > 31)
+                        sheetName = sheetName.Substring(0, 31);
+                    
+                    // Xử lý ký tự không hợp lệ trong tên sheet
+                    sheetName = sheetName.Replace(":", "").Replace("\\", "").Replace("/", "").Replace("?", "").Replace("*", "").Replace("[", "").Replace("]", "");
+
+                    var worksheet = workbook.Worksheets.Add(sheetName);
+
+                    // Tạo header row
+                    CreateHeaderRow(worksheet);
+
+                    // Populate data
+                    int row = 2; // Bắt đầu từ row 2 (row 1 là header)
+                    foreach (var dangVien in group.OrderBy(dv => dv.HoTen))
+                    {
+                        PopulateDangVienRow(worksheet, row, dangVien);
+                        row++;
+                    }
+
+                    // Auto-fit columns và set width
+                    AutoFitColumns(worksheet);
+                }
+
+                // Lưu file
+                workbook.SaveAs(filePath);
+            }
+        }
+
+        /// <summary>
+        /// Tạo header row cho Excel
+        /// </summary>
+        private void CreateHeaderRow(IXLWorksheet worksheet)
+        {
+            worksheet.Cell(1, 1).Value = "Họ và tên\nNgày, tháng, năm sinh\nSố thẻ đảng viên\nSố CCCD\nSố điện thoại";
+            worksheet.Cell(1, 2).Value = "Cấp bậc\nChức vụ\nĐơn vị";
+            worksheet.Cell(1, 3).Value = "Nhập ngũ\nNgày vào đảng\nChính thức";
+            worksheet.Cell(1, 4).Value = "Tuổi đảng\nTuổi đời";
+            worksheet.Cell(1, 5).Value = "Đối tượng; Giới tính";
+            worksheet.Cell(1, 6).Value = "Quê quán";
+            worksheet.Cell(1, 7).Value = "Trình Độ";
+            worksheet.Cell(1, 8).Value = "Quá trình công tác";
+            worksheet.Cell(1, 9).Value = "Hồ sơ gia đình";
+            worksheet.Cell(1, 10).Value = "Khen thưởng";
+            worksheet.Cell(1, 11).Value = "Kỷ luật";
+            worksheet.Cell(1, 12).Value = "Tài Liệu Hồ sơ Đảng viên";
+            worksheet.Cell(1, 13).Value = "Ghi chú";
+
+            // Format header
+            var headerRange = worksheet.Range(1, 1, 1, 13);
+            headerRange.Style.Font.Bold = true;
+            headerRange.Style.Font.FontSize = 10;
+            headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            headerRange.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+            headerRange.Style.Alignment.WrapText = true;
+            headerRange.Style.Fill.BackgroundColor = XLColor.LightGray;
+            headerRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+            headerRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+
+            // Set header row height
+            worksheet.Row(1).Height = 80;
+        }
+
+        /// <summary>
+        /// Populate data cho một đảng viên
+        /// </summary>
+        private void PopulateDangVienRow(IXLWorksheet worksheet, int row, DangVienDTO dangVien)
+        {
+            // Cột 1: Họ và tên, Ngày sinh, Số thẻ đảng viên, Số CCCD, Số điện thoại
+            var col1 = new StringBuilder();
+            col1.AppendLine(dangVien.HoTen ?? "");
+            col1.AppendLine(dangVien.NgaySinh?.ToString("dd/MM/yyyy") ?? "");
+            col1.AppendLine(dangVien.SoTheDangVien ?? "");
+            col1.AppendLine(dangVien.SoCCCD ?? "");
+            col1.AppendLine(dangVien.SoDienThoai ?? "");
+            worksheet.Cell(row, 1).Value = col1.ToString().TrimEnd('\r', '\n');
+
+            // Cột 2: Cấp bậc, Chức vụ, Đơn vị
+            var col2 = new StringBuilder();
+            col2.AppendLine(dangVien.CapBac ?? "");
+            col2.AppendLine(dangVien.ChucVu ?? "");
+            col2.AppendLine(dangVien.TenDonVi ?? "");
+            worksheet.Cell(row, 2).Value = col2.ToString().TrimEnd('\r', '\n');
+
+            // Cột 3: Nhập ngũ, Ngày vào đảng, Chính thức
+            var col3 = new StringBuilder();
+            // Note: Nhập ngũ không có trong DangVienDTO, có thể lấy từ QuanNhan nếu cần
+            col3.AppendLine(""); // Nhập ngũ - để trống hoặc lấy từ bảng khác
+            col3.AppendLine(dangVien.NgayVaoDang?.ToString("dd/MM/yyyy") ?? "");
+            col3.AppendLine(dangVien.NgayChinhThuc?.ToString("dd/MM/yyyy") ?? "");
+            worksheet.Cell(row, 3).Value = col3.ToString().TrimEnd('\r', '\n');
+
+            // Cột 4: Tuổi đảng, Tuổi đời
+            var col4 = new StringBuilder();
+            col4.AppendLine(dangVien.TuoiDang?.ToString() ?? "");
+            col4.AppendLine(dangVien.TuoiDoi?.ToString() ?? "");
+            worksheet.Cell(row, 4).Value = col4.ToString().TrimEnd('\r', '\n');
+
+            // Cột 5: Đối tượng; Giới tính
+            worksheet.Cell(row, 5).Value = $"{dangVien.DoiTuong ?? ""}; {dangVien.GioiTinh ?? ""}";
+
+            // Cột 6: Quê quán
+            worksheet.Cell(row, 6).Value = dangVien.QueQuan ?? "";
+
+            // Cột 7: Trình Độ
+            worksheet.Cell(row, 7).Value = dangVien.TrinhDo ?? "";
+
+            // Cột 8: Quá trình công tác
+            worksheet.Cell(row, 8).Value = dangVien.QuaTrinhCongTac ?? "";
+
+            // Cột 9: Hồ sơ gia đình
+            worksheet.Cell(row, 9).Value = dangVien.HoSoGiaDinh ?? "";
+
+            // Cột 10: Khen thưởng (lấy từ service)
+            var khenThuongList = _khenThuongService.GetByDangVienID(dangVien.DangVienID);
+            var col10 = new StringBuilder();
+            foreach (var kt in khenThuongList)
+            {
+                col10.AppendLine(kt.HinhThuc ?? "");
+            }
+            worksheet.Cell(row, 10).Value = col10.ToString().TrimEnd('\r', '\n');
+
+            // Cột 11: Kỷ luật (lấy từ service)
+            var kyLuatList = _kyLuatService.GetByDangVienID(dangVien.DangVienID);
+            var col11 = new StringBuilder();
+            foreach (var kl in kyLuatList)
+            {
+                col11.AppendLine(kl.HinhThuc ?? "");
+            }
+            worksheet.Cell(row, 11).Value = col11.ToString().TrimEnd('\r', '\n');
+
+            // Cột 12: Tài Liệu Hồ sơ Đảng viên
+            var taiLieuList = _taiLieuHoSoService.GetByDangVienID(dangVien.DangVienID);
+            var col12 = new StringBuilder();
+            foreach (var tl in taiLieuList)
+            {
+                col12.AppendLine(tl.TenFile ?? "");
+            }
+            worksheet.Cell(row, 12).Value = col12.ToString().TrimEnd('\r', '\n');
+
+            // Cột 13: Ghi chú (có thể lấy từ trường khác nếu có)
+            worksheet.Cell(row, 13).Value = "";
+
+            // Format cells: WrapText = true cho tất cả các cell
+            var dataRange = worksheet.Range(row, 1, row, 13);
+            dataRange.Style.Alignment.WrapText = true;
+            dataRange.Style.Alignment.Vertical = XLAlignmentVerticalValues.Top;
+            dataRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+            dataRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+
+            // Set row height
+            worksheet.Row(row).Height = 80;
+        }
+
+        /// <summary>
+        /// Auto-fit columns và set width phù hợp
+        /// </summary>
+        private void AutoFitColumns(IXLWorksheet worksheet)
+        {
+            // Set column widths
+            worksheet.Column(1).Width = 20;  // Cột 1: Thông tin cơ bản
+            worksheet.Column(2).Width = 18;  // Cột 2: Cấp bậc, Chức vụ, Đơn vị
+            worksheet.Column(3).Width = 18;  // Cột 3: Nhập ngũ, Ngày vào đảng, Chính thức
+            worksheet.Column(4).Width = 12;  // Cột 4: Tuổi đảng, Tuổi đời
+            worksheet.Column(5).Width = 15;  // Cột 5: Đối tượng; Giới tính
+            worksheet.Column(6).Width = 20;  // Cột 6: Quê quán
+            worksheet.Column(7).Width = 12;  // Cột 7: Trình Độ
+            worksheet.Column(8).Width = 30;  // Cột 8: Quá trình công tác
+            worksheet.Column(9).Width = 30;  // Cột 9: Hồ sơ gia đình
+            worksheet.Column(10).Width = 20; // Cột 10: Khen thưởng
+            worksheet.Column(11).Width = 20; // Cột 11: Kỷ luật
+            worksheet.Column(12).Width = 25; // Cột 12: Tài Liệu Hồ sơ Đảng viên
+            worksheet.Column(13).Width = 20; // Cột 13: Ghi chú
         }
     }
 }

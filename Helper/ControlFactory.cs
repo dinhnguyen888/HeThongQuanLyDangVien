@@ -27,6 +27,8 @@ namespace QuanLyDangVien.Helper
                         return CreateRichTextBox();
 
                     case ControlInputType.ComboBox:
+                        // Trong chế độ read-only, hiển thị như TextBox thay vì ComboBox
+                        if (isReadOnly) return CreateTextBox();
                         return CreateComboBox(property);
 
                     case ControlInputType.PictureBox:
@@ -49,6 +51,12 @@ namespace QuanLyDangVien.Helper
                 }
             }
 
+            // Nếu không có attribute: xác định tự động, nhưng nếu read-only và là ComboBox (enum) thì dùng TextBox
+            var intendedType = DetermineInputType(property);
+            if (isReadOnly && intendedType == ControlInputType.ComboBox)
+            {
+                return CreateTextBox();
+            }
             return CreateControlByDataType(property);
         }
 

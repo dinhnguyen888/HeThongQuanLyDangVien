@@ -39,12 +39,14 @@
             this.metroLabel2 = new MetroFramework.Controls.MetroLabel();
             this.MatKhauTb = new MetroFramework.Controls.MetroTextBox();
             this.TaiKhoanTb = new MetroFramework.Controls.MetroTextBox();
+            this.pictureBox3 = new System.Windows.Forms.PictureBox();
             this.metroPanel1 = new MetroFramework.Controls.MetroPanel();
             this.metroLabel1 = new MetroFramework.Controls.MetroLabel();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel1.SuspendLayout();
             this.metroPanel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
             this.metroPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -94,13 +96,14 @@
             this.metroPanel2.Controls.Add(this.metroLabel2);
             this.metroPanel2.Controls.Add(this.MatKhauTb);
             this.metroPanel2.Controls.Add(this.TaiKhoanTb);
+            this.metroPanel2.Controls.Add(this.pictureBox3);
             this.metroPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.metroPanel2.HorizontalScrollbarBarColor = true;
             this.metroPanel2.HorizontalScrollbarHighlightOnWheel = false;
             this.metroPanel2.HorizontalScrollbarSize = 10;
-            this.metroPanel2.Location = new System.Drawing.Point(0, 100);
+            this.metroPanel2.Location = new System.Drawing.Point(0, 72);
             this.metroPanel2.Name = "metroPanel2";
-            this.metroPanel2.Size = new System.Drawing.Size(510, 479);
+            this.metroPanel2.Size = new System.Drawing.Size(510, 507);
             this.metroPanel2.TabIndex = 1;
             this.metroPanel2.VerticalScrollbarBarColor = true;
             this.metroPanel2.VerticalScrollbarHighlightOnWheel = false;
@@ -110,23 +113,22 @@
             // 
             this.LienHe.Cursor = System.Windows.Forms.Cursors.Hand;
             this.LienHe.FontSize = MetroFramework.MetroLinkSize.Medium;
-            this.LienHe.Location = new System.Drawing.Point(64, 202);
+            this.LienHe.Location = new System.Drawing.Point(50, 312);
             this.LienHe.Name = "LienHe";
             this.LienHe.Size = new System.Drawing.Size(75, 23);
             this.LienHe.Style = MetroFramework.MetroColorStyle.Blue;
-            this.LienHe.TabIndex = 21;
+            this.LienHe.TabIndex = 30;
             this.LienHe.Text = "Liên hệ..";
             this.LienHe.UseStyleColors = true;
-            this.LienHe.Click += new System.EventHandler(this.LienHe_Click);
             // 
             // GhiNhoCb
             // 
             this.GhiNhoCb.AutoSize = true;
             this.GhiNhoCb.FontSize = MetroFramework.MetroLinkSize.Tall;
-            this.GhiNhoCb.Location = new System.Drawing.Point(64, 156);
+            this.GhiNhoCb.Location = new System.Drawing.Point(50, 266);
             this.GhiNhoCb.Name = "GhiNhoCb";
             this.GhiNhoCb.Size = new System.Drawing.Size(181, 25);
-            this.GhiNhoCb.TabIndex = 20;
+            this.GhiNhoCb.TabIndex = 29;
             this.GhiNhoCb.Text = "Ghi nhớ đăng nhập";
             this.GhiNhoCb.UseVisualStyleBackColor = true;
             // 
@@ -134,10 +136,10 @@
             // 
             this.DangNhapBtn.BackColor = System.Drawing.Color.Yellow;
             this.DangNhapBtn.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.DangNhapBtn.Location = new System.Drawing.Point(274, 182);
+            this.DangNhapBtn.Location = new System.Drawing.Point(260, 292);
             this.DangNhapBtn.Name = "DangNhapBtn";
             this.DangNhapBtn.Size = new System.Drawing.Size(164, 43);
-            this.DangNhapBtn.TabIndex = 19;
+            this.DangNhapBtn.TabIndex = 28;
             this.DangNhapBtn.Text = "Đăng nhập";
             this.DangNhapBtn.UseVisualStyleBackColor = false;
             this.DangNhapBtn.Click += new System.EventHandler(this.DangNhapBtn_Click);
@@ -146,38 +148,48 @@
             // 
             this.metroLabel3.AutoSize = true;
             this.metroLabel3.FontWeight = MetroFramework.MetroLabelWeight.Regular;
-            this.metroLabel3.Location = new System.Drawing.Point(64, 116);
+            this.metroLabel3.Location = new System.Drawing.Point(50, 226);
             this.metroLabel3.Name = "metroLabel3";
             this.metroLabel3.Size = new System.Drawing.Size(73, 20);
-            this.metroLabel3.TabIndex = 18;
+            this.metroLabel3.TabIndex = 27;
             this.metroLabel3.Text = "Mật khẩu:";
             // 
             // metroLabel2
             // 
             this.metroLabel2.AutoSize = true;
             this.metroLabel2.FontWeight = MetroFramework.MetroLabelWeight.Regular;
-            this.metroLabel2.Location = new System.Drawing.Point(64, 67);
+            this.metroLabel2.Location = new System.Drawing.Point(50, 177);
             this.metroLabel2.Name = "metroLabel2";
             this.metroLabel2.Size = new System.Drawing.Size(74, 20);
-            this.metroLabel2.TabIndex = 17;
+            this.metroLabel2.TabIndex = 26;
             this.metroLabel2.Text = "Tài khoản:";
             // 
             // MatKhauTb
             // 
             this.MatKhauTb.FontSize = MetroFramework.MetroTextBoxSize.Medium;
-            this.MatKhauTb.Location = new System.Drawing.Point(151, 113);
+            this.MatKhauTb.Location = new System.Drawing.Point(137, 223);
             this.MatKhauTb.Name = "MatKhauTb";
             this.MatKhauTb.PasswordChar = '*';
             this.MatKhauTb.Size = new System.Drawing.Size(287, 23);
-            this.MatKhauTb.TabIndex = 16;
+            this.MatKhauTb.TabIndex = 25;
             // 
             // TaiKhoanTb
             // 
             this.TaiKhoanTb.FontSize = MetroFramework.MetroTextBoxSize.Medium;
-            this.TaiKhoanTb.Location = new System.Drawing.Point(151, 64);
+            this.TaiKhoanTb.Location = new System.Drawing.Point(137, 174);
             this.TaiKhoanTb.Name = "TaiKhoanTb";
             this.TaiKhoanTb.Size = new System.Drawing.Size(287, 23);
-            this.TaiKhoanTb.TabIndex = 15;
+            this.TaiKhoanTb.TabIndex = 24;
+            // 
+            // pictureBox3
+            // 
+            this.pictureBox3.Image = global::QuanLyDangVien.Properties.Resources.cong_binh_vat_can;
+            this.pictureBox3.Location = new System.Drawing.Point(137, 3);
+            this.pictureBox3.Name = "pictureBox3";
+            this.pictureBox3.Size = new System.Drawing.Size(223, 165);
+            this.pictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox3.TabIndex = 23;
+            this.pictureBox3.TabStop = false;
             // 
             // metroPanel1
             // 
@@ -188,7 +200,7 @@
             this.metroPanel1.HorizontalScrollbarSize = 10;
             this.metroPanel1.Location = new System.Drawing.Point(0, 0);
             this.metroPanel1.Name = "metroPanel1";
-            this.metroPanel1.Size = new System.Drawing.Size(510, 100);
+            this.metroPanel1.Size = new System.Drawing.Size(510, 72);
             this.metroPanel1.TabIndex = 0;
             this.metroPanel1.VerticalScrollbarBarColor = true;
             this.metroPanel1.VerticalScrollbarHighlightOnWheel = false;
@@ -222,6 +234,7 @@
             this.panel1.ResumeLayout(false);
             this.metroPanel2.ResumeLayout(false);
             this.metroPanel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
             this.metroPanel1.ResumeLayout(false);
             this.metroPanel1.PerformLayout();
             this.ResumeLayout(false);
@@ -234,6 +247,9 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Panel panel1;
         private MetroFramework.Controls.MetroPanel metroPanel2;
+        private MetroFramework.Controls.MetroPanel metroPanel1;
+        private MetroFramework.Controls.MetroLabel metroLabel1;
+        private System.Windows.Forms.PictureBox pictureBox3;
         private MetroFramework.Controls.MetroLink LienHe;
         private MetroFramework.Controls.MetroCheckBox GhiNhoCb;
         private System.Windows.Forms.Button DangNhapBtn;
@@ -241,7 +257,5 @@
         private MetroFramework.Controls.MetroLabel metroLabel2;
         private MetroFramework.Controls.MetroTextBox MatKhauTb;
         private MetroFramework.Controls.MetroTextBox TaiKhoanTb;
-        private MetroFramework.Controls.MetroPanel metroPanel1;
-        private MetroFramework.Controls.MetroLabel metroLabel1;
     }
 }

@@ -1,5 +1,7 @@
 ﻿using QuanLyDangVien.Attributes;
 using QuanLyDangVien.Helper;
+using QuanLyDangVien.Services;
+using QuanLyDangVien.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -156,6 +158,51 @@ namespace QuanLyDangVien
         private void LoadDataToControls()
         {
             FormHelper.LoadDataToControls(_dataObject, _controlsDictionary, _propertiesDictionary);
+            
+            // Nếu là DonVi, load danh sách đơn vị cấp dưới
+            if (_dataObject is DonVi donVi && donVi.DonViID > 0)
+            {
+                try
+                {
+                    var donViService = new DonViService();
+                    var allDonVi = donViService.GetAll();
+                    
+                    // Lấy danh sách đơn vị cấp dưới (có CapTrenID = DonViID hiện tại)
+                    var capDuoiList = allDonVi.Where(dv => dv.CapTrenID == donVi.DonViID).ToList();
+                    
+                    if (capDuoiList.Any())
+                    {
+                        string danhSachCapDuoi = string.Join(", ", capDuoiList.Select(dv => dv.TenDonVi));
+                        donVi.DanhSachCapDuoi = danhSachCapDuoi;
+                        
+                        // Cập nhật lại control nếu có
+                        if (_controlsDictionary.ContainsKey("DanhSachCapDuoi"))
+                        {
+                            var control = _controlsDictionary["DanhSachCapDuoi"];
+                            if (control is TextBox textBox)
+                            {
+                                textBox.Text = danhSachCapDuoi;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        donVi.DanhSachCapDuoi = "(Không có)";
+                        if (_controlsDictionary.ContainsKey("DanhSachCapDuoi"))
+                        {
+                            var control = _controlsDictionary["DanhSachCapDuoi"];
+                            if (control is TextBox textBox)
+                            {
+                                textBox.Text = "(Không có)";
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Lỗi khi load danh sách đơn vị cấp dưới: {ex.Message}");
+                }
+            }
         }
 
         public object GetData()

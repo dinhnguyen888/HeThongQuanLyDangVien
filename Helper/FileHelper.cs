@@ -200,6 +200,51 @@ namespace QuanLyDangVien.Helper
         }
 
         /// <summary>
+        /// Lấy đường dẫn đầy đủ đến thư mục lưu file Sinh hoạt chi bộ
+        /// </summary>
+        public static string GetSinhHoatChiBoFolder()
+        {
+            string serverBase = GetServerBaseFolder();
+            return Path.Combine(serverBase, "Server", "SinhHoatChiBo");
+        }
+
+        /// <summary>
+        /// Lưu file nghị quyết sinh hoạt chi bộ vào thư mục
+        /// </summary>
+        /// <param name="sourceFilePath">Đường dẫn file nguồn</param>
+        /// <returns>Đường dẫn tương đối từ Server (ví dụ: Server\SinhHoatChiBo\filename.pdf)</returns>
+        public static string SaveSinhHoatChiBoFile(string sourceFilePath)
+        {
+            try
+            {
+                string folder = GetSinhHoatChiBoFolder();
+                
+                // Tạo thư mục nếu chưa có
+                if (!Directory.Exists(folder))
+                {
+                    Directory.CreateDirectory(folder);
+                }
+
+                // Tạo tên file mới với timestamp
+                string fileName = Path.GetFileName(sourceFilePath);
+                string fileExtension = Path.GetExtension(fileName);
+                string fileNameWithoutExt = Path.GetFileNameWithoutExtension(fileName);
+                string newFileName = $"{fileNameWithoutExt}_{DateTime.Now:yyyyMMdd_HHmmss}{fileExtension}";
+                string destinationPath = Path.Combine(folder, newFileName);
+
+                // Copy file
+                File.Copy(sourceFilePath, destinationPath, true);
+
+                // Trả về đường dẫn tương đối
+                return Path.Combine("Server", "SinhHoatChiBo", newFileName);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Lỗi khi lưu file sinh hoạt chi bộ: {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
         /// Lưu file hồ sơ đảng viên vào thư mục
         /// </summary>
         /// <param name="sourceFilePath">Đường dẫn file nguồn</param>
@@ -299,6 +344,123 @@ namespace QuanLyDangVien.Helper
                 // Log lỗi nhưng không throw exception để không ảnh hưởng đến việc xóa record
                 System.Diagnostics.Debug.WriteLine($"Lỗi khi xóa file {relativePath}: {ex.Message}");
                 return false;
+            }
+        }
+
+        /// <summary>
+        /// Lấy đường dẫn đầy đủ đến thư mục Server
+        /// </summary>
+        public static string GetServerFolder()
+        {
+            string serverBase = GetServerBaseFolder();
+            return Path.Combine(serverBase, "Server");
+        }
+
+        /// <summary>
+        /// Lấy đường dẫn đầy đủ đến thư mục lưu file Tài liệu
+        /// </summary>
+        public static string GetTaiLieuFolder()
+        {
+            string serverBase = GetServerBaseFolder();
+            return Path.Combine(serverBase, "Server", "TaiLieu");
+        }
+
+        /// <summary>
+        /// Lấy đường dẫn đầy đủ đến thư mục lưu file Văn bản chi bộ
+        /// </summary>
+        public static string GetVanBanChiBoFolder()
+        {
+            string serverBase = GetServerBaseFolder();
+            return Path.Combine(serverBase, "Server", "VanBanChiBo");
+        }
+
+        /// <summary>
+        /// Lưu file tài liệu vào thư mục
+        /// </summary>
+        /// <param name="sourceFilePath">Đường dẫn file nguồn</param>
+        /// <param name="subFolder">Thư mục con (ví dụ: "VanBan", "TaiLieuHuongDan")</param>
+        /// <returns>Đường dẫn tương đối từ Server (ví dụ: Server\TaiLieu\VanBan\filename.pdf)</returns>
+        public static string SaveTaiLieuFile(string sourceFilePath, string subFolder = "")
+        {
+            try
+            {
+                string folder = GetTaiLieuFolder();
+                
+                // Thêm thư mục con nếu có
+                if (!string.IsNullOrWhiteSpace(subFolder))
+                {
+                    folder = Path.Combine(folder, subFolder);
+                }
+                
+                // Tạo thư mục nếu chưa có
+                if (!Directory.Exists(folder))
+                {
+                    Directory.CreateDirectory(folder);
+                }
+
+                // Tạo tên file mới với timestamp
+                string fileName = Path.GetFileName(sourceFilePath);
+                string fileExtension = Path.GetExtension(fileName);
+                string fileNameWithoutExt = Path.GetFileNameWithoutExtension(fileName);
+                string newFileName = $"{fileNameWithoutExt}_{DateTime.Now:yyyyMMdd_HHmmss}{fileExtension}";
+                string destinationPath = Path.Combine(folder, newFileName);
+
+                // Copy file
+                File.Copy(sourceFilePath, destinationPath, true);
+
+                // Trả về đường dẫn tương đối
+                if (!string.IsNullOrWhiteSpace(subFolder))
+                {
+                    return Path.Combine("Server", "TaiLieu", subFolder, newFileName);
+                }
+                else
+                {
+                    return Path.Combine("Server", "TaiLieu", newFileName);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Lỗi khi lưu file tài liệu: {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
+        /// Lưu file văn bản chi bộ vào thư mục
+        /// </summary>
+        /// <param name="sourceFilePath">Đường dẫn file nguồn</param>
+        /// <param name="donViID">ID đơn vị (tạo thư mục con theo DonViID)</param>
+        /// <returns>Đường dẫn tương đối từ Server (ví dụ: Server\VanBanChiBo\1\filename.pdf)</returns>
+        public static string SaveVanBanChiBoFile(string sourceFilePath, int donViID)
+        {
+            try
+            {
+                string folder = GetVanBanChiBoFolder();
+                
+                // Thêm thư mục con theo DonViID
+                folder = Path.Combine(folder, donViID.ToString());
+                
+                // Tạo thư mục nếu chưa có
+                if (!Directory.Exists(folder))
+                {
+                    Directory.CreateDirectory(folder);
+                }
+
+                // Tạo tên file mới với timestamp
+                string fileName = Path.GetFileName(sourceFilePath);
+                string fileExtension = Path.GetExtension(fileName);
+                string fileNameWithoutExt = Path.GetFileNameWithoutExtension(fileName);
+                string newFileName = $"{fileNameWithoutExt}_{DateTime.Now:yyyyMMdd_HHmmss}{fileExtension}";
+                string destinationPath = Path.Combine(folder, newFileName);
+
+                // Copy file
+                File.Copy(sourceFilePath, destinationPath, true);
+
+                // Trả về đường dẫn tương đối
+                return Path.Combine("Server", "VanBanChiBo", donViID.ToString(), newFileName);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Lỗi khi lưu file văn bản chi bộ: {ex.Message}", ex);
             }
         }
     }

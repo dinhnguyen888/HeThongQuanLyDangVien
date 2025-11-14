@@ -32,11 +32,27 @@
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.panel1 = new System.Windows.Forms.Panel();
             this.metroTile1 = new MetroFramework.Controls.MetroTile();
-            this.TimKiemBtn = new MetroFramework.Controls.MetroButton();
+            this.TimKiemBtn = new System.Windows.Forms.Button();
             this.TimTb = new MetroFramework.Controls.MetroTextBox();
             this.DoiTuongCb = new MetroFramework.Controls.MetroComboBox();
+            this.CapBacCb = new MetroFramework.Controls.MetroComboBox();
+            this.TrinhDoCb = new MetroFramework.Controls.MetroComboBox();
+            this.LoaiDangVienCb = new MetroFramework.Controls.MetroComboBox();
+            this.TrangThaiCb = new MetroFramework.Controls.MetroComboBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.DangVienGridView = new System.Windows.Forms.DataGridView();
+            this.ChucNang = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.metroLabel2 = new MetroFramework.Controls.MetroLabel();
+            this.SoluongCb = new MetroFramework.Controls.MetroComboBox();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.button2 = new System.Windows.Forms.Button();
+            this.metroLabel1 = new MetroFramework.Controls.MetroLabel();
+            this.button1 = new System.Windows.Forms.Button();
+            this.XoaNhieuBtn = new System.Windows.Forms.Button();
+            this.ThemBtn = new System.Windows.Forms.Button();
+            this.XuatBtn = new System.Windows.Forms.Button();
+            this.metroTile3 = new MetroFramework.Controls.MetroTile();
             this.dangVienIDDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.hoTenDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.soTheDangVienDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -47,26 +63,14 @@
             this.ngayChinhThucDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.loaiDangVienDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.trangThaiDataGridViewCheckBoxColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.ChucNang = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.dangVienBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.panel4 = new System.Windows.Forms.Panel();
-            this.panel3 = new System.Windows.Forms.Panel();
-            this.button2 = new System.Windows.Forms.Button();
-            this.metroLabel1 = new MetroFramework.Controls.MetroLabel();
-            this.button1 = new System.Windows.Forms.Button();
-            this.XoaNhieuBtn = new System.Windows.Forms.Button();
-            this.ThemBtn = new System.Windows.Forms.Button();
-            this.XuatBtn = new System.Windows.Forms.Button();
-            this.metroTile3 = new MetroFramework.Controls.MetroTile();
-            this.metroLabel2 = new MetroFramework.Controls.MetroLabel();
-            this.SoluongCb = new MetroFramework.Controls.MetroComboBox();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DangVienGridView)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dangVienBindingSource)).BeginInit();
             this.panel4.SuspendLayout();
             this.panel3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dangVienBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -105,6 +109,10 @@
             this.panel1.Controls.Add(this.TimKiemBtn);
             this.panel1.Controls.Add(this.TimTb);
             this.panel1.Controls.Add(this.DoiTuongCb);
+            this.panel1.Controls.Add(this.CapBacCb);
+            this.panel1.Controls.Add(this.TrinhDoCb);
+            this.panel1.Controls.Add(this.LoaiDangVienCb);
+            this.panel1.Controls.Add(this.TrangThaiCb);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(3, 3);
             this.panel1.Name = "panel1";
@@ -127,20 +135,26 @@
             // 
             // TimKiemBtn
             // 
-            this.TimKiemBtn.Location = new System.Drawing.Point(798, 44);
+            this.TimKiemBtn.BackColor = System.Drawing.Color.Red;
+            this.TimKiemBtn.FlatAppearance.BorderSize = 0;
+            this.TimKiemBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.TimKiemBtn.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.TimKiemBtn.ForeColor = System.Drawing.Color.White;
+            this.TimKiemBtn.Location = new System.Drawing.Point(320, 44);
             this.TimKiemBtn.Name = "TimKiemBtn";
-            this.TimKiemBtn.Size = new System.Drawing.Size(137, 35);
+            this.TimKiemBtn.Size = new System.Drawing.Size(120, 35);
             this.TimKiemBtn.TabIndex = 24;
             this.TimKiemBtn.Text = "Tìm kiếm";
+            this.TimKiemBtn.UseVisualStyleBackColor = false;
             this.TimKiemBtn.Click += new System.EventHandler(this.TimKiemBtn_Click);
             // 
             // TimTb
             // 
             this.TimTb.FontSize = MetroFramework.MetroTextBoxSize.Tall;
-            this.TimTb.Location = new System.Drawing.Point(2, 44);
+            this.TimTb.Location = new System.Drawing.Point(10, 44);
             this.TimTb.Name = "TimTb";
             this.TimTb.PromptText = "Nhập từ khóa tìm kiếm";
-            this.TimTb.Size = new System.Drawing.Size(436, 35);
+            this.TimTb.Size = new System.Drawing.Size(300, 35);
             this.TimTb.TabIndex = 23;
             // 
             // DoiTuongCb
@@ -148,11 +162,55 @@
             this.DoiTuongCb.FontSize = MetroFramework.MetroLinkSize.Tall;
             this.DoiTuongCb.FormattingEnabled = true;
             this.DoiTuongCb.ItemHeight = 29;
-            this.DoiTuongCb.Location = new System.Drawing.Point(444, 44);
+            this.DoiTuongCb.Location = new System.Drawing.Point(10, 85);
             this.DoiTuongCb.Name = "DoiTuongCb";
-            this.DoiTuongCb.Size = new System.Drawing.Size(348, 35);
+            this.DoiTuongCb.Size = new System.Drawing.Size(100, 35);
             this.DoiTuongCb.TabIndex = 18;
             this.DoiTuongCb.SelectedIndexChanged += new System.EventHandler(this.DoiTuongCb_SelectedIndexChanged);
+            // 
+            // CapBacCb
+            // 
+            this.CapBacCb.FontSize = MetroFramework.MetroLinkSize.Tall;
+            this.CapBacCb.FormattingEnabled = true;
+            this.CapBacCb.ItemHeight = 29;
+            this.CapBacCb.Location = new System.Drawing.Point(120, 85);
+            this.CapBacCb.Name = "CapBacCb";
+            this.CapBacCb.Size = new System.Drawing.Size(130, 35);
+            this.CapBacCb.TabIndex = 19;
+            this.CapBacCb.SelectedIndexChanged += new System.EventHandler(this.CapBacCb_SelectedIndexChanged);
+            // 
+            // TrinhDoCb
+            // 
+            this.TrinhDoCb.FontSize = MetroFramework.MetroLinkSize.Tall;
+            this.TrinhDoCb.FormattingEnabled = true;
+            this.TrinhDoCb.ItemHeight = 29;
+            this.TrinhDoCb.Location = new System.Drawing.Point(260, 85);
+            this.TrinhDoCb.Name = "TrinhDoCb";
+            this.TrinhDoCb.Size = new System.Drawing.Size(180, 35);
+            this.TrinhDoCb.TabIndex = 20;
+            this.TrinhDoCb.SelectedIndexChanged += new System.EventHandler(this.TrinhDoCb_SelectedIndexChanged);
+            // 
+            // LoaiDangVienCb
+            // 
+            this.LoaiDangVienCb.FontSize = MetroFramework.MetroLinkSize.Tall;
+            this.LoaiDangVienCb.FormattingEnabled = true;
+            this.LoaiDangVienCb.ItemHeight = 29;
+            this.LoaiDangVienCb.Location = new System.Drawing.Point(450, 85);
+            this.LoaiDangVienCb.Name = "LoaiDangVienCb";
+            this.LoaiDangVienCb.Size = new System.Drawing.Size(140, 35);
+            this.LoaiDangVienCb.TabIndex = 21;
+            this.LoaiDangVienCb.SelectedIndexChanged += new System.EventHandler(this.LoaiDangVienCb_SelectedIndexChanged);
+            // 
+            // TrangThaiCb
+            // 
+            this.TrangThaiCb.FontSize = MetroFramework.MetroLinkSize.Tall;
+            this.TrangThaiCb.FormattingEnabled = true;
+            this.TrangThaiCb.ItemHeight = 29;
+            this.TrangThaiCb.Location = new System.Drawing.Point(600, 85);
+            this.TrangThaiCb.Name = "TrangThaiCb";
+            this.TrangThaiCb.Size = new System.Drawing.Size(160, 35);
+            this.TrangThaiCb.TabIndex = 22;
+            this.TrangThaiCb.SelectedIndexChanged += new System.EventHandler(this.TrangThaiCb_SelectedIndexChanged);
             // 
             // panel2
             // 
@@ -174,7 +232,6 @@
             this.DangVienGridView.BackgroundColor = System.Drawing.SystemColors.ActiveCaption;
             this.DangVienGridView.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.DangVienGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.DangVienGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.DangVienGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.dangVienIDDataGridViewTextBoxColumn,
             this.hoTenDataGridViewTextBoxColumn,
@@ -193,8 +250,165 @@
             this.DangVienGridView.Name = "DangVienGridView";
             this.DangVienGridView.RowHeadersWidth = 51;
             this.DangVienGridView.RowTemplate.Height = 24;
+            this.DangVienGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.DangVienGridView.Size = new System.Drawing.Size(1120, 437);
             this.DangVienGridView.TabIndex = 7;
+            // 
+            // ChucNang
+            // 
+            this.ChucNang.HeaderText = "Chức năng";
+            this.ChucNang.Items.AddRange(new object[] {
+            "Chi Tiết Đảng Viên",
+            "Sửa Thông Tin ",
+            "Xóa Đảng Viên"});
+            this.ChucNang.MinimumWidth = 6;
+            this.ChucNang.Name = "ChucNang";
+            // 
+            // panel4
+            // 
+            this.panel4.Controls.Add(this.metroLabel2);
+            this.panel4.Controls.Add(this.SoluongCb);
+            this.panel4.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel4.Location = new System.Drawing.Point(0, 121);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(1120, 36);
+            this.panel4.TabIndex = 0;
+            // 
+            // metroLabel2
+            // 
+            this.metroLabel2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.metroLabel2.AutoSize = true;
+            this.metroLabel2.FontSize = MetroFramework.MetroLabelSize.Tall;
+            this.metroLabel2.Location = new System.Drawing.Point(840, 8);
+            this.metroLabel2.Name = "metroLabel2";
+            this.metroLabel2.Size = new System.Drawing.Size(71, 25);
+            this.metroLabel2.TabIndex = 7;
+            this.metroLabel2.Text = "Hiển thị";
+            // 
+            // SoluongCb
+            // 
+            this.SoluongCb.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.SoluongCb.FontSize = MetroFramework.MetroLinkSize.Tall;
+            this.SoluongCb.FormattingEnabled = true;
+            this.SoluongCb.ItemHeight = 29;
+            this.SoluongCb.Location = new System.Drawing.Point(918, 1);
+            this.SoluongCb.Name = "SoluongCb";
+            this.SoluongCb.Size = new System.Drawing.Size(200, 35);
+            this.SoluongCb.TabIndex = 8;
+            this.SoluongCb.SelectedIndexChanged += new System.EventHandler(this.SoluongCb_SelectedIndexChanged);
+            // 
+            // panel3
+            // 
+            this.panel3.Controls.Add(this.button2);
+            this.panel3.Controls.Add(this.metroLabel1);
+            this.panel3.Controls.Add(this.button1);
+            this.panel3.Controls.Add(this.XoaNhieuBtn);
+            this.panel3.Controls.Add(this.ThemBtn);
+            this.panel3.Controls.Add(this.XuatBtn);
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel3.Location = new System.Drawing.Point(0, 30);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(1120, 91);
+            this.panel3.TabIndex = 1;
+            // 
+            // button2
+            // 
+            this.button2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(117)))), ((int)(((byte)(125)))));
+            this.button2.FlatAppearance.BorderSize = 0;
+            this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button2.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button2.ForeColor = System.Drawing.Color.White;
+            this.button2.Location = new System.Drawing.Point(697, 6);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(183, 43);
+            this.button2.TabIndex = 21;
+            this.button2.Text = "Chuyển sinh hoạt Đảng";
+            this.button2.UseVisualStyleBackColor = false;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // metroLabel1
+            // 
+            this.metroLabel1.AutoSize = true;
+            this.metroLabel1.FontSize = MetroFramework.MetroLabelSize.Tall;
+            this.metroLabel1.Location = new System.Drawing.Point(9, 54);
+            this.metroLabel1.Name = "metroLabel1";
+            this.metroLabel1.Size = new System.Drawing.Size(1051, 25);
+            this.metroLabel1.TabIndex = 20;
+            this.metroLabel1.Text = "*Chọn hàng Đảng viên cần thao tác bằng cách nhấp vào ô đầu tiên của hàng, sau đó " +
+    "sử dụng các nút chức năng phía trên để thực hiện.";
+            // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(167)))), ((int)(((byte)(69)))));
+            this.button1.FlatAppearance.BorderSize = 0;
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button1.ForeColor = System.Drawing.Color.White;
+            this.button1.Location = new System.Drawing.Point(431, 6);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(243, 43);
+            this.button1.TabIndex = 19;
+            this.button1.Text = "Thêm hồ sơ đảng viên";
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // XoaNhieuBtn
+            // 
+            this.XoaNhieuBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(53)))), ((int)(((byte)(69)))));
+            this.XoaNhieuBtn.FlatAppearance.BorderSize = 0;
+            this.XoaNhieuBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.XoaNhieuBtn.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.XoaNhieuBtn.ForeColor = System.Drawing.Color.White;
+            this.XoaNhieuBtn.Location = new System.Drawing.Point(310, 6);
+            this.XoaNhieuBtn.Name = "XoaNhieuBtn";
+            this.XoaNhieuBtn.Size = new System.Drawing.Size(107, 43);
+            this.XoaNhieuBtn.TabIndex = 16;
+            this.XoaNhieuBtn.Text = "Xóa nhiều";
+            this.XoaNhieuBtn.UseVisualStyleBackColor = false;
+            this.XoaNhieuBtn.Click += new System.EventHandler(this.XoaNhieuBtn_Click);
+            // 
+            // ThemBtn
+            // 
+            this.ThemBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(174)))), ((int)(((byte)(219)))));
+            this.ThemBtn.FlatAppearance.BorderSize = 0;
+            this.ThemBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.ThemBtn.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ThemBtn.ForeColor = System.Drawing.Color.White;
+            this.ThemBtn.Location = new System.Drawing.Point(189, 6);
+            this.ThemBtn.Name = "ThemBtn";
+            this.ThemBtn.Size = new System.Drawing.Size(107, 43);
+            this.ThemBtn.TabIndex = 15;
+            this.ThemBtn.Text = "Thêm mới";
+            this.ThemBtn.UseVisualStyleBackColor = false;
+            this.ThemBtn.Click += new System.EventHandler(this.ThemBtn_Click);
+            // 
+            // XuatBtn
+            // 
+            this.XuatBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(193)))), ((int)(((byte)(7)))));
+            this.XuatBtn.FlatAppearance.BorderSize = 0;
+            this.XuatBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.XuatBtn.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.XuatBtn.ForeColor = System.Drawing.Color.White;
+            this.XuatBtn.Location = new System.Drawing.Point(9, 6);
+            this.XuatBtn.Name = "XuatBtn";
+            this.XuatBtn.Size = new System.Drawing.Size(156, 43);
+            this.XuatBtn.TabIndex = 14;
+            this.XuatBtn.Text = "Xuất danh sách";
+            this.XuatBtn.UseVisualStyleBackColor = false;
+            this.XuatBtn.Click += new System.EventHandler(this.XuatBtn_Click);
+            // 
+            // metroTile3
+            // 
+            this.metroTile3.Dock = System.Windows.Forms.DockStyle.Top;
+            this.metroTile3.Location = new System.Drawing.Point(0, 0);
+            this.metroTile3.Name = "metroTile3";
+            this.metroTile3.Size = new System.Drawing.Size(1120, 30);
+            this.metroTile3.Style = MetroFramework.MetroColorStyle.Red;
+            this.metroTile3.TabIndex = 0;
+            this.metroTile3.Text = "Thao tác";
+            this.metroTile3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.metroTile3.TileTextFontSize = MetroFramework.MetroTileTextSize.Tall;
+            this.metroTile3.TileTextFontWeight = MetroFramework.MetroTileTextWeight.Regular;
             // 
             // dangVienIDDataGridViewTextBoxColumn
             // 
@@ -266,151 +480,9 @@
             this.trangThaiDataGridViewCheckBoxColumn.MinimumWidth = 6;
             this.trangThaiDataGridViewCheckBoxColumn.Name = "trangThaiDataGridViewCheckBoxColumn";
             // 
-            // ChucNang
-            // 
-            this.ChucNang.HeaderText = "Chức năng";
-            this.ChucNang.Items.AddRange(new object[] {
-            "Chi Tiết Đảng Viên",
-            "Sửa Thông Tin ",
-            "Xóa Đảng Viên"});
-            this.ChucNang.MinimumWidth = 6;
-            this.ChucNang.Name = "ChucNang";
-            // 
             // dangVienBindingSource
             // 
             this.dangVienBindingSource.DataSource = typeof(QuanLyDangVien.Models.DangVien);
-            // 
-            // panel4
-            // 
-            this.panel4.Controls.Add(this.metroLabel2);
-            this.panel4.Controls.Add(this.SoluongCb);
-            this.panel4.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel4.Location = new System.Drawing.Point(0, 121);
-            this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(1120, 36);
-            this.panel4.TabIndex = 0;
-            // 
-            // panel3
-            // 
-            this.panel3.Controls.Add(this.button2);
-            this.panel3.Controls.Add(this.metroLabel1);
-            this.panel3.Controls.Add(this.button1);
-            this.panel3.Controls.Add(this.XoaNhieuBtn);
-            this.panel3.Controls.Add(this.ThemBtn);
-            this.panel3.Controls.Add(this.XuatBtn);
-            this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel3.Location = new System.Drawing.Point(0, 30);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(1120, 91);
-            this.panel3.TabIndex = 1;
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(697, 6);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(183, 35);
-            this.button2.TabIndex = 21;
-            this.button2.Text = "Chuyển sinh hoạt Đảng";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // metroLabel1
-            // 
-            this.metroLabel1.AutoSize = true;
-            this.metroLabel1.FontSize = MetroFramework.MetroLabelSize.Tall;
-            this.metroLabel1.Location = new System.Drawing.Point(9, 54);
-            this.metroLabel1.Name = "metroLabel1";
-            this.metroLabel1.Size = new System.Drawing.Size(1051, 25);
-            this.metroLabel1.TabIndex = 20;
-            this.metroLabel1.Text = "*Chọn hàng Đảng viên cần thao tác bằng cách nhấp vào ô đầu tiên của hàng, sau đó " +
-    "sử dụng các nút chức năng phía trên để thực hiện.";
-            // 
-            // button1
-            // 
-            this.button1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.button1.Font = new System.Drawing.Font("Arial", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.button1.Location = new System.Drawing.Point(431, 6);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(243, 35);
-            this.button1.TabIndex = 19;
-            this.button1.Text = "Thêm hồ sơ đảng viên";
-            this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // XoaNhieuBtn
-            // 
-            this.XoaNhieuBtn.BackColor = System.Drawing.Color.Red;
-            this.XoaNhieuBtn.Font = new System.Drawing.Font("Arial", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.XoaNhieuBtn.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.XoaNhieuBtn.Location = new System.Drawing.Point(310, 6);
-            this.XoaNhieuBtn.Name = "XoaNhieuBtn";
-            this.XoaNhieuBtn.Size = new System.Drawing.Size(100, 35);
-            this.XoaNhieuBtn.TabIndex = 16;
-            this.XoaNhieuBtn.Text = "Xóa nhiều ";
-            this.XoaNhieuBtn.UseVisualStyleBackColor = false;
-            this.XoaNhieuBtn.Click += new System.EventHandler(this.XoaNhieuBtn_Click);
-            // 
-            // ThemBtn
-            // 
-            this.ThemBtn.BackColor = System.Drawing.Color.SteelBlue;
-            this.ThemBtn.Font = new System.Drawing.Font("Arial", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ThemBtn.ForeColor = System.Drawing.SystemColors.Control;
-            this.ThemBtn.Location = new System.Drawing.Point(189, 6);
-            this.ThemBtn.Name = "ThemBtn";
-            this.ThemBtn.Size = new System.Drawing.Size(100, 35);
-            this.ThemBtn.TabIndex = 15;
-            this.ThemBtn.Text = "Thêm mới";
-            this.ThemBtn.UseVisualStyleBackColor = false;
-            this.ThemBtn.Click += new System.EventHandler(this.ThemBtn_Click);
-            // 
-            // XuatBtn
-            // 
-            this.XuatBtn.BackColor = System.Drawing.Color.Orange;
-            this.XuatBtn.Font = new System.Drawing.Font("Arial", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.XuatBtn.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.XuatBtn.Location = new System.Drawing.Point(9, 6);
-            this.XuatBtn.Name = "XuatBtn";
-            this.XuatBtn.Size = new System.Drawing.Size(156, 35);
-            this.XuatBtn.TabIndex = 14;
-            this.XuatBtn.Text = "Xuất danh sách";
-            this.XuatBtn.UseVisualStyleBackColor = false;
-            // 
-            // metroTile3
-            // 
-            this.metroTile3.Dock = System.Windows.Forms.DockStyle.Top;
-            this.metroTile3.Location = new System.Drawing.Point(0, 0);
-            this.metroTile3.Name = "metroTile3";
-            this.metroTile3.Size = new System.Drawing.Size(1120, 30);
-            this.metroTile3.Style = MetroFramework.MetroColorStyle.Red;
-            this.metroTile3.TabIndex = 0;
-            this.metroTile3.Text = "Thao tác";
-            this.metroTile3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.metroTile3.TileTextFontSize = MetroFramework.MetroTileTextSize.Tall;
-            this.metroTile3.TileTextFontWeight = MetroFramework.MetroTileTextWeight.Regular;
-            // 
-            // metroLabel2
-            // 
-            this.metroLabel2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.metroLabel2.AutoSize = true;
-            this.metroLabel2.FontSize = MetroFramework.MetroLabelSize.Tall;
-            this.metroLabel2.Location = new System.Drawing.Point(840, 8);
-            this.metroLabel2.Name = "metroLabel2";
-            this.metroLabel2.Size = new System.Drawing.Size(71, 25);
-            this.metroLabel2.TabIndex = 7;
-            this.metroLabel2.Text = "Hiển thị";
-            // 
-            // SoluongCb
-            // 
-            this.SoluongCb.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.SoluongCb.FontSize = MetroFramework.MetroLinkSize.Tall;
-            this.SoluongCb.FormattingEnabled = true;
-            this.SoluongCb.ItemHeight = 29;
-            this.SoluongCb.Location = new System.Drawing.Point(918, 1);
-            this.SoluongCb.Name = "SoluongCb";
-            this.SoluongCb.Size = new System.Drawing.Size(200, 35);
-            this.SoluongCb.TabIndex = 8;
-            this.SoluongCb.SelectedIndexChanged += new System.EventHandler(this.SoluongCb_SelectedIndexChanged);
             // 
             // UserControlQuanLyDangVien
             // 
@@ -423,11 +495,11 @@
             this.panel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.DangVienGridView)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dangVienBindingSource)).EndInit();
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dangVienBindingSource)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -437,9 +509,13 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
-        private MetroFramework.Controls.MetroButton TimKiemBtn;
+        private System.Windows.Forms.Button TimKiemBtn;
         private MetroFramework.Controls.MetroTextBox TimTb;
         private MetroFramework.Controls.MetroComboBox DoiTuongCb;
+        private MetroFramework.Controls.MetroComboBox CapBacCb;
+        private MetroFramework.Controls.MetroComboBox TrinhDoCb;
+        private MetroFramework.Controls.MetroComboBox LoaiDangVienCb;
+        private MetroFramework.Controls.MetroComboBox TrangThaiCb;
         private MetroFramework.Controls.MetroTile metroTile3;
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Button button1;

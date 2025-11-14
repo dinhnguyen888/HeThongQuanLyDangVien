@@ -56,6 +56,8 @@ namespace QuanLyDangVien
 
             // Load dữ liệu vào controls
             LoadDataToControls();
+            // Thêm TextBox "Giá trị cũ" trước các ComboBox
+            AddOldValueTextBoxesForComboBoxes();
         }
 
         private void TaoDynamicControls()
@@ -175,7 +177,181 @@ namespace QuanLyDangVien
             this.MinimumSize = new Size(800, 600);
         }
 
-   
+        /// <summary>
+        /// Thêm TextBox read-only "Giá trị cũ: {Data}" trước ComboBox
+        /// </summary>
+        private void AddOldValueTextBoxesForComboBoxes()
+        {
+            try
+            {
+                foreach (var kvp in _controlsDictionary)
+                {
+                    string propertyName = kvp.Key;
+                    Control inputControl = kvp.Value;
+
+                    var property = _propertiesDictionary.ContainsKey(propertyName)
+                        ? _propertiesDictionary[propertyName]
+                        : null;
+                    if (property == null) continue;
+
+                    var comboBox = inputControl as ComboBox;
+                    if (comboBox == null) continue;
+
+                    object originalValue = property.GetValue(_dataObject);
+                    string displayText = string.Empty;
+
+                    if (originalValue != null)
+                    {
+                        if (!string.IsNullOrEmpty(comboBox.ValueMember) &&
+                            !string.IsNullOrEmpty(comboBox.DisplayMember) &&
+                            comboBox.DataSource is System.Collections.IEnumerable list)
+                        {
+                            foreach (var item in list)
+                            {
+                                var valProp = item.GetType().GetProperty(comboBox.ValueMember);
+                                var dispProp = item.GetType().GetProperty(comboBox.DisplayMember);
+                                if (valProp != null && dispProp != null)
+                                {
+                                    var val = valProp.GetValue(item, null);
+                                    if (string.Equals(Convert.ToString(val), Convert.ToString(originalValue), StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        displayText = Convert.ToString(dispProp.GetValue(item, null));
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        if (string.IsNullOrWhiteSpace(displayText))
+                        {
+                            displayText = Convert.ToString(originalValue);
+                        }
+                    }
+
+                    var parent = comboBox.Parent;
+                    if (parent != null)
+                    {
+                        int comboBoxX = comboBox.Left;
+                        int comboBoxY = comboBox.Top;
+                        int comboBoxWidth = comboBox.Width;
+                        int comboBoxHeight = comboBox.Height;
+
+                        // Tạo TextBox read-only hiển thị "Giá trị cũ: {Data}" với cùng chiều cao ComboBox
+                        TextBox txtOldValue = new TextBox
+                        {
+                            ReadOnly = true,
+                            Text = $"Giá trị cũ: {displayText}",
+                            Font = new Font("Arial", 12, FontStyle.Regular),
+                            BackColor = Color.FromArgb(240, 240, 240), // Màu nền xám nhạt để thể hiện read-only
+                            BorderStyle = BorderStyle.FixedSingle,
+                            Width = 250, // Độ rộng cố định
+                            Height = comboBoxHeight  // Cùng chiều cao với ComboBox
+                        };
+
+                        // Đặt vị trí TextBox (bên trái ComboBox, cùng vị trí Y)
+                        txtOldValue.Location = new Point(comboBoxX, comboBoxY);
+                        parent.Controls.Add(txtOldValue);
+
+                        // Di chuyển ComboBox sang phải và điều chỉnh độ rộng
+                        int spacing = 10; // Khoảng cách giữa TextBox và ComboBox
+                        int comboBoxNewWidth = comboBoxWidth - txtOldValue.Width - spacing;
+
+                        // Đảm bảo ComboBox không quá nhỏ
+                        if (comboBoxNewWidth < 150)
+                        {
+                            comboBoxNewWidth = 150;
+                        }
+
+                        comboBox.Left = comboBoxX + txtOldValue.Width + spacing;
+                        comboBox.Width = comboBoxNewWidth;
+                    }
+
+                    // Thử set SelectedValue cho ComboBox dựa trên giá trị từ TextBox
+                    if (!string.IsNullOrWhiteSpace(displayText))
+                    {
+                        TrySelectComboBoxValue(comboBox, property, displayText);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"AddOldValueTextBoxesForComboBoxes error: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Thử chọn giá trị trong ComboBox dựa trên displayText từ TextBox "Giá trị cũ"
+        /// </summary>
+        private void TrySelectComboBoxValue(ComboBox comboBox, PropertyInfo property, string displayText)
+        {
+            try
+            {
+                // Lấy ComboBoxDataAttribute từ property
+                var comboDataAttr = property.GetCustomAttribute<ComboBoxDataAttribute>();
+                if (comboDataAttr != null && comboDataAttr.Items != null)
+                {
+                    // Ưu tiên: So sánh displayText với Value của các ComboBoxItem (giá trị hiển thị)
+                    foreach (var item in comboDataAttr.Items)
+                    {
+                        string itemValue = Convert.ToString(item.Value);
+                        if (string.Equals(itemValue, displayText, StringComparison.OrdinalIgnoreCase))
+                        {
+                            // Tìm thấy match với Value, set SelectedValue = Key
+                            try
+                            {
+                                comboBox.SelectedValue = item.Key;
+                                System.Diagnostics.Debug.WriteLine($"Đã set SelectedValue = {item.Key} cho ComboBox {property.Name} (match với Value: {itemValue})");
+                                return; // Thành công, thoát
+                            }
+                            catch (Exception ex)
+                            {
+                                System.Diagnostics.Debug.WriteLine($"Lỗi khi set SelectedValue: {ex.Message}");
+                            }
+                        }
+                    }
+
+                    // Nếu không match với Value, thử so sánh với Key (trường hợp database lưu Key)
+                    foreach (var item in comboDataAttr.Items)
+                    {
+                        string itemKey = Convert.ToString(item.Key);
+                        if (string.Equals(itemKey, displayText, StringComparison.OrdinalIgnoreCase))
+                        {
+                            // Tìm thấy match với Key, set SelectedValue = Key
+                            try
+                            {
+                                comboBox.SelectedValue = item.Key;
+                                System.Diagnostics.Debug.WriteLine($"Đã set SelectedValue = {item.Key} cho ComboBox {property.Name} (match với Key: {itemKey})");
+                                return; // Thành công, thoát
+                            }
+                            catch (Exception ex)
+                            {
+                                System.Diagnostics.Debug.WriteLine($"Lỗi khi set SelectedValue: {ex.Message}");
+                            }
+                        }
+                    }
+                }
+                else if (property.PropertyType.IsEnum ||
+                         (Nullable.GetUnderlyingType(property.PropertyType)?.IsEnum ?? false))
+                {
+                    // Xử lý cho Enum
+                    Type enumType = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
+                    try
+                    {
+                        // Thử parse displayText thành enum value
+                        object enumValue = Enum.Parse(enumType, displayText, true);
+                        comboBox.SelectedValue = enumValue;
+                        System.Diagnostics.Debug.WriteLine($"Đã set SelectedValue = {enumValue} cho Enum ComboBox {property.Name}");
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Không thể parse enum từ displayText: {ex.Message}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"TrySelectComboBoxValue error: {ex.Message}");
+            }
+        }
 
         private void LoadDataToControls()
         {

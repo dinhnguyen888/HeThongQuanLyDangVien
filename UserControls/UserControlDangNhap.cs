@@ -48,7 +48,9 @@ namespace QuanLyDangVien
         private void LienHe_Click(object sender, EventArgs e)
         {
             // Mở ra một MessageBox hiển thị email, số điện thoại, Tên
-            MessageBox.Show("Email:sample@gmail.com \nSố điện thoại: 0123456789 \nTên: Mã Chung" ,"Liên hệ", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("Email: machung199@gmail.com \nSố điện thoại: 0387255530 \nTên: Bá Chung", "Liên hệ", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
+
+       
     }
 }

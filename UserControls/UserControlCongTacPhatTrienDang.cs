@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using QuanLyDangVien.Pages;
+
 namespace QuanLyDangVien
 {
     public partial class UserControlCongTacPhatTrienDang : UserControl
@@ -15,29 +16,55 @@ namespace QuanLyDangVien
         public UserControlCongTacPhatTrienDang()
         {
             InitializeComponent();
-            // gán Page QuanLyDangVienDuBi vào Panel khi khởi tạo
-            var ucDangVienDuBi = new PageQuanLyDangVienDuBi();
-            ucDangVienDuBi.Dock = DockStyle.Fill;
-            Panel.Controls.Add(ucDangVienDuBi);
-
+            
+            // Chỉ khởi tạo Page khi không ở design mode để tránh lỗi NullRef
+            if (!DesignMode)
+            {
+                // Mặc định hiển thị Page QuanLyDangVienDuBi
+                ShowQuanLyDangVienDuBi();
+            }
         }
 
         private void QuanLyDangVienDuBi_Click(object sender, EventArgs e)
         {
-            // gán Page QuanLyDangVienDuBi vào Panel
-            Panel.Controls.Clear();
-            var ucDangVienDuBi = new PageQuanLyDangVienDuBi();
-            ucDangVienDuBi.Dock = DockStyle.Fill;
-            Panel.Controls.Add(ucDangVienDuBi);
-
+            ShowQuanLyDangVienDuBi();
+            SetActiveButton(QuanLyDangVienDuBi);
         }
 
         private void TheoDoiChuyenChinhThuc_Click(object sender, EventArgs e)
         {
-            Panel.Controls.Clear();
-            var ucDangVienDuBi = new PageTheoDoiChuyenChinhThuc();
-            ucDangVienDuBi.Dock = DockStyle.Fill;
-            Panel.Controls.Add(ucDangVienDuBi);
+            ShowTheoDoiChuyenChinhThuc();
+            SetActiveButton(TheoDoiChuyenChinhThuc);
+        }
+
+        private void ShowQuanLyDangVienDuBi()
+        {
+            if (DesignMode) return;
+            
+            contentPanel.Controls.Clear();
+            var page = new PageQuanLyDangVienDuBi();
+            page.Dock = DockStyle.Fill;
+            contentPanel.Controls.Add(page);
+        }
+
+        private void ShowTheoDoiChuyenChinhThuc()
+        {
+            if (DesignMode) return;
+            
+            contentPanel.Controls.Clear();
+            var page = new PageTheoDoiChuyenChinhThuc();
+            page.Dock = DockStyle.Fill;
+            contentPanel.Controls.Add(page);
+        }
+
+        private void SetActiveButton(MetroFramework.Controls.MetroTile activeButton)
+        {
+            // Reset all buttons to default style
+            QuanLyDangVienDuBi.Style = MetroFramework.MetroColorStyle.Default;
+            TheoDoiChuyenChinhThuc.Style = MetroFramework.MetroColorStyle.Default;
+            
+            // Set active button style
+            activeButton.Style = MetroFramework.MetroColorStyle.Blue;
         }
     }
 }

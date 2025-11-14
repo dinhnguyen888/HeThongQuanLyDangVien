@@ -163,6 +163,7 @@ namespace QuanLyDangVien.Services
                     parameters.Add("@DiaChi", donVi.DiaChi);
                     parameters.Add("@Email", donVi.Email);
                     parameters.Add("@TruongDonVi", donVi.TruongDonVi);
+                    parameters.Add("@CapTrenID", donVi.CapTrenID);
                     parameters.Add("@NguoiTao", donVi.NguoiTao);
                     parameters.Add("@DonViID", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
@@ -198,6 +199,7 @@ namespace QuanLyDangVien.Services
                     parameters.Add("@DiaChi", donVi.DiaChi);
                     parameters.Add("@Email", donVi.Email);
                     parameters.Add("@TruongDonVi", donVi.TruongDonVi);
+                    parameters.Add("@CapTrenID", donVi.CapTrenID);
                     parameters.Add("@ReturnValue", dbType: DbType.Int32, direction: ParameterDirection.ReturnValue);
 
                     conn.Execute("DonVi_Update", parameters, commandType: CommandType.StoredProcedure);

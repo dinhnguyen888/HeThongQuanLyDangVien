@@ -21,16 +21,16 @@ namespace QuanLyDangVien
         {
             InitializeComponent();
 
-            tabDangNhap = new TabPage("Đăng nhập") { Name = "DangNhap" };
-            tabQuanLyQuanNhan = new TabPage("Quản lý Quân nhân") { Name = "QuanLyQuanNhan" };
-            tabHoSoDangVien = new TabPage("Hồ sơ Đảng Viên") { Name = "HoSoDangVien" };
-            tabHoSoDonVi = new TabPage("Hồ sơ Đơn Vị") { Name = "HoSoDonVi" };
-            tabChuyenSinhHoatDang = new TabPage("Chuyển Sinh Hoạt Đảng") { Name = "ChuyenSinhHoatDang" };
-            tabThiDuaKhenThuong = new TabPage("Thi Đua Khen Thưởng") { Name = "ThiDuaKhenThuong" };
-            tabCongTacPhatTrienDang = new TabPage("Công Tác Phát Triển Đảng") { Name = "CongTacPhatTrienDang" };
-            tabTaiLieu = new TabPage("Tài Liệu") { Name = "TaiLieu" };
-            tabBaoCaoThongKe = new TabPage("Báo Cáo - Thống Kê") { Name = "BaoCaoThongKe" };
-            tabQuanTriHeThong = new TabPage("Quản Trị Hệ Thống") { Name = "QuanTriHeThong" };
+            tabDangNhap = new TabPage("ĐĂNG NHẬP") { Name = "DangNhap" };
+            tabQuanLyQuanNhan = new TabPage("QUẢN LÝ QUÂN NHÂN") { Name = "QuanLyQuanNhan" };
+            tabHoSoDangVien = new TabPage("HỒ SƠ ĐẢNG VIÊN") { Name = "HoSoDangVien" };
+            tabHoSoDonVi = new TabPage("HỒ SƠ ĐƠN VỊ") { Name = "HoSoDonVi" };
+            tabChuyenSinhHoatDang = new TabPage("CHUYỂN SINH HOẠT ĐẢNG") { Name = "ChuyenSinhHoatDang" };
+            tabThiDuaKhenThuong = new TabPage("THI ĐUA KHEN THƯỞNG") { Name = "ThiDuaKhenThuong" };
+            tabCongTacPhatTrienDang = new TabPage("CÔNG TÁC PHÁT TRIỂN ĐẢNG") { Name = "CongTacPhatTrienDang" };
+            tabTaiLieu = new TabPage("TÀI LIỆU") { Name = "TaiLieu" };
+            tabBaoCaoThongKe = new TabPage("BÁO CÁO - THỐNG KÊ") { Name = "BaoCaoThongKe" };
+            tabQuanTriHeThong = new TabPage("QUẢN TRỊ HỆ THỐNG") { Name = "QuanTriHeThong" };
 
             TabControl.TabPages.Clear();
             TabControl.FontSize = MetroFramework.MetroTabControlSize.Medium;

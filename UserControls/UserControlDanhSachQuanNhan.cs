@@ -11,6 +11,15 @@ using System.Diagnostics;
 using QuanLyDangVien.Services;
 using QuanLyDangVien.Models;
 using QuanLyDangVien.DTOs;
+using MetroFramework.Controls;
+using ClosedXML.Excel;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
+using System.IO;
+using WinFormsControl = System.Windows.Forms.Control;
+using DrawingColor = System.Drawing.Color;
+using DrawingFont = System.Drawing.Font;
 
 namespace QuanLyDangVien.UserControls
 {
@@ -55,9 +64,8 @@ namespace QuanLyDangVien.UserControls
                 cboDonVi.DataSource = null;
                 cboDonVi.Items.Clear();
                 
-                // Đảm bảo ComboBox ở chế độ DropDownList và FormattingEnabled = true
-                cboDonVi.DropDownStyle = ComboBoxStyle.DropDownList;
-                cboDonVi.FormattingEnabled = true;
+                // Đảm bảo ComboBox FormattingEnabled = true
+                // MetroComboBox không có DropDownStyle property
                 
                 // Bind dữ liệu
                 cboDonVi.DataSource = _donViList;
@@ -138,16 +146,48 @@ namespace QuanLyDangVien.UserControls
                 dgvQuanNhan.ReadOnly = true;
                 dgvQuanNhan.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
                 dgvQuanNhan.MultiSelect = false;
+                dgvQuanNhan.RowHeadersVisible = false;
+                dgvQuanNhan.BackgroundColor = DrawingColor.White;
+                dgvQuanNhan.BorderStyle = BorderStyle.None;
+                dgvQuanNhan.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+                dgvQuanNhan.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+                dgvQuanNhan.EnableHeadersVisualStyles = false;
                 dgvQuanNhan.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
                 dgvQuanNhan.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
-                dgvQuanNhan.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-                dgvQuanNhan.ColumnHeadersDefaultCellStyle.Font = new Font("Arial", 9, FontStyle.Bold);
-                dgvQuanNhan.DefaultCellStyle.Font = new Font("Arial", 9);
+                
+                // Header styling - màu xanh lục
+                dgvQuanNhan.ColumnHeadersDefaultCellStyle.BackColor = DrawingColor.FromArgb(40, 167, 69); // Màu xanh lục
+                dgvQuanNhan.ColumnHeadersDefaultCellStyle.ForeColor = DrawingColor.White;
+                dgvQuanNhan.ColumnHeadersDefaultCellStyle.Font = new DrawingFont("Segoe UI", 9F, FontStyle.Bold);
+                dgvQuanNhan.ColumnHeadersDefaultCellStyle.Padding = new Padding(10, 8, 10, 8);
+                dgvQuanNhan.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.True;
+                dgvQuanNhan.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                dgvQuanNhan.ColumnHeadersDefaultCellStyle.SelectionBackColor = DrawingColor.FromArgb(40, 167, 69);
+                dgvQuanNhan.ColumnHeadersDefaultCellStyle.SelectionForeColor = DrawingColor.White;
+                dgvQuanNhan.ColumnHeadersHeight = 100; // Tăng chiều cao để hiển thị đầy đủ headerText nhiều dòng
+                dgvQuanNhan.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+                
+                // Row styling
+                dgvQuanNhan.DefaultCellStyle.Font = new DrawingFont("Segoe UI", 9F);
+                dgvQuanNhan.DefaultCellStyle.Padding = new Padding(10, 8, 10, 8);
+                dgvQuanNhan.DefaultCellStyle.SelectionBackColor = DrawingColor.FromArgb(200, 255, 200); // Màu xanh lục nhạt khi chọn
+                dgvQuanNhan.DefaultCellStyle.SelectionForeColor = DrawingColor.Black;
+                dgvQuanNhan.AlternatingRowsDefaultCellStyle.BackColor = DrawingColor.FromArgb(245, 245, 245);
+                dgvQuanNhan.AlternatingRowsDefaultCellStyle.SelectionBackColor = DrawingColor.FromArgb(200, 255, 200);
+                dgvQuanNhan.AlternatingRowsDefaultCellStyle.SelectionForeColor = DrawingColor.Black;
                 
                 // Tăng chiều cao hàng mặc định và thêm padding
-                dgvQuanNhan.RowTemplate.Height = 120; // Tăng từ 100 lên 120
-                dgvQuanNhan.DefaultCellStyle.Padding = new Padding(5, 8, 5, 8); // Tăng padding
-                dgvQuanNhan.RowTemplate.DefaultCellStyle.Padding = new Padding(5, 8, 5, 8);
+                dgvQuanNhan.RowTemplate.Height = 60;
+                dgvQuanNhan.RowTemplate.DefaultCellStyle.Padding = new Padding(10, 8, 10, 8);
+                
+                // Allow column resizing
+                dgvQuanNhan.AllowUserToResizeColumns = true;
+                
+                // Handle DataError to prevent dialog from showing
+                dgvQuanNhan.DataError += (s, e) =>
+                {
+                    e.ThrowException = false;
+                };
 
                 // Column for TT (ID) - hiển thị ở đầu tiên
                 dgvQuanNhan.Columns.Add(new DataGridViewTextBoxColumn
@@ -165,7 +205,7 @@ namespace QuanLyDangVien.UserControls
                 var colThongTinCoBan = new MultiLineDataGridViewColumn
                 {
                     Name = "ThongTinCoBan",
-                    HeaderText = "Họ tên / Ngày sinh / SHSQ / BHYT / CCCD",
+                    HeaderText = "Họ tên\nNgày sinh\nSHSQ\nBHYT\nCCCD",
                     Width = 200,
                     MinimumWidth = 180
                 };
@@ -175,7 +215,7 @@ namespace QuanLyDangVien.UserControls
                 var colCapBacChucVu = new MultiLineDataGridViewColumn
                 {
                     Name = "CapBacChucVu",
-                    HeaderText = "Cấp bậc / Chức vụ / Đơn vị",
+                    HeaderText = "Cấp bậc\nChức vụ\nĐơn vị",
                     Width = 150,
                     MinimumWidth = 130
                 };
@@ -185,7 +225,7 @@ namespace QuanLyDangVien.UserControls
                 var colThongTinDang = new MultiLineDataGridViewColumn
                 {
                     Name = "ThongTinDang",
-                    HeaderText = "Nhập ngũ / Vào đảng / Số thẻ Đảng / Đoàn",
+                    HeaderText = "Nhập ngũ\nVào đảng\nSố thẻ Đảng\nĐoàn",
                     Width = 180,
                     MinimumWidth = 160
                 };
@@ -195,7 +235,7 @@ namespace QuanLyDangVien.UserControls
                 var colDanTocTonGiao = new MultiLineDataGridViewColumn
                 {
                     Name = "DanTocTonGiao",
-                    HeaderText = "Dân tộc / Tôn giáo",
+                    HeaderText = "Dân tộc\nTôn giáo",
                     Width = 120,
                     MinimumWidth = 100
                 };
@@ -205,7 +245,7 @@ namespace QuanLyDangVien.UserControls
                 var colSucKhoeNhomMau = new MultiLineDataGridViewColumn
                 {
                     Name = "SucKhoeNhomMau",
-                    HeaderText = "Sức khỏe / Nhóm máu",
+                    HeaderText = "Sức khỏe\nNhóm máu",
                     Width = 120,
                     MinimumWidth = 100
                 };
@@ -215,7 +255,7 @@ namespace QuanLyDangVien.UserControls
                 var colGiaDinh = new MultiLineDataGridViewColumn
                 {
                     Name = "GiaDinh",
-                    HeaderText = "Cha / Mẹ / Vợ (Con)",
+                    HeaderText = "Cha\nMẹ\nVợ (Con)",
                     Width = 200,
                     MinimumWidth = 180
                 };
@@ -245,7 +285,7 @@ namespace QuanLyDangVien.UserControls
                 var colQueQuanNoiO = new MultiLineDataGridViewColumn
                 {
                     Name = "QueQuanNoiO",
-                    HeaderText = "Quê quán / Nơi ở",
+                    HeaderText = "Quê quán\nNơi ở",
                     Width = 200,
                     MinimumWidth = 180
                 };
@@ -672,7 +712,7 @@ namespace QuanLyDangVien.UserControls
         {
             try
             {
-                if (_quanNhanList == null || _quanNhanList.Count == 0)
+                if (dgvQuanNhan.Rows.Count == 0)
                 {
                     MessageBox.Show("Không có dữ liệu để xuất!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
@@ -684,8 +724,8 @@ namespace QuanLyDangVien.UserControls
 
                 if (saveFileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    var result = _quanNhanService.ExportToExcel(_quanNhanList, saveFileDialog.FileName);
-                    MessageBox.Show(result, "Kết quả", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    ExportToExcel(saveFileDialog.FileName);
+                    MessageBox.Show("Xuất Excel thành công!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
             catch (Exception ex)
@@ -694,22 +734,105 @@ namespace QuanLyDangVien.UserControls
             }
         }
 
-        private void btnIn_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Xuất dữ liệu từ DataGridView ra Excel
+        /// </summary>
+        private void ExportToExcel(string filePath)
         {
-            try
+            using (var workbook = new XLWorkbook())
             {
-                if (_quanNhanList == null || _quanNhanList.Count == 0)
+                var worksheet = workbook.Worksheets.Add("Danh sách quân nhân");
+
+                // Đếm số cột visible
+                int visibleColCount = dgvQuanNhan.Columns.Cast<DataGridViewColumn>().Count(c => c.Visible);
+
+                // Tiêu đề
+                worksheet.Cell(1, 1).Value = "DANH SÁCH QUÂN NHÂN";
+                var titleRange = worksheet.Range(1, 1, 1, visibleColCount);
+                titleRange.Merge();
+                titleRange.Style.Font.Bold = true;
+                titleRange.Style.Font.FontSize = 16;
+                titleRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                titleRange.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                worksheet.Row(1).Height = 30;
+
+                // Header row
+                int headerRow = 3;
+                int headerColIndex = 0;
+                for (int col = 0; col < dgvQuanNhan.Columns.Count; col++)
                 {
-                    MessageBox.Show("Không có dữ liệu để in!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
+                    var column = dgvQuanNhan.Columns[col];
+                    if (column.Visible)
+                    {
+                        worksheet.Cell(headerRow, headerColIndex + 1).Value = column.HeaderText;
+                        headerColIndex++;
+                    }
                 }
 
-                var result = _quanNhanService.PrintList(_quanNhanList);
-                MessageBox.Show(result, "Kết quả", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Lỗi in danh sách: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                // Style header
+                var headerRange = worksheet.Range(headerRow, 1, headerRow, visibleColCount);
+                headerRange.Style.Font.Bold = true;
+                headerRange.Style.Font.FontSize = 10;
+                headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                headerRange.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                headerRange.Style.Alignment.WrapText = true;
+                headerRange.Style.Fill.BackgroundColor = XLColor.LightGray;
+                headerRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                headerRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+                worksheet.Row(headerRow).Height = 80;
+
+                // Data rows
+                int dataRow = headerRow + 1;
+                foreach (DataGridViewRow row in dgvQuanNhan.Rows)
+                {
+                    if (row.IsNewRow) continue;
+
+                    int colIndex = 0;
+                    for (int col = 0; col < dgvQuanNhan.Columns.Count; col++)
+                    {
+                        var column = dgvQuanNhan.Columns[col];
+                        if (column.Visible)
+                        {
+                            // Lấy giá trị đã format từ cell (hỗ trợ MultiLineDataGridViewCell)
+                            var cell = row.Cells[col];
+                            string cellValue = "";
+                            if (cell.FormattedValue != null)
+                            {
+                                cellValue = cell.FormattedValue.ToString();
+                            }
+                            else if (cell.Value != null)
+                            {
+                                cellValue = cell.Value.ToString();
+                            }
+                            worksheet.Cell(dataRow, colIndex + 1).Value = cellValue;
+                            colIndex++;
+                        }
+                    }
+
+                    // Style data row
+                    var dataRange = worksheet.Range(dataRow, 1, dataRow, visibleColCount);
+                    dataRange.Style.Alignment.WrapText = true;
+                    dataRange.Style.Alignment.Vertical = XLAlignmentVerticalValues.Top;
+                    dataRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                    dataRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+                    worksheet.Row(dataRow).Height = 80;
+
+                    dataRow++;
+                }
+
+                // Auto-fit columns
+                int colNum = 1;
+                for (int col = 0; col < dgvQuanNhan.Columns.Count; col++)
+                {
+                    var column = dgvQuanNhan.Columns[col];
+                    if (column.Visible)
+                    {
+                        worksheet.Column(colNum).Width = Math.Max(10, Math.Min(30, column.Width / 7.0));
+                        colNum++;
+                    }
+                }
+
+                workbook.SaveAs(filePath);
             }
         }
 
@@ -727,15 +850,15 @@ namespace QuanLyDangVien.UserControls
         public void RefreshDonViData(Form form, List<DonViSimplified> donViData)
         {
             if (form == null) return;
-            BindDonViComboBoxes(form, donViData);
+            BindDonViComboBoxes((WinFormsControl)form, donViData);
         }
 
         /// <summary>
         /// Bind DonVi data vào tất cả ComboBox có tên "DonViID" trong form
         /// </summary>
-        private void BindDonViComboBoxes(Control parent, List<DonViSimplified> donViData)
+        private void BindDonViComboBoxes(WinFormsControl parent, List<DonViSimplified> donViData)
         {
-            foreach (Control control in parent.Controls)
+            foreach (WinFormsControl control in parent.Controls)
             {
                 if (control is ComboBox comboBox && comboBox.Name == "DonViID")
                 {

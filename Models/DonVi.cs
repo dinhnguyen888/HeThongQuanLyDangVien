@@ -32,6 +32,19 @@ namespace QuanLyDangVien.Models
         [DisplayName("Trưởng đơn vị")]
         public string TruongDonVi { get; set; }
 
+        [DisplayName("Đơn vị cấp trên")]
+        [ControlType(ControlInputType.ComboBox)]
+        public int? CapTrenID { get; set; }
+
+        // Properties để hiển thị tên (không lưu vào DB, chỉ dùng ở form xem chi tiết)
+        [ReadOnlyField(IsReadOnly = true)]
+        [DisplayName("Tên đơn vị cấp trên")]
+        public string TenCapTren { get; set; }
+
+        [ReadOnlyField(IsReadOnly = true)]
+        [DisplayName("Danh sách đơn vị cấp dưới")]
+        public string DanhSachCapDuoi { get; set; }
+
         [ReadOnlyField(IsReadOnly = true)]
         [DisplayName("Ngày tạo")]
         [ControlType(ControlInputType.DateTimePicker)]

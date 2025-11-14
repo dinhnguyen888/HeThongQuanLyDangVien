@@ -73,6 +73,26 @@ namespace QuanLyDangVien.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap anh_co_viet_nam {
+            get {
+                object obj = ResourceManager.GetObject("anh_co_viet_nam", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap cong_binh_vat_can {
+            get {
+                object obj = ResourceManager.GetObject("cong_binh_vat_can", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap emblem_of_vietnam_communist_party {
             get {
                 object obj = ResourceManager.GetObject("emblem_of_vietnam_communist_party", resourceCulture);
@@ -86,6 +106,16 @@ namespace QuanLyDangVien.Properties {
         internal static System.Drawing.Bitmap hinh_nen_ve_dang_cong_san_viet_nam_1 {
             get {
                 object obj = ResourceManager.GetObject("hinh-nen-ve-dang-cong-san-viet-nam-1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap list_add_svgrepo_com {
+            get {
+                object obj = ResourceManager.GetObject("list-add-svgrepo-com", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

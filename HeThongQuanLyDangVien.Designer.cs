@@ -64,7 +64,7 @@
             // 
             // pictureBox2
             // 
-            this.pictureBox2.Image = global::QuanLyDangVien.Properties.Resources.anh_bua_liem;
+            this.pictureBox2.Image = global::QuanLyDangVien.Properties.Resources.anh_co_viet_nam;
             this.pictureBox2.Location = new System.Drawing.Point(81, 7);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(55, 50);
@@ -74,7 +74,7 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Image = global::QuanLyDangVien.Properties.Resources.emblem_of_vietnam_communist_party;
+            this.pictureBox1.Image = global::QuanLyDangVien.Properties.Resources.anh_bua_liem;
             this.pictureBox1.Location = new System.Drawing.Point(20, 7);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(55, 50);
@@ -92,10 +92,12 @@
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.MainPn);
             this.Controls.Add(this.TabControl);
+            this.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ForeColor = System.Drawing.Color.Red;
             this.Name = "HeThongQuanLyDangVien";
             this.Style = MetroFramework.MetroColorStyle.Red;
-            this.Text = "                 Hệ Thống Quản Lý Đảng Viên";
+            this.Text = "HỆ THỐNG QUẢN LÝ ĐẢNG VIÊN";
+            this.TextAlign = System.Windows.Forms.VisualStyles.HorizontalAlign.Center;
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);

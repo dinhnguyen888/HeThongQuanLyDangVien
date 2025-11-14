@@ -166,7 +166,7 @@ namespace QuanLyDangVien.DTOs
         public int DonViID { get; set; }
 
         [DisplayName("Tên đơn vị")]
-        [ControlType(ControlInputType.ComboBox)]
+        [ControlType(ControlInputType.TextBox)]
         [ReadOnlyField]
         public string TenDonVi { get; set; }
 
@@ -359,6 +359,18 @@ namespace QuanLyDangVien.DTOs
         [DisplayName("Trưởng đơn vị")]
         [ControlType(ControlInputType.TextBox)]
         public string TruongDonVi { get; set; }
+
+        [DisplayName("Đơn vị cấp trên")]
+        [ControlType(ControlInputType.ComboBox)]
+        public int? CapTrenID { get; set; }
+
+        [DisplayName("Tên đơn vị cấp trên")]
+        [ReadOnlyField]
+        public string TenCapTren { get; set; }
+
+        [DisplayName("Danh sách đơn vị cấp dưới")]
+        [ReadOnlyField]
+        public string DanhSachCapDuoi { get; set; }
 
         [DisplayName("Mô tả")]
         [ControlType(ControlInputType.RichTextBox)]
@@ -809,9 +821,9 @@ namespace QuanLyDangVien.DTOs
         [ControlType(ControlInputType.RichTextBox)]
         public string NoiDung { get; set; }
 
-        [DisplayName("Nghị quyết")]
-        [ControlType(ControlInputType.RichTextBox)]
-        public string NghiQuyet { get; set; }
+        [DisplayName("File nghị quyết")]
+        [ControlType(ControlInputType.FileDialog)]
+        public string FileNghiQuyet { get; set; }
 
         [DisplayName("Số lượng tham gia")]
         [ControlType(ControlInputType.NumericUpDown)]

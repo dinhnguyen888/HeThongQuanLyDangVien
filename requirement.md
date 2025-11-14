@@ -175,9 +175,9 @@
 - [x] **Lưu trữ file quyết định**
 
 ### 4.2 Form Chuyển sinh hoạt
-- [ ] **Chọn đảng viên**: Họ và tên, Ngày sinh
+- [ ] **Chọn đảng viên**: chọn trên hàng của datagridviewDangVien
 - [ ] **Hiển thị**: Cấp bậc, Chức vụ, Vào Đảng, Chính thức, Số thẻ đảng viên
-- [ ] **Nhập**: Đơn vị đi, Đơn vị đến, Ngày chuyển, Ghi chú
+- [ ] **DropDown**: Đơn vị đi, Đơn vị đến, Ngày chuyển, Ghi chú
 - [ ] **Upload file quyết định**
 
 ### 4.3 Form Lịch sử chuyển sinh hoạt
@@ -186,12 +186,11 @@
 - [ ] **Lọc theo năm**
 - [ ] **Lọc theo đơn vị**
 
-### 4.4 Form Thêm/Sửa/Xóa
+### 4.4 Dùng form Thêm/Sửa/Xóa đã được định nghĩa
 - [ ] **Chức năng thêm**
 - [ ] **Chức năng sửa**
-- [ ] **Chức năng lưu**
 - [ ] **Chức năng xóa**
-- [ ] **Chức năng cập nhật**
+
 
 ---
 
@@ -351,9 +350,7 @@
   - [ ] Giới tính
   - [ ] Ngày sinh
   - [ ] Vào Đảng
-  - [ ] Chính thức
   - [ ] Đơn vị
-  - [ ] Chức vụ
   - [ ] Đối Tượng (SQ, QNCN, HSQ-BS, LĐHĐ, CNVCQP)
   - [ ] Quê quán
   - [ ] Trình độ
@@ -370,12 +367,9 @@
 - [ ] **Lọc theo**:
   - [ ] Đơn vị
   - [ ] Họ và tên
-  - [ ] Cấp bậc
-  - [ ] Chức vụ
   - [ ] Đối Tượng (SQ, QNCN, HSQ-BS, LĐHĐ, CNVCQP)
   - [ ] Quê quán
   - [ ] Trình độ
-  - [ ] Tuổi Đời
 
 ---
 

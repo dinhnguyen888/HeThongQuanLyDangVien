@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using QuanLyDangVien.Attributes;
 
 namespace QuanLyDangVien.Models
@@ -218,7 +218,7 @@ namespace QuanLyDangVien.Models
 
         [DisplayName("Đảng viên")]
         [ControlType(ControlInputType.TextBox)]
-        [ReadOnlyField]
+        [ReadOnlyField] 
         [Required]
         public int DangVienID { get; set; }
 
@@ -350,9 +350,9 @@ namespace QuanLyDangVien.Models
         [ControlType(ControlInputType.RichTextBox)]
         public string NoiDung { get; set; }
 
-        [DisplayName("Nghị quyết")]
-        [ControlType(ControlInputType.RichTextBox)]
-        public string NghiQuyet { get; set; }
+        [DisplayName("File nghị quyết")]
+        [ControlType(ControlInputType.FileDialog)]
+        public string FileNghiQuyet { get; set; }
 
         [DisplayName("Số lượng tham gia")]
         [ControlType(ControlInputType.NumericUpDown)]
@@ -457,6 +457,98 @@ namespace QuanLyDangVien.Models
         [DisplayName("Trạng thái")]
         [ControlType(ControlInputType.CheckBox)]
         public bool TrangThai { get; set; } = true;
+
+        [DisplayName("Ngày tạo")]
+        [ControlType(ControlInputType.DateTimePicker)]
+        [ReadOnlyField]
+        public DateTime? NgayTao { get; set; }
+
+        [DisplayName("Người tạo")]
+        [ReadOnlyField]
+        public string NguoiTao { get; set; }
+    }
+
+    /// <summary>
+    /// Model cho Văn bản chi bộ
+    /// </summary>
+    public class VanBanChiBo
+    {
+        [DisplayName("Mã Văn bản")]
+        [ReadOnlyField]
+        public int VanBanChiBoID { get; set; }
+
+        [DisplayName("Đơn vị")]
+        [ControlType(ControlInputType.ComboBox)]
+        [Required]
+        public int DonViID { get; set; }
+
+        [DisplayName("Tên văn bản")]
+        [Required]
+        public string TenVanBan { get; set; }
+
+        [DisplayName("Nội dung")]
+        [ControlType(ControlInputType.RichTextBox)]
+        public string NoiDung { get; set; }
+
+        [DisplayName("Ngày gửi")]
+        [ControlType(ControlInputType.DateTimePicker)]
+        public DateTime? NgayGui { get; set; }
+
+        [DisplayName("Ngày nhận")]
+        [ControlType(ControlInputType.DateTimePicker)]
+        public DateTime? NgayNhan { get; set; }
+
+        [DisplayName("Trạng thái")]
+        [ControlType(ControlInputType.ComboBox)]
+        [ComboBoxData("Chưa xử lý", "Chưa xử lý", "Đã xử lý", "Đã xử lý", "Đang xử lý", "Đang xử lý")]
+        public string TrangThai { get; set; } = "Chưa xử lý";
+
+        [DisplayName("File đính kèm")]
+        [ControlType(ControlInputType.FileDialog)]
+        public string FileDinhKem { get; set; }
+
+        [DisplayName("Ngày tạo")]
+        [ControlType(ControlInputType.DateTimePicker)]
+        [ReadOnlyField]
+        public DateTime? NgayTao { get; set; }
+
+        [DisplayName("Người tạo")]
+        [ReadOnlyField]
+        public string NguoiTao { get; set; }
+    }
+
+    /// <summary>
+    /// Model cho Theo dõi chuyển chính thức
+    /// </summary>
+    public class TheoDoiChuyenChinhThuc
+    {
+        [DisplayName("Mã theo dõi")]
+        [ReadOnlyField]
+        public int TheoDoiChuyenChinhThucID { get; set; }
+
+        [DisplayName("Đảng viên")]
+        [ControlType(ControlInputType.TextBox)]
+        [ReadOnlyField]
+        [Required]
+        public int DangVienID { get; set; }
+
+        [DisplayName("Ngày vào Đảng")]
+        [ControlType(ControlInputType.DateTimePicker)]
+        [Required]
+        public DateTime NgayVaoDang { get; set; }
+
+        [DisplayName("Ngày chuyển chính thức")]
+        [ControlType(ControlInputType.DateTimePicker)]
+        public DateTime? NgayChuyenChinhThuc { get; set; }
+
+        [DisplayName("Trạng thái")]
+        [ControlType(ControlInputType.ComboBox)]
+        [ComboBoxData("Đang theo dõi", "Đang theo dõi", "Đã chuyển chính thức", "Đã chuyển chính thức", "Quá hạn", "Quá hạn")]
+        public string TrangThai { get; set; } = "Đang theo dõi";
+
+        [DisplayName("Ghi chú")]
+        [ControlType(ControlInputType.RichTextBox)]
+        public string GhiChu { get; set; }
 
         [DisplayName("Ngày tạo")]
         [ControlType(ControlInputType.DateTimePicker)]
