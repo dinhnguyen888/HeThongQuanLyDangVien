@@ -28,6 +28,7 @@ namespace QuanLyDangVien.Pages
             InitializeServices();
             SetupUI();
             LoadData();
+            ApplyPermissions();
         }
 
         private void InitializeServices()
@@ -423,12 +424,17 @@ namespace QuanLyDangVien.Pages
 
         private void btnThem_Click(object sender, EventArgs e)
         {
+            if (!AuthorizationHelper.HasPermission("SinhHoatChiBo", "Create"))
+            {
+                MessageBox.Show("Bạn không có quyền thêm sinh hoạt chi bộ!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             try
             {
                 var formThem = new FormThem(typeof(SinhHoatChiBo));
                 var donViData = _donViService.GetDonViData();
                 BindDonViComboBoxesRecursive(formThem, donViData);
-
+                
                 if (formThem.ShowDialog() == DialogResult.OK)
                 {
                     var newSinhHoat = (SinhHoatChiBo)formThem.GetData();
@@ -477,7 +483,7 @@ namespace QuanLyDangVien.Pages
                 var formSua = new FormSua(sinhHoat);
                 var donViData = _donViService.GetDonViData();
                 BindDonViComboBoxesRecursive(formSua, donViData);
-
+                
                 if (formSua.ShowDialog() == DialogResult.OK)
                 {
                     var updatedSinhHoat = (SinhHoatChiBo)formSua.GetData();
@@ -605,6 +611,11 @@ namespace QuanLyDangVien.Pages
 
         private void btnSua_Click(object sender, EventArgs e)
         {
+            if (!AuthorizationHelper.HasPermission("SinhHoatChiBo", "Update"))
+            {
+                MessageBox.Show("Bạn không có quyền sửa sinh hoạt chi bộ!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             if (dgvSinhHoat.SelectedRows.Count == 0)
             {
                 MessageBox.Show("Vui lòng chọn buổi sinh hoạt để sửa!", "Thông báo", 
@@ -613,12 +624,17 @@ namespace QuanLyDangVien.Pages
             }
 
             var selectedRow = dgvSinhHoat.SelectedRows[0];
-            var sinhHoatID = Convert.ToInt32(selectedRow.Cells["SinhHoatID"].Value);
+                var sinhHoatID = Convert.ToInt32(selectedRow.Cells["SinhHoatID"].Value);
             SuaSinhHoat(sinhHoatID);
         }
 
         private void btnXoa_Click(object sender, EventArgs e)
         {
+            if (!AuthorizationHelper.HasPermission("SinhHoatChiBo", "Delete"))
+            {
+                MessageBox.Show("Bạn không có quyền xóa sinh hoạt chi bộ!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             if (dgvSinhHoat.SelectedRows.Count == 0)
             {
                 MessageBox.Show("Vui lòng chọn buổi sinh hoạt để xóa!", "Thông báo", 
@@ -713,6 +729,20 @@ namespace QuanLyDangVien.Pages
                     BindDonViComboBoxesRecursive(control, donViData);
                 }
             }
+        }
+
+        /// <summary>
+        /// Áp dụng phân quyền cho các control dựa trên vai trò người dùng
+        /// </summary>
+        private void ApplyPermissions()
+        {
+            bool canCreate = AuthorizationHelper.HasPermission("SinhHoatChiBo", "Create");
+            bool canUpdate = AuthorizationHelper.HasPermission("SinhHoatChiBo", "Update");
+            bool canDelete = AuthorizationHelper.HasPermission("SinhHoatChiBo", "Delete");
+
+            if (btnThem != null) btnThem.Enabled = canCreate;
+            if (btnSua != null) btnSua.Enabled = canUpdate;
+            if (btnXoa != null) btnXoa.Enabled = canDelete;
         }
     }
 }

@@ -23,7 +23,7 @@ namespace QuanLyDangVien.Helper
             FilePath = Path.Combine(FolderPath, "user_info.json");
         }
 
-        public static bool SaveInfo(string email, string userSignIn, string role, string status)
+        public static bool SaveInfo(string email, string userSignIn, string role, string status, int? nguoiDungID = null, int? donViID = null)
         {
             try
             {
@@ -32,10 +32,12 @@ namespace QuanLyDangVien.Helper
 
                 var userInfo = new
                 {
+                    NguoiDungID = nguoiDungID,
                     Email = email,
                     TenDangNhap = userSignIn,
                     VaiTro = role,
                     TrangThai = status,
+                    DonViID = donViID,
                     ThoiGianDangNhap = DateTime.Now
                 };
 

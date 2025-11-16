@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using QuanLyDangVien.Services;
 using QuanLyDangVien.DTOs;
+using QuanLyDangVien.Helper;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
@@ -30,6 +31,7 @@ namespace QuanLyDangVien
             _selectedYear = DateTime.Now.Year;
             InitializeYearComboBox();
             LoadData();
+            ApplyPermissions();
         }
 
         private void InitializeYearComboBox()
@@ -214,6 +216,11 @@ namespace QuanLyDangVien
 
         private void btnXuatBaoCao_Click(object sender, EventArgs e)
         {
+            if (!AuthorizationHelper.HasPermission("BaoCao", "Export"))
+            {
+                MessageBox.Show("Bạn không có quyền xuất báo cáo!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             try
             {
                 using (SaveFileDialog saveDialog = new SaveFileDialog())
@@ -675,6 +682,15 @@ namespace QuanLyDangVien
             }
             chartKetNapChuyen.Series.Add(seriesKetNap);
             chartKetNapChuyen.Series.Add(seriesChuyen);
+        }
+
+        /// <summary>
+        /// Áp dụng phân quyền cho các control dựa trên vai trò người dùng
+        /// </summary>
+        private void ApplyPermissions()
+        {
+            bool canExport = AuthorizationHelper.HasPermission("BaoCao", "Export");
+            if (btnXuatBaoCao != null) btnXuatBaoCao.Enabled = canExport;
         }
     }
 }

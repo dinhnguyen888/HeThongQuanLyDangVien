@@ -8,11 +8,18 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace QuanLyDangVien.Services
 {
     public class DonViService
     {
+        private AuditLogService _auditLogService;
+
+        public DonViService()
+        {
+            _auditLogService = new AuditLogService();
+        }
         #region Get Operations
 
         /// <summary>
@@ -169,7 +176,17 @@ namespace QuanLyDangVien.Services
 
                     conn.Execute("DonVi_Insert", parameters, commandType: CommandType.StoredProcedure);
 
-                    return parameters.Get<int>("@DonViID");
+                    int donViID = parameters.Get<int>("@DonViID");
+                    
+                    // Ghi Audit Log
+                    try
+                    {
+                        string newValues = JsonConvert.SerializeObject(donVi, Formatting.None);
+                        _auditLogService.LogAction("Insert", "DonVi", donViID, null, newValues);
+                    }
+                    catch { } // Không throw nếu audit log lỗi
+
+                    return donViID;
                 }
             }
             catch (Exception ex)
@@ -186,6 +203,18 @@ namespace QuanLyDangVien.Services
         {
             try
             {
+                // Lấy dữ liệu cũ trước khi update để ghi Audit Log
+                string oldValues = null;
+                try
+                {
+                    var oldDonVi = GetById(donVi.DonViID);
+                    if (oldDonVi != null)
+                    {
+                        oldValues = JsonConvert.SerializeObject(oldDonVi, Formatting.None);
+                    }
+                }
+                catch { } // Không throw nếu không lấy được old values
+
                 using (var conn = DbHelper.GetConnection())
                 {
                     if (conn == null)
@@ -205,7 +234,20 @@ namespace QuanLyDangVien.Services
                     conn.Execute("DonVi_Update", parameters, commandType: CommandType.StoredProcedure);
                     
                     int returnValue = parameters.Get<int>("@ReturnValue");
-                    return returnValue == 0; // 0 = thành công
+                    bool success = returnValue == 0; // 0 = thành công
+                    
+                    if (success)
+                    {
+                        // Ghi Audit Log
+                        try
+                        {
+                            string newValues = JsonConvert.SerializeObject(donVi, Formatting.None);
+                            _auditLogService.LogAction("Update", "DonVi", donVi.DonViID, oldValues, newValues);
+                        }
+                        catch { } // Không throw nếu audit log lỗi
+                    }
+                    
+                    return success;
                 }
             }
             catch (Exception ex)
@@ -222,6 +264,18 @@ namespace QuanLyDangVien.Services
         {
             try
             {
+                // Lấy dữ liệu cũ trước khi delete để ghi Audit Log
+                string oldValues = null;
+                try
+                {
+                    var oldDonVi = GetById(donViId);
+                    if (oldDonVi != null)
+                    {
+                        oldValues = JsonConvert.SerializeObject(oldDonVi, Formatting.None);
+                    }
+                }
+                catch { } // Không throw nếu không lấy được old values
+
                 using (var conn = DbHelper.GetConnection())
                 {
                     if (conn == null)
@@ -239,7 +293,19 @@ namespace QuanLyDangVien.Services
                         throw new Exception("Không thể xóa đơn vị vì đang có đảng viên hoặc quân nhân thuộc đơn vị này!");
                     }
                     
-                    return returnValue == 0; // 0 = thành công
+                    bool success = returnValue == 0; // 0 = thành công
+                    
+                    if (success)
+                    {
+                        // Ghi Audit Log
+                        try
+                        {
+                            _auditLogService.LogAction("Delete", "DonVi", donViId, oldValues, null);
+                        }
+                        catch { } // Không throw nếu audit log lỗi
+                    }
+                    
+                    return success;
                 }
             }
             catch (Exception ex)

@@ -11,6 +11,8 @@ using QuanLyDangVien.Models;
 using QuanLyDangVien.Services;
 using QuanLyDangVien.DTOs;
 using QuanLyDangVien.Helper;
+using ClosedXML.Excel;
+using System.IO;
 
 namespace QuanLyDangVien.Pages
 {
@@ -118,6 +120,7 @@ namespace QuanLyDangVien.Pages
             btnSua.Click += BtnSua_Click;
             btnSuaFile.Click += BtnSuaFile_Click;
             btnXoa.Click += BtnXoa_Click;
+            btnXuatExcel.Click += BtnXuatExcel_Click;
             dgvDanhSach.CellDoubleClick += DgvDanhSach_CellDoubleClick;
             dgvDanhSach.KeyDown += DgvDanhSach_KeyDown;
         }
@@ -1375,6 +1378,142 @@ namespace QuanLyDangVien.Pages
             catch (Exception ex)
             {
                 MessageBox.Show($"Lỗi khi sửa file đính kèm: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void BtnXuatExcel_Click(object sender, EventArgs e)
+        {
+            if (!AuthorizationHelper.HasPermission("KhenThuong", "Export") && !AuthorizationHelper.HasPermission("KyLuat", "Export"))
+            {
+                MessageBox.Show("Bạn không có quyền xuất dữ liệu!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            try
+            {
+                if (dgvDanhSach.Rows.Count == 0)
+                {
+                    MessageBox.Show("Không có dữ liệu để xuất!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                SaveFileDialog saveFileDialog = new SaveFileDialog();
+                saveFileDialog.Filter = "Excel Files (*.xlsx)|*.xlsx";
+                string loai = _loaiHienTai == "Khen thưởng" ? "KhenThuong" : "KyLuat";
+                saveFileDialog.FileName = $"DanhSach{loai}_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
+
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    ExportToExcel(saveFileDialog.FileName);
+                    MessageBox.Show("Xuất Excel thành công!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi xuất Excel: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Xuất dữ liệu từ DataGridView ra Excel
+        /// </summary>
+        private void ExportToExcel(string filePath)
+        {
+            using (var workbook = new XLWorkbook())
+            {
+                string sheetName = _loaiHienTai == "Khen thưởng" ? "Danh sách khen thưởng" : "Danh sách kỷ luật";
+                var worksheet = workbook.Worksheets.Add(sheetName);
+
+                // Đếm số cột visible
+                int visibleColCount = dgvDanhSach.Columns.Cast<DataGridViewColumn>().Count(c => c.Visible);
+
+                // Tiêu đề
+                string title = _loaiHienTai == "Khen thưởng" ? "DANH SÁCH KHEN THƯỞNG" : "DANH SÁCH KỶ LUẬT";
+                worksheet.Cell(1, 1).Value = title;
+                var titleRange = worksheet.Range(1, 1, 1, visibleColCount);
+                titleRange.Merge();
+                titleRange.Style.Font.Bold = true;
+                titleRange.Style.Font.FontSize = 16;
+                titleRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                titleRange.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                worksheet.Row(1).Height = 30;
+
+                // Header row
+                int headerRow = 3;
+                int headerColIndex = 0;
+                for (int col = 0; col < dgvDanhSach.Columns.Count; col++)
+                {
+                    var column = dgvDanhSach.Columns[col];
+                    if (column.Visible)
+                    {
+                        worksheet.Cell(headerRow, headerColIndex + 1).Value = column.HeaderText;
+                        headerColIndex++;
+                    }
+                }
+
+                // Style header
+                var headerRange = worksheet.Range(headerRow, 1, headerRow, visibleColCount);
+                headerRange.Style.Font.Bold = true;
+                headerRange.Style.Font.FontSize = 10;
+                headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                headerRange.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                headerRange.Style.Alignment.WrapText = true;
+                headerRange.Style.Fill.BackgroundColor = XLColor.LightGray;
+                headerRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                headerRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+                worksheet.Row(headerRow).Height = 60;
+
+                // Data rows
+                int dataRow = headerRow + 1;
+                foreach (DataGridViewRow row in dgvDanhSach.Rows)
+                {
+                    if (row.IsNewRow) continue;
+
+                    int colIndex = 0;
+                    for (int col = 0; col < dgvDanhSach.Columns.Count; col++)
+                    {
+                        var column = dgvDanhSach.Columns[col];
+                        if (column.Visible)
+                        {
+                            // Lấy giá trị đã format từ cell
+                            var cell = row.Cells[col];
+                            string cellValue = "";
+                            if (cell.FormattedValue != null)
+                            {
+                                cellValue = cell.FormattedValue.ToString();
+                            }
+                            else if (cell.Value != null)
+                            {
+                                cellValue = cell.Value.ToString();
+                            }
+                            worksheet.Cell(dataRow, colIndex + 1).Value = cellValue;
+                            colIndex++;
+                        }
+                    }
+
+                    // Style data row
+                    var dataRange = worksheet.Range(dataRow, 1, dataRow, visibleColCount);
+                    dataRange.Style.Alignment.WrapText = true;
+                    dataRange.Style.Alignment.Vertical = XLAlignmentVerticalValues.Top;
+                    dataRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                    dataRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+                    worksheet.Row(dataRow).Height = 60;
+
+                    dataRow++;
+                }
+
+                // Auto-fit columns
+                int colNum = 1;
+                for (int col = 0; col < dgvDanhSach.Columns.Count; col++)
+                {
+                    var column = dgvDanhSach.Columns[col];
+                    if (column.Visible)
+                    {
+                        worksheet.Column(colNum).Width = Math.Max(10, Math.Min(30, column.Width / 7.0));
+                        colNum++;
+                    }
+                }
+
+                workbook.SaveAs(filePath);
             }
         }
     }

@@ -47,6 +47,12 @@ namespace QuanLyDangVien
 
             // Load dữ liệu vào controls
             LoadDataToControls();
+            
+            // Chuyển DonViCap1 và DonViCap2 sang TextBox nếu là DangVien
+            if (_dataType.Name == "DangVien")
+            {
+                ConvertDonViCapToTextBox();
+            }
         }
 
         private void TaoDynamicControls()
@@ -155,6 +161,101 @@ namespace QuanLyDangVien
             this.MinimumSize = new Size(800, 600);
         }
      
+        /// <summary>
+        /// Đảm bảo DonViCap1 và DonViCap2 hiển thị đúng giá trị (từ property hoặc tính từ DonViID)
+        /// </summary>
+        private void ConvertDonViCapToTextBox()
+        {
+            try
+            {
+                // Nếu là DangVienDTO, tính DonViCap1 và DonViCap2 từ DonViID nếu chưa có
+                if (_dataObject.GetType().Name == "DangVienDTO")
+                {
+                    var donViIDProperty = _propertiesDictionary.ContainsKey("DonViID") 
+                        ? _propertiesDictionary["DonViID"] : null;
+                    var donViCap1Property = _propertiesDictionary.ContainsKey("DonViCap1") 
+                        ? _propertiesDictionary["DonViCap1"] : null;
+                    var donViCap2Property = _propertiesDictionary.ContainsKey("DonViCap2") 
+                        ? _propertiesDictionary["DonViCap2"] : null;
+                    
+                    if (donViIDProperty != null)
+                    {
+                        var currentDonViID = Convert.ToInt32(donViIDProperty.GetValue(_dataObject) ?? 0);
+                        if (currentDonViID > 0)
+                        {
+                            var donViService = new DonViService();
+                            var allDonVi = donViService.GetAll();
+                            var currentDonVi = allDonVi.FirstOrDefault(dv => dv.DonViID == currentDonViID);
+                            
+                            if (currentDonVi != null && currentDonVi.CapTrenID.HasValue)
+                            {
+                                var donViCap2 = allDonVi.FirstOrDefault(dv => dv.DonViID == currentDonVi.CapTrenID.Value);
+                                if (donViCap2 != null && donViCap2.CapTrenID.HasValue)
+                                {
+                                    var donViCap1 = allDonVi.FirstOrDefault(dv => dv.DonViID == donViCap2.CapTrenID.Value);
+                                    
+                                    // Set DonViCap1 nếu chưa có
+                                    if (donViCap1Property != null && donViCap1 != null)
+                                    {
+                                        var currentDonViCap1 = donViCap1Property.GetValue(_dataObject) as string;
+                                        if (string.IsNullOrEmpty(currentDonViCap1))
+                                        {
+                                            donViCap1Property.SetValue(_dataObject, donViCap1.TenDonVi);
+                                        }
+                                    }
+                                    
+                                    // Set DonViCap2 nếu chưa có
+                                    if (donViCap2Property != null)
+                                    {
+                                        var currentDonViCap2 = donViCap2Property.GetValue(_dataObject) as string;
+                                        if (string.IsNullOrEmpty(currentDonViCap2))
+                                        {
+                                            donViCap2Property.SetValue(_dataObject, donViCap2.TenDonVi);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                // Đảm bảo TextBox hiển thị đúng giá trị
+                if (_controlsDictionary.ContainsKey("DonViCap1"))
+                {
+                    var control = _controlsDictionary["DonViCap1"];
+                    if (control is TextBox textBox)
+                    {
+                        var property = _propertiesDictionary.ContainsKey("DonViCap1") 
+                            ? _propertiesDictionary["DonViCap1"] : null;
+                        if (property != null)
+                        {
+                            var value = property.GetValue(_dataObject);
+                            textBox.Text = value != null ? value.ToString() : "";
+                        }
+                    }
+                }
+                
+                if (_controlsDictionary.ContainsKey("DonViCap2"))
+                {
+                    var control = _controlsDictionary["DonViCap2"];
+                    if (control is TextBox textBox)
+                    {
+                        var property = _propertiesDictionary.ContainsKey("DonViCap2") 
+                            ? _propertiesDictionary["DonViCap2"] : null;
+                        if (property != null)
+                        {
+                            var value = property.GetValue(_dataObject);
+                            textBox.Text = value != null ? value.ToString() : "";
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Lỗi khi xử lý DonViCap: {ex.Message}");
+            }
+        }
+
         private void LoadDataToControls()
         {
             FormHelper.LoadDataToControls(_dataObject, _controlsDictionary, _propertiesDictionary);

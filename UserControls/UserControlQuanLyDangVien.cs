@@ -4,6 +4,7 @@ using QuanLyDangVien.Helper;
 using QuanLyDangVien.Models;
 using QuanLyDangVien.Services;
 using QuanLyDangVien.DTOs;
+using static QuanLyDangVien.Helper.AuthorizationHelper;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -43,6 +44,7 @@ namespace QuanLyDangVien
 
             LoadData();
             SetupUI();
+            ApplyPermissions();
 
             // Setup số lượng hiển thị
             SoluongCb.Items.AddRange(new object[] { "10", "20", "50", "Tất cả" });
@@ -272,6 +274,12 @@ namespace QuanLyDangVien
                         var dangVienDetails = _dangVienService.GetById(dangVienID);
                         if (dangVienDetails != null)
                         {
+                            // Kiểm tra quyền Update
+                            if (!AuthorizationHelper.HasPermission("DangVien", "Update", dangVienDetails.DonViID))
+                            {
+                                MessageBox.Show("Bạn không có quyền sửa thông tin đảng viên này!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                return;
+                            }
                             // Convert DangVienDTO thành DangVien để sử dụng với FormSua
                             var dangVienSua = new DangVien
                             {
@@ -295,7 +303,6 @@ namespace QuanLyDangVien
                                 DanToc = dangVienDetails.DanToc,
                                 TonGiao = dangVienDetails.TonGiao,
                                 NgheNghiep = dangVienDetails.NgheNghiep,
-                                TrinhDoHocVan = dangVienDetails.TrinhDoHocVan,
                                 TrinhDoChuyenMon = dangVienDetails.TrinhDoChuyenMon,
                                 LyLuanChinhTri = dangVienDetails.LyLuanChinhTri,
                                 NgoaiNgu = dangVienDetails.NgoaiNgu,
@@ -400,6 +407,12 @@ namespace QuanLyDangVien
 
         private void button1_Click(object sender, EventArgs e)
         {
+            // Kiểm tra quyền Create
+            if (!AuthorizationHelper.HasPermission("DangVien", "Create"))
+            {
+                MessageBox.Show("Bạn không có quyền thêm hồ sơ đảng viên!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             try
             {
                 // Kiểm tra xem có đảng viên nào được chọn không
@@ -685,6 +698,12 @@ namespace QuanLyDangVien
 
         private void ThemBtn_Click(object sender, EventArgs e)
         {
+            // Kiểm tra quyền Create
+            if (!AuthorizationHelper.HasPermission("DangVien", "Create"))
+            {
+                MessageBox.Show("Bạn không có quyền thêm đảng viên!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             try
             {
                 FormThem form = new FormThem(typeof(DangVien));
@@ -713,6 +732,12 @@ namespace QuanLyDangVien
 
         private void XoaNhieuBtn_Click(object sender, EventArgs e)
         {
+            // Kiểm tra quyền Delete
+            if (!AuthorizationHelper.HasPermission("DangVien", "Delete"))
+            {
+                MessageBox.Show("Bạn không có quyền xóa đảng viên!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             try
             {
                 if (DangVienGridView.SelectedRows.Count == 0)
@@ -973,6 +998,12 @@ namespace QuanLyDangVien
 
         private void button2_Click(object sender, EventArgs e)
         {
+            // Kiểm tra quyền Create (chuyển sinh hoạt đảng)
+            if (!AuthorizationHelper.HasPermission("ChuyenSinhHoatDang", "Create"))
+            {
+                MessageBox.Show("Bạn không có quyền chuyển sinh hoạt đảng!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             try
             {
                 // Lấy row được chọn - ưu tiên SelectedRows, nếu không có thì lấy CurrentRow
@@ -1086,6 +1117,12 @@ namespace QuanLyDangVien
 
         private void XuatBtn_Click(object sender, EventArgs e)
         {
+            // Kiểm tra quyền Export
+            if (!AuthorizationHelper.HasPermission("DangVien", "Export"))
+            {
+                MessageBox.Show("Bạn không có quyền xuất dữ liệu!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             try
             {
                 if (_danhSachDangVien == null || _danhSachDangVien.Count == 0)
@@ -1302,6 +1339,36 @@ namespace QuanLyDangVien
             worksheet.Column(11).Width = 20; // Cột 11: Kỷ luật
             worksheet.Column(12).Width = 25; // Cột 12: Tài Liệu Hồ sơ Đảng viên
             worksheet.Column(13).Width = 20; // Cột 13: Ghi chú
+        }
+
+        /// <summary>
+        /// Áp dụng phân quyền cho các control dựa trên vai trò người dùng
+        /// </summary>
+        private void ApplyPermissions()
+        {
+            bool canCreate = AuthorizationHelper.HasPermission("DangVien", "Create");
+            bool canUpdate = AuthorizationHelper.HasPermission("DangVien", "Update");
+            bool canDelete = AuthorizationHelper.HasPermission("DangVien", "Delete");
+            bool canExport = AuthorizationHelper.HasPermission("DangVien", "Export");
+
+            // Enable/disable buttons
+            if (ThemBtn != null) ThemBtn.Enabled = canCreate;
+            if (XoaNhieuBtn != null) XoaNhieuBtn.Enabled = canDelete;
+            if (XuatBtn != null) XuatBtn.Enabled = canExport;
+            if (button1 != null) button1.Enabled = canCreate; // Thêm hồ sơ đảng viên
+
+            // Disable edit trong DataGridView nếu không có quyền Update
+            if (DangVienGridView != null)
+            {
+                foreach (DataGridViewColumn column in DangVienGridView.Columns)
+                {
+                    if (column.Name == "ChucNang")
+                    {
+                        // Chỉ cho phép edit nếu có quyền Update
+                        column.ReadOnly = !canUpdate;
+                    }
+                }
+            }
         }
     }
 }

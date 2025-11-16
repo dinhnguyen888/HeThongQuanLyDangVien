@@ -37,6 +37,7 @@
             this.btnTimKiem = new MetroFramework.Controls.MetroButton();
             this.txtTimKiem = new MetroFramework.Controls.MetroTextBox();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.btnXuatExcel = new System.Windows.Forms.Button();
             this.btnSuaFile = new MetroFramework.Controls.MetroButton();
             this.btnXoa = new MetroFramework.Controls.MetroButton();
             this.btnSua = new MetroFramework.Controls.MetroButton();
@@ -65,22 +66,47 @@
             this.panel1.Size = new System.Drawing.Size(1600, 150);
             this.panel1.TabIndex = 0;
             // 
-            // txtTimKiem
+            // cboLoaiDoiTuong
             // 
-            this.txtTimKiem.FontSize = MetroFramework.MetroTextBoxSize.Medium;
-            this.txtTimKiem.Location = new System.Drawing.Point(13, 13);
-            this.txtTimKiem.Name = "txtTimKiem";
-            this.txtTimKiem.PromptText = "Tìm kiếm theo tên, số quyết định, hình thức...";
-            this.txtTimKiem.Size = new System.Drawing.Size(1200, 40);
-            this.txtTimKiem.TabIndex = 0;
+            this.cboLoaiDoiTuong.FormattingEnabled = true;
+            this.cboLoaiDoiTuong.ItemHeight = 24;
+            this.cboLoaiDoiTuong.Location = new System.Drawing.Point(127, 70);
+            this.cboLoaiDoiTuong.Name = "cboLoaiDoiTuong";
+            this.cboLoaiDoiTuong.Size = new System.Drawing.Size(150, 30);
+            this.cboLoaiDoiTuong.TabIndex = 2;
             // 
-            // btnTimKiem
+            // lblLoaiDoiTuong
             // 
-            this.btnTimKiem.Location = new System.Drawing.Point(1225, 13);
-            this.btnTimKiem.Name = "btnTimKiem";
-            this.btnTimKiem.Size = new System.Drawing.Size(150, 40);
-            this.btnTimKiem.TabIndex = 1;
-            this.btnTimKiem.Text = "Tìm kiếm";
+            this.lblLoaiDoiTuong.AutoSize = true;
+            this.lblLoaiDoiTuong.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblLoaiDoiTuong.Location = new System.Drawing.Point(13, 73);
+            this.lblLoaiDoiTuong.Name = "lblLoaiDoiTuong";
+            this.lblLoaiDoiTuong.Size = new System.Drawing.Size(119, 20);
+            this.lblLoaiDoiTuong.TabIndex = 4;
+            this.lblLoaiDoiTuong.Text = "Loại đối tượng:";
+            // 
+            // lblLocTheoDonVi
+            // 
+            this.lblLocTheoDonVi.AutoSize = true;
+            this.lblLocTheoDonVi.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblLocTheoDonVi.Location = new System.Drawing.Point(280, 73);
+            this.lblLocTheoDonVi.Name = "lblLocTheoDonVi";
+            this.lblLocTheoDonVi.Size = new System.Drawing.Size(128, 20);
+            this.lblLocTheoDonVi.TabIndex = 6;
+            this.lblLocTheoDonVi.Text = "Lọc theo đơn vị:";
+            this.lblLocTheoDonVi.Visible = false;
+            // 
+            // radioTheoNam
+            // 
+            this.radioTheoNam.AutoSize = true;
+            this.radioTheoNam.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.radioTheoNam.Location = new System.Drawing.Point(690, 70);
+            this.radioTheoNam.Name = "radioTheoNam";
+            this.radioTheoNam.Size = new System.Drawing.Size(130, 17);
+            this.radioTheoNam.TabIndex = 5;
+            this.radioTheoNam.TabStop = true;
+            this.radioTheoNam.Text = "Sắp xếp theo năm";
+            this.radioTheoNam.UseVisualStyleBackColor = true;
             // 
             // cboLocTheo
             // 
@@ -92,50 +118,26 @@
             this.cboLocTheo.TabIndex = 3;
             this.cboLocTheo.Visible = false;
             // 
-            // lblLoaiDoiTuong
+            // btnTimKiem
             // 
-            this.lblLoaiDoiTuong.AutoSize = true;
-            this.lblLoaiDoiTuong.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblLoaiDoiTuong.Location = new System.Drawing.Point(13, 73);
-            this.lblLoaiDoiTuong.Name = "lblLoaiDoiTuong";
-            this.lblLoaiDoiTuong.Size = new System.Drawing.Size(108, 20);
-            this.lblLoaiDoiTuong.TabIndex = 4;
-            this.lblLoaiDoiTuong.Text = "Loại đối tượng:";
+            this.btnTimKiem.Location = new System.Drawing.Point(1225, 13);
+            this.btnTimKiem.Name = "btnTimKiem";
+            this.btnTimKiem.Size = new System.Drawing.Size(150, 40);
+            this.btnTimKiem.TabIndex = 1;
+            this.btnTimKiem.Text = "Tìm kiếm";
             // 
-            // cboLoaiDoiTuong
+            // txtTimKiem
             // 
-            this.cboLoaiDoiTuong.FormattingEnabled = true;
-            this.cboLoaiDoiTuong.ItemHeight = 24;
-            this.cboLoaiDoiTuong.Location = new System.Drawing.Point(127, 70);
-            this.cboLoaiDoiTuong.Name = "cboLoaiDoiTuong";
-            this.cboLoaiDoiTuong.Size = new System.Drawing.Size(150, 30);
-            this.cboLoaiDoiTuong.TabIndex = 2;
-            // 
-            // lblLocTheoDonVi
-            // 
-            this.lblLocTheoDonVi.AutoSize = true;
-            this.lblLocTheoDonVi.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblLocTheoDonVi.Location = new System.Drawing.Point(280, 73);
-            this.lblLocTheoDonVi.Name = "lblLocTheoDonVi";
-            this.lblLocTheoDonVi.Size = new System.Drawing.Size(130, 20);
-            this.lblLocTheoDonVi.TabIndex = 6;
-            this.lblLocTheoDonVi.Text = "Lọc theo đơn vị:";
-            this.lblLocTheoDonVi.Visible = false;
-            // 
-            // radioTheoNam
-            // 
-            this.radioTheoNam.AutoSize = true;
-            this.radioTheoNam.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioTheoNam.Location = new System.Drawing.Point(690, 70);
-            this.radioTheoNam.Name = "radioTheoNam";
-            this.radioTheoNam.Size = new System.Drawing.Size(163, 24);
-            this.radioTheoNam.TabIndex = 5;
-            this.radioTheoNam.TabStop = true;
-            this.radioTheoNam.Text = "Sắp xếp theo năm";
-            this.radioTheoNam.UseVisualStyleBackColor = true;
+            this.txtTimKiem.FontSize = MetroFramework.MetroTextBoxSize.Medium;
+            this.txtTimKiem.Location = new System.Drawing.Point(13, 13);
+            this.txtTimKiem.Name = "txtTimKiem";
+            this.txtTimKiem.PromptText = "Tìm kiếm theo tên, số quyết định, hình thức...";
+            this.txtTimKiem.Size = new System.Drawing.Size(1200, 40);
+            this.txtTimKiem.TabIndex = 0;
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.btnXuatExcel);
             this.panel2.Controls.Add(this.btnSuaFile);
             this.panel2.Controls.Add(this.btnXoa);
             this.panel2.Controls.Add(this.btnSua);
@@ -148,13 +150,51 @@
             this.panel2.Size = new System.Drawing.Size(1600, 70);
             this.panel2.TabIndex = 1;
             // 
+            // btnXuatExcel
+            // 
+            this.btnXuatExcel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(167)))), ((int)(((byte)(69)))));
+            this.btnXuatExcel.FlatAppearance.BorderSize = 0;
+            this.btnXuatExcel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnXuatExcel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnXuatExcel.ForeColor = System.Drawing.Color.White;
+            this.btnXuatExcel.Location = new System.Drawing.Point(1358, 13);
+            this.btnXuatExcel.Name = "btnXuatExcel";
+            this.btnXuatExcel.Size = new System.Drawing.Size(120, 40);
+            this.btnXuatExcel.TabIndex = 5;
+            this.btnXuatExcel.Text = "Xuất Excel";
+            this.btnXuatExcel.UseVisualStyleBackColor = false;
+            // 
+            // btnSuaFile
+            // 
+            this.btnSuaFile.Location = new System.Drawing.Point(1228, 13);
+            this.btnSuaFile.Name = "btnSuaFile";
+            this.btnSuaFile.Size = new System.Drawing.Size(120, 40);
+            this.btnSuaFile.TabIndex = 3;
+            this.btnSuaFile.Text = "Sửa file đính kèm";
+            // 
+            // btnXoa
+            // 
+            this.btnXoa.Location = new System.Drawing.Point(1488, 13);
+            this.btnXoa.Name = "btnXoa";
+            this.btnXoa.Size = new System.Drawing.Size(100, 40);
+            this.btnXoa.TabIndex = 4;
+            this.btnXoa.Text = "Xóa";
+            // 
+            // btnSua
+            // 
+            this.btnSua.Location = new System.Drawing.Point(1118, 13);
+            this.btnSua.Name = "btnSua";
+            this.btnSua.Size = new System.Drawing.Size(100, 40);
+            this.btnSua.TabIndex = 2;
+            this.btnSua.Text = "Sửa";
+            // 
             // radioKyLuat
             // 
             this.radioKyLuat.AutoSize = true;
             this.radioKyLuat.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.radioKyLuat.Location = new System.Drawing.Point(200, 13);
             this.radioKyLuat.Name = "radioKyLuat";
-            this.radioKyLuat.Size = new System.Drawing.Size(88, 24);
+            this.radioKyLuat.Size = new System.Drawing.Size(63, 17);
             this.radioKyLuat.TabIndex = 1;
             this.radioKyLuat.TabStop = true;
             this.radioKyLuat.Text = "Kỷ luật";
@@ -167,38 +207,11 @@
             this.radioKhenThuong.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.radioKhenThuong.Location = new System.Drawing.Point(13, 13);
             this.radioKhenThuong.Name = "radioKhenThuong";
-            this.radioKhenThuong.Size = new System.Drawing.Size(118, 24);
+            this.radioKhenThuong.Size = new System.Drawing.Size(99, 17);
             this.radioKhenThuong.TabIndex = 0;
             this.radioKhenThuong.TabStop = true;
             this.radioKhenThuong.Text = "Khen thưởng";
             this.radioKhenThuong.UseVisualStyleBackColor = true;
-            // 
-            // btnSua
-            // 
-            this.btnSua.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnSua.Location = new System.Drawing.Point(1200, 13);
-            this.btnSua.Name = "btnSua";
-            this.btnSua.Size = new System.Drawing.Size(100, 40);
-            this.btnSua.TabIndex = 2;
-            this.btnSua.Text = "Sửa";
-            // 
-            // btnSuaFile
-            // 
-            this.btnSuaFile.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnSuaFile.Location = new System.Drawing.Point(1320, 13);
-            this.btnSuaFile.Name = "btnSuaFile";
-            this.btnSuaFile.Size = new System.Drawing.Size(120, 40);
-            this.btnSuaFile.TabIndex = 3;
-            this.btnSuaFile.Text = "Sửa file đính kèm";
-            // 
-            // btnXoa
-            // 
-            this.btnXoa.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnXoa.Location = new System.Drawing.Point(1460, 13);
-            this.btnXoa.Name = "btnXoa";
-            this.btnXoa.Size = new System.Drawing.Size(100, 40);
-            this.btnXoa.TabIndex = 4;
-            this.btnXoa.Text = "Xóa";
             // 
             // dgvDanhSach
             // 
@@ -229,7 +242,6 @@
             this.metroTile1.TabIndex = 3;
             this.metroTile1.Text = "Danh sách Khen thưởng - Kỷ luật";
             this.metroTile1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.metroTile1.TileTextFontSize = MetroFramework.MetroTileTextSize.Medium;
             this.metroTile1.TileTextFontWeight = MetroFramework.MetroTileTextWeight.Bold;
             // 
             // PageDanhSachKhenThuongKyLuat
@@ -262,6 +274,7 @@
         private MetroFramework.Controls.MetroButton btnTimKiem;
         private MetroFramework.Controls.MetroTextBox txtTimKiem;
         private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Button btnXuatExcel;
         private MetroFramework.Controls.MetroButton btnSuaFile;
         private MetroFramework.Controls.MetroButton btnXoa;
         private MetroFramework.Controls.MetroButton btnSua;

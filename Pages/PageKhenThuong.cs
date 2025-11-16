@@ -93,6 +93,7 @@ namespace QuanLyDangVien.Pages
             InitializeServices();
             SetupUI();
             LoadData();
+            ApplyPermissions();
         }
 
         private void InitializeServices()
@@ -505,6 +506,11 @@ namespace QuanLyDangVien.Pages
 
         private void BtnLuu_Click(object sender, EventArgs e)
         {
+            if (!AuthorizationHelper.HasPermission("KhenThuong", "Create"))
+            {
+                MessageBox.Show("Bạn không có quyền thêm khen thưởng!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             if (_dangVienSelected == null)
             {
                 MessageBox.Show("Vui lòng chọn đảng viên!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -603,6 +609,15 @@ namespace QuanLyDangVien.Pages
             rtxtNoiDung.Clear();
             lblFileDinhKem.Text = "Chưa chọn file";
             lblFileDinhKem.ForeColor = Color.Gray;
+        }
+
+        /// <summary>
+        /// Áp dụng phân quyền cho các control dựa trên vai trò người dùng
+        /// </summary>
+        private void ApplyPermissions()
+        {
+            bool canCreate = AuthorizationHelper.HasPermission("KhenThuong", "Create");
+            if (btnLuu != null) btnLuu.Enabled = canCreate;
         }
     }
 }

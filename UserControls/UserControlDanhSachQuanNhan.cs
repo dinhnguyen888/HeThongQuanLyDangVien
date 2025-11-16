@@ -11,6 +11,7 @@ using System.Diagnostics;
 using QuanLyDangVien.Services;
 using QuanLyDangVien.Models;
 using QuanLyDangVien.DTOs;
+using QuanLyDangVien.Helper;
 using MetroFramework.Controls;
 using ClosedXML.Excel;
 using DocumentFormat.OpenXml;
@@ -36,6 +37,7 @@ namespace QuanLyDangVien.UserControls
             _quanNhanService = new QuanNhanService();
             _donViService = new DonViService();
             InitializeData();
+            ApplyPermissions();
         }
 
         private void InitializeData()
@@ -495,6 +497,11 @@ namespace QuanLyDangVien.UserControls
 
         private void btnThem_Click(object sender, EventArgs e)
         {
+            if (!AuthorizationHelper.HasPermission("QuanNhan", "Create"))
+            {
+                MessageBox.Show("Bạn không có quyền thêm quân nhân!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             try
             {
                 var formThem = new FormThem(typeof(QuanNhan));
@@ -528,6 +535,11 @@ namespace QuanLyDangVien.UserControls
 
         private void btnSua_Click(object sender, EventArgs e)
         {
+            if (!AuthorizationHelper.HasPermission("QuanNhan", "Update"))
+            {
+                MessageBox.Show("Bạn không có quyền sửa quân nhân!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             if (dgvQuanNhan.SelectedRows.Count == 0)
             {
                 MessageBox.Show("Vui lòng chọn quân nhân cần sửa!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -612,6 +624,11 @@ namespace QuanLyDangVien.UserControls
 
         private void btnXoa_Click(object sender, EventArgs e)
         {
+            if (!AuthorizationHelper.HasPermission("QuanNhan", "Delete"))
+            {
+                MessageBox.Show("Bạn không có quyền xóa quân nhân!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             if (dgvQuanNhan.SelectedRows.Count == 0)
             {
                 MessageBox.Show("Vui lòng chọn quân nhân cần xóa!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -710,6 +727,11 @@ namespace QuanLyDangVien.UserControls
 
         private void btnXuatExcel_Click(object sender, EventArgs e)
         {
+            if (!AuthorizationHelper.HasPermission("QuanNhan", "Export"))
+            {
+                MessageBox.Show("Bạn không có quyền xuất dữ liệu!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             try
             {
                 if (dgvQuanNhan.Rows.Count == 0)
@@ -870,6 +892,22 @@ namespace QuanLyDangVien.UserControls
                 if (control.HasChildren)
                     BindDonViComboBoxes(control, donViData);
             }
+        }
+
+        /// <summary>
+        /// Áp dụng phân quyền cho các control dựa trên vai trò người dùng
+        /// </summary>
+        private void ApplyPermissions()
+        {
+            bool canCreate = AuthorizationHelper.HasPermission("QuanNhan", "Create");
+            bool canUpdate = AuthorizationHelper.HasPermission("QuanNhan", "Update");
+            bool canDelete = AuthorizationHelper.HasPermission("QuanNhan", "Delete");
+            bool canExport = AuthorizationHelper.HasPermission("QuanNhan", "Export");
+
+            if (btnThem != null) btnThem.Enabled = canCreate;
+            if (btnSua != null) btnSua.Enabled = canUpdate;
+            if (btnXoa != null) btnXoa.Enabled = canDelete;
+            if (btnXuatExcel != null) btnXuatExcel.Enabled = canExport;
         }
     }
 }

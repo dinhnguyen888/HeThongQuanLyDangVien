@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace QuanLyDangVien.Services
 {
@@ -14,6 +15,12 @@ namespace QuanLyDangVien.Services
     /// </summary>
     public class ChuyenSinhHoatDangService
     {
+        private AuditLogService _auditLogService;
+
+        public ChuyenSinhHoatDangService()
+        {
+            _auditLogService = new AuditLogService();
+        }
         /// <summary>
         /// Lấy tất cả chuyển sinh hoạt đảng
         /// </summary>
@@ -148,6 +155,15 @@ namespace QuanLyDangVien.Services
                     if (returnValue == 0 && string.IsNullOrEmpty(errorMessage))
                     {
                         int id = parameters.Get<int>("@ChuyenSinhHoatID");
+                        
+                        // Ghi Audit Log
+                        try
+                        {
+                            string newValues = JsonConvert.SerializeObject(chuyenSinhHoat, Formatting.None);
+                            _auditLogService.LogAction("Insert", "ChuyenSinhHoatDang", id, null, newValues);
+                        }
+                        catch { } // Không throw nếu audit log lỗi
+                        
                         return (id, null);
                     }
                     else
@@ -169,6 +185,18 @@ namespace QuanLyDangVien.Services
         {
             using (var conn = DbHelper.GetConnection())
             {
+                // Lấy dữ liệu cũ trước khi update để ghi Audit Log
+                string oldValues = null;
+                try
+                {
+                    var oldDTO = GetById(chuyenSinhHoat.ChuyenSinhHoatID);
+                    if (oldDTO != null)
+                    {
+                        oldValues = JsonConvert.SerializeObject(oldDTO, Formatting.None);
+                    }
+                }
+                catch { } // Không throw nếu không lấy được old values
+
                 try
                 {
                     var parameters = new DynamicParameters();
@@ -189,7 +217,17 @@ namespace QuanLyDangVien.Services
                     string errorMessage = parameters.Get<string>("@ErrorMessage");
                     
                     if (returnValue == 0 && string.IsNullOrEmpty(errorMessage))
+                    {
+                        // Ghi Audit Log
+                        try
+                        {
+                            string newValues = JsonConvert.SerializeObject(chuyenSinhHoat, Formatting.None);
+                            _auditLogService.LogAction("Update", "ChuyenSinhHoatDang", chuyenSinhHoat.ChuyenSinhHoatID, oldValues, newValues);
+                        }
+                        catch { } // Không throw nếu audit log lỗi
+                        
                         return (true, null);
+                    }
                     else
                         return (false, errorMessage ?? "Không tìm thấy chuyển sinh hoạt đảng hoặc không thể cập nhật");
                 }
@@ -207,6 +245,18 @@ namespace QuanLyDangVien.Services
         {
             using (var conn = DbHelper.GetConnection())
             {
+                // Lấy dữ liệu cũ trước khi delete để ghi Audit Log
+                string oldValues = null;
+                try
+                {
+                    var oldDTO = GetById(chuyenSinhHoatID);
+                    if (oldDTO != null)
+                    {
+                        oldValues = JsonConvert.SerializeObject(oldDTO, Formatting.None);
+                    }
+                }
+                catch { } // Không throw nếu không lấy được old values
+
                 try
                 {
                     var parameters = new DynamicParameters();
@@ -220,7 +270,16 @@ namespace QuanLyDangVien.Services
                     string errorMessage = parameters.Get<string>("@ErrorMessage");
                     
                     if (returnValue == 0 && string.IsNullOrEmpty(errorMessage))
+                    {
+                        // Ghi Audit Log
+                        try
+                        {
+                            _auditLogService.LogAction("Delete", "ChuyenSinhHoatDang", chuyenSinhHoatID, oldValues, null);
+                        }
+                        catch { } // Không throw nếu audit log lỗi
+                        
                         return (true, null);
+                    }
                     else
                         return (false, errorMessage ?? "Không tìm thấy chuyển sinh hoạt đảng hoặc không thể xóa");
                 }

@@ -161,19 +161,38 @@ namespace QuanLyDangVien.DTOs
         [ReadOnlyField]
         public int DangVienID { get; set; }
 
-        [DisplayName("Đơn vị")]
+        [DisplayName("Đơn vị cấp 3")]
         [ReadOnlyField]
         public int DonViID { get; set; }
+
+        [DisplayName("Đơn vị cấp 1")]
+        [ControlType(ControlInputType.TextBox)]
+        [ReadOnlyField]
+        public string DonViCap1 { get; set; }
+
+        [DisplayName("Đơn vị cấp 2")]
+        [ControlType(ControlInputType.TextBox)]
+        [ReadOnlyField]
+        public string DonViCap2 { get; set; }
 
         [DisplayName("Tên đơn vị")]
         [ControlType(ControlInputType.TextBox)]
         [ReadOnlyField]
         public string TenDonVi { get; set; }
 
+        [DisplayName("Họ tên khai sinh")]
+        [Required]
+        [ControlType(ControlInputType.TextBox)]
+        public string HoTenKhaiSinh { get; set; }
+
         [DisplayName("Họ và tên")]
         [Required]
         [ControlType(ControlInputType.TextBox)]
         public string HoTen { get; set; }
+
+        [DisplayName("Họ tên khác")]
+        [ControlType(ControlInputType.TextBox)]
+        public string HoTenKhac { get; set; }
 
         [DisplayName("Ngày sinh")]
         [ControlType(ControlInputType.DateTimePicker)]
@@ -200,6 +219,26 @@ namespace QuanLyDangVien.DTOs
         [DisplayName("Số lý lịch Đảng viên")]
         [ControlType(ControlInputType.TextBox)]
         public string SoLyLichDangVien { get; set; }
+
+        [DisplayName("Ngày tham gia cách mạng")]
+        [ControlType(ControlInputType.DateTimePicker)]
+        public DateTime? NgayThamGiaCachMang { get; set; }
+
+        [DisplayName("Ngày tuyển dụng")]
+        [ControlType(ControlInputType.DateTimePicker)]
+        public DateTime? NgayTuyenDung { get; set; }
+
+        [DisplayName("Ngày nhập ngũ")]
+        [ControlType(ControlInputType.DateTimePicker)]
+        public DateTime? NgayNhapNgu { get; set; }
+
+        [DisplayName("Ngày xuất ngũ")]
+        [ControlType(ControlInputType.DateTimePicker)]
+        public DateTime? NgayXuatNgu { get; set; }
+
+        [DisplayName("Ngày tái ngũ")]
+        [ControlType(ControlInputType.DateTimePicker)]
+        public DateTime? NgayTaiNgu { get; set; }
 
         [DisplayName("Ngày vào Đảng")]
         [ControlType(ControlInputType.DateTimePicker)]
@@ -257,11 +296,6 @@ namespace QuanLyDangVien.DTOs
         [ControlType(ControlInputType.TextBox)]
         public string NgheNghiep { get; set; }
 
-        [DisplayName("Trình độ học vấn")]
-        [ControlType(ControlInputType.ComboBox)]
-        [ComboBoxData("Tiểu học", "Tiểu học", "Trung học cơ sở", "Trung học cơ sở", "Trung học phổ thông", "Trung học phổ thông", "Đại học", "Đại học", "Cao học", "Cao học", "Tiến sĩ", "Tiến sĩ")]
-        public string TrinhDoHocVan { get; set; }
-
         [DisplayName("Trình độ chuyên môn")]
         [ControlType(ControlInputType.ComboBox)]
         [ComboBoxData("Quân sự", "Quân sự", "Y tế", "Y tế", "Kỹ thuật", "Kỹ thuật", "Quản lý", "Quản lý", "Tài chính", "Tài chính", "Khác", "Khác")]
@@ -272,10 +306,82 @@ namespace QuanLyDangVien.DTOs
         [ComboBoxData("Cao", "Cao", "Trung bình", "Trung bình", "Thấp", "Thấp")]
         public string LyLuanChinhTri { get; set; }
 
+        [DisplayName("Chức danh khoa học")]
+        public string ChucDanhKhoaHoc { get; set; }
+
+        [DisplayName("Học vị cao nhất")]
+        public string HocViCaoNhat { get; set; }
+
+        [DisplayName("Chuyên ngành")]
+        public string ChuyenNganh { get; set; }
+
+        [DisplayName("Thời gian học vị")]
+        public string ThoiGianHocVi { get; set; }
+
+        [DisplayName("Trình độ chỉ huy, quản lý")]
+        [ControlType(ControlInputType.ComboBox)]
+        [ComboBoxData("Sơ cấp", "Sơ cấp", "Trung cấp", "Trung cấp", "Cao cấp", "Cao cấp")]
+        public string TrinhDoChiHuyQuanLy { get; set; }
+
         [DisplayName("Ngoại ngữ")]
         [ControlType(ControlInputType.ComboBox)]
         [ComboBoxData("Tiếng Anh", "Tiếng Anh", "Tiếng Pháp", "Tiếng Pháp", "Tiếng Trung", "Tiếng Trung", "Tiếng Nhật", "Tiếng Nhật", "Khác", "Khác")]
         public string NgoaiNgu { get; set; }
+
+        [DisplayName("Trình độ ngoại ngữ")]
+        [ControlType(ControlInputType.ComboBox)]
+        [ComboBoxData("Sơ cấp", "Sơ cấp", "Trung cấp", "Trung cấp", "Cao cấp", "Cao cấp")]
+        public string TrinhDoNgoaiNgu { get; set; }
+
+        [DisplayName("Thời gian ngoại ngữ")]
+        public string ThoiGianNgoaiNgu { get; set; }
+
+        [DisplayName("Tiếng dân tộc – mức độ nghe/nói/viết")]
+        [ControlType(ControlInputType.RichTextBox)]
+        public string TiengDanToc { get; set; }
+
+        [DisplayName("Quá trình học tập tại các trường")]
+        [ControlType(ControlInputType.RichTextBox)]
+        public string QuaTrinhHocTap { get; set; }
+
+        [DisplayName("Chiến đấu, phục vụ chiến đấu")]
+        [ControlType(ControlInputType.RichTextBox)]
+        public string ChienDauPhucVuChienDau { get; set; }
+
+        [DisplayName("Đi nước ngoài")]
+        [ControlType(ControlInputType.RichTextBox)]
+        public string DiNuocNgoai { get; set; }
+
+        [DisplayName("Sức khỏe loại")]
+        [ControlType(ControlInputType.ComboBox)]
+        [ComboBoxData("Tốt", "Tốt", "Khá", "Khá", "Trung bình", "Trung bình", "Yếu", "Yếu")]
+        public string SucKhoeLoai { get; set; }
+
+        [DisplayName("Nhóm máu")]
+        [ControlType(ControlInputType.ComboBox)]
+        [ComboBoxData("A", "A", "B", "B", "AB", "AB", "O", "O")]
+        public string NhomMau { get; set; }
+
+        [DisplayName("Bệnh chính")]
+        public string BenhChinh { get; set; }
+
+        [DisplayName("Thương tật")]
+        [ControlType(ControlInputType.RichTextBox)]
+        public string ThuongTat { get; set; }
+
+        [DisplayName("Danh hiệu được phong")]
+        [ControlType(ControlInputType.RichTextBox)]
+        public string DanhHieuDuocPhong { get; set; }
+
+        [DisplayName("Nghề nghiệp trước khi nhập ngũ")]
+        public string NgheNghiepTruocNhapNgu { get; set; }
+
+        [DisplayName("Quan hệ CT-XH trước khi nhập ngũ")]
+        public string QuanHeCTXHTruocNhapNgu { get; set; }
+
+        [DisplayName("Tình hình nhà ở")]
+        [ControlType(ControlInputType.RichTextBox)]
+        public string TinhHinhNhaO { get; set; }
 
         [DisplayName("Tin học")]
         [ControlType(ControlInputType.ComboBox)]
@@ -293,6 +399,103 @@ namespace QuanLyDangVien.DTOs
         [DisplayName("Hồ sơ gia đình")]
         [ControlType(ControlInputType.RichTextBox)]
         public string HoSoGiaDinh { get; set; }
+
+        // II. TÌNH HÌNH KINH TẾ – CHÍNH TRỊ GIA ĐÌNH
+        [DisplayName("Họ tên cha")]
+        public string HoTenCha { get; set; }
+
+        [DisplayName("Năm sinh cha")]
+        public int? NamSinhCha { get; set; }
+
+        [DisplayName("Nghề nghiệp cha")]
+        public string NgheNghiepCha { get; set; }
+
+        [DisplayName("Họ tên mẹ")]
+        public string HoTenMe { get; set; }
+
+        [DisplayName("Năm sinh mẹ")]
+        public int? NamSinhMe { get; set; }
+
+        [DisplayName("Nghề nghiệp mẹ")]
+        public string NgheNghiepMe { get; set; }
+
+        [DisplayName("Thành phần gia đình")]
+        public string ThanhPhanGiaDinh { get; set; }
+
+        [DisplayName("Quê quán của cha mẹ")]
+        public string QueQuanChaMe { get; set; }
+
+        [DisplayName("Chỗ ở hiện nay của cha mẹ")]
+        [ControlType(ControlInputType.RichTextBox)]
+        public string ChoOHienNayChaMe { get; set; }
+
+        [DisplayName("Số con trong gia đình (cha mẹ sinh được)")]
+        public int? SoConTrongGiaDinh { get; set; }
+
+        [DisplayName("Giới tính/Thứ tự của bản thân trong gia đình")]
+        public string GioiTinhThuTuBanThan { get; set; }
+
+        [DisplayName("Tình hình kinh tế của gia đình")]
+        [ControlType(ControlInputType.RichTextBox)]
+        public string TinhHinhKinhTeGiaDinh { get; set; }
+
+        [DisplayName("Tình hình chính trị của gia đình")]
+        [ControlType(ControlInputType.RichTextBox)]
+        public string TinhHinhChinhTriGiaDinh { get; set; }
+
+        // III. TÌNH HÌNH KT – CT CỦA GIA ĐÌNH VỢ (CHỒNG)
+        [DisplayName("Họ tên cha vợ/chồng")]
+        public string HoTenChaVoChong { get; set; }
+
+        [DisplayName("Năm sinh cha vợ/chồng")]
+        public int? NamSinhChaVoChong { get; set; }
+
+        [DisplayName("Nghề nghiệp cha vợ/chồng")]
+        public string NgheNghiepChaVoChong { get; set; }
+
+        [DisplayName("Họ tên mẹ vợ/chồng")]
+        public string HoTenMeVoChong { get; set; }
+
+        [DisplayName("Năm sinh mẹ vợ/chồng")]
+        public int? NamSinhMeVoChong { get; set; }
+
+        [DisplayName("Nghề nghiệp mẹ vợ/chồng")]
+        public string NgheNghiepMeVoChong { get; set; }
+
+        [DisplayName("Thành phần gia đình vợ/chồng")]
+        public string ThanhPhanGiaDinhVoChong { get; set; }
+
+        [DisplayName("Quê quán gia đình vợ/chồng")]
+        public string QueQuanGiaDinhVoChong { get; set; }
+
+        [DisplayName("Chỗ ở hiện nay của gia đình vợ/chồng")]
+        [ControlType(ControlInputType.RichTextBox)]
+        public string ChoOHienNayGiaDinhVoChong { get; set; }
+
+        [DisplayName("Số con trong gia đình vợ/chồng")]
+        public int? SoConTrongGiaDinhVoChong { get; set; }
+
+        [DisplayName("Thứ tự của vợ/chồng trong gia đình")]
+        public string ThuTuVoChongTrongGiaDinh { get; set; }
+
+        [DisplayName("Tình hình KT-CT của gia đình vợ/chồng")]
+        [ControlType(ControlInputType.RichTextBox)]
+        public string TinhHinhKTCTGiaDinhVoChong { get; set; }
+
+        [DisplayName("Nghề nghiệp của vợ/chồng")]
+        public string NgheNghiepVoChong { get; set; }
+
+        [DisplayName("Đảng viên hay không")]
+        [ControlType(ControlInputType.CheckBox)]
+        public bool? DangVienHayKhong { get; set; }
+
+        [DisplayName("Nơi ở hiện nay của vợ/chồng")]
+        [ControlType(ControlInputType.RichTextBox)]
+        public string NoiOHienNayVoChong { get; set; }
+
+        [DisplayName("Họ tên – năm sinh – nghề nghiệp các con")]
+        [ControlType(ControlInputType.RichTextBox)]
+        public string ThongTinCacCon { get; set; }
 
         [DisplayName("Trạng thái")]
         [ReadOnlyField]

@@ -1,5 +1,7 @@
 ﻿using QuanLyDangVien.Attributes;
 using QuanLyDangVien.Helper;
+using QuanLyDangVien.Services;
+using QuanLyDangVien.DTOs;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -48,8 +50,13 @@ namespace QuanLyDangVien
             _controlsDictionary = new Dictionary<string, Control>();
             _propertiesDictionary = new Dictionary<string, PropertyInfo>();
 
-            // Đặt title cho form
-            this.Text = $"Chỉnh sửa {_dataType.Name}";
+            // Đặt title cho form - đẹp hơn
+            string displayName = _dataType.Name;
+            if (displayName == "NguoiDung") displayName = "Người dùng";
+            else if (displayName == "DangVien") displayName = "Đảng viên";
+            else if (displayName == "QuanNhan") displayName = "Quân nhân";
+            else if (displayName == "DonVi") displayName = "Đơn vị";
+            this.Text = $"Chỉnh sửa {displayName}";
 
             // Tạo dynamic controls
             TaoDynamicControls();
@@ -58,6 +65,12 @@ namespace QuanLyDangVien
             LoadDataToControls();
             // Thêm TextBox "Giá trị cũ" trước các ComboBox
             AddOldValueTextBoxesForComboBoxes();
+            
+            // Setup DonVi ComboBoxes nếu là DangVien
+            if (_dataType.Name == "DangVien")
+            {
+                SetupDonViComboBoxes();
+            }
         }
 
         private void TaoDynamicControls()
@@ -405,6 +418,349 @@ namespace QuanLyDangVien
             System.Diagnostics.Debug.WriteLine($"GetData() returning object of type: {_dataObject.GetType().Name}");
             
             return _dataObject;
+        }
+
+        /// <summary>
+        /// Setup DonVi ComboBoxes với logic cascade
+        /// </summary>
+        private void SetupDonViComboBoxes()
+        {
+            try
+            {
+                var donViService = new DonViService();
+                var allDonVi = donViService.GetAll();
+
+                // DonViCap1: các DonVi không có CapTrenID
+                if (_controlsDictionary.ContainsKey("DonViCap1"))
+                {
+                    var cboDonViCap1 = _controlsDictionary["DonViCap1"] as ComboBox;
+                    if (cboDonViCap1 != null)
+                    {
+                        var donViCap1List = allDonVi.Where(dv => !dv.CapTrenID.HasValue)
+                            .Select(dv => new { Key = dv.TenDonVi, Value = dv.TenDonVi })
+                            .ToList();
+                        cboDonViCap1.DataSource = donViCap1List;
+                        cboDonViCap1.DisplayMember = "Value";
+                        cboDonViCap1.ValueMember = "Key";
+                        cboDonViCap1.SelectedIndexChanged += CboDonViCap1_SelectedIndexChanged;
+                        
+                        // Load giá trị hiện tại nếu có (từ DonViCap1 property hoặc tính từ DonViID)
+                        var property = _propertiesDictionary.ContainsKey("DonViCap1") 
+                            ? _propertiesDictionary["DonViCap1"] : null;
+                        string currentDonViCap1 = null;
+                        if (property != null)
+                        {
+                            currentDonViCap1 = property.GetValue(_dataObject) as string;
+                        }
+                        
+                        // Nếu không có DonViCap1, tính từ DonViID
+                        if (string.IsNullOrEmpty(currentDonViCap1))
+                        {
+                            var donViIDProperty = _propertiesDictionary.ContainsKey("DonViID") 
+                                ? _propertiesDictionary["DonViID"] : null;
+                            if (donViIDProperty != null)
+                            {
+                                var currentDonViID = Convert.ToInt32(donViIDProperty.GetValue(_dataObject) ?? 0);
+                                if (currentDonViID > 0)
+                                {
+                                    // Tính DonViCap1 từ DonViID
+                                    var currentDonVi = allDonVi.FirstOrDefault(dv => dv.DonViID == currentDonViID);
+                                    if (currentDonVi != null && currentDonVi.CapTrenID.HasValue)
+                                    {
+                                        var donViCap2 = allDonVi.FirstOrDefault(dv => dv.DonViID == currentDonVi.CapTrenID.Value);
+                                        if (donViCap2 != null && donViCap2.CapTrenID.HasValue)
+                                        {
+                                            var donViCap1 = allDonVi.FirstOrDefault(dv => dv.DonViID == donViCap2.CapTrenID.Value);
+                                            if (donViCap1 != null)
+                                            {
+                                                currentDonViCap1 = donViCap1.TenDonVi;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        
+                        if (!string.IsNullOrEmpty(currentDonViCap1))
+                        {
+                            cboDonViCap1.SelectedValue = currentDonViCap1;
+                        }
+                    }
+                }
+
+                // DonViCap2: sẽ được load khi chọn DonViCap1
+                if (_controlsDictionary.ContainsKey("DonViCap2"))
+                {
+                    var cboDonViCap2 = _controlsDictionary["DonViCap2"] as ComboBox;
+                    if (cboDonViCap2 != null)
+                    {
+                        cboDonViCap2.SelectedIndexChanged += CboDonViCap2_SelectedIndexChanged;
+                        
+                        // Load giá trị hiện tại nếu có (từ DonViCap2 property hoặc tính từ DonViID)
+                        var property = _propertiesDictionary.ContainsKey("DonViCap2") 
+                            ? _propertiesDictionary["DonViCap2"] : null;
+                        string currentDonViCap2 = null;
+                        if (property != null)
+                        {
+                            currentDonViCap2 = property.GetValue(_dataObject) as string;
+                        }
+                        
+                        // Nếu không có DonViCap2, tính từ DonViID
+                        if (string.IsNullOrEmpty(currentDonViCap2))
+                        {
+                            var donViIDProperty = _propertiesDictionary.ContainsKey("DonViID") 
+                                ? _propertiesDictionary["DonViID"] : null;
+                            if (donViIDProperty != null)
+                            {
+                                var currentDonViID = Convert.ToInt32(donViIDProperty.GetValue(_dataObject) ?? 0);
+                                if (currentDonViID > 0)
+                                {
+                                    // Tính DonViCap2 từ DonViID
+                                    var currentDonVi = allDonVi.FirstOrDefault(dv => dv.DonViID == currentDonViID);
+                                    if (currentDonVi != null && currentDonVi.CapTrenID.HasValue)
+                                    {
+                                        var donViCap2 = allDonVi.FirstOrDefault(dv => dv.DonViID == currentDonVi.CapTrenID.Value);
+                                        if (donViCap2 != null)
+                                        {
+                                            currentDonViCap2 = donViCap2.TenDonVi;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        
+                        if (!string.IsNullOrEmpty(currentDonViCap2))
+                        {
+                            // Cần load DonViCap2 list trước
+                            LoadDonViCap2List(currentDonViCap2);
+                        }
+                    }
+                }
+
+                // DonViID: sẽ được load khi chọn DonViCap2
+                if (_controlsDictionary.ContainsKey("DonViID"))
+                {
+                    var cboDonViID = _controlsDictionary["DonViID"] as ComboBox;
+                    if (cboDonViID != null)
+                    {
+                        // Load giá trị hiện tại nếu có
+                        var property = _propertiesDictionary.ContainsKey("DonViID") 
+                            ? _propertiesDictionary["DonViID"] : null;
+                        if (property != null)
+                        {
+                            var currentDonViID = property.GetValue(_dataObject);
+                            if (currentDonViID != null && Convert.ToInt32(currentDonViID) > 0)
+                            {
+                                // Cần load DonViID list trước
+                                LoadDonViIDList(Convert.ToInt32(currentDonViID));
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi setup DonVi ComboBoxes: {ex.Message}", "Lỗi", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void LoadDonViCap2List(string selectedDonViCap2)
+        {
+            try
+            {
+                var donViService = new DonViService();
+                var allDonVi = donViService.GetAll();
+                
+                // Tìm DonViCap2
+                var donViCap2 = allDonVi.FirstOrDefault(dv => dv.TenDonVi == selectedDonViCap2);
+                if (donViCap2 != null && donViCap2.CapTrenID.HasValue)
+                {
+                    // Tìm DonViCap1 từ DonViCap2
+                    var donViCap1 = allDonVi.FirstOrDefault(dv => dv.DonViID == donViCap2.CapTrenID.Value);
+                    if (donViCap1 != null && _controlsDictionary.ContainsKey("DonViCap1"))
+                    {
+                        var cboDonViCap1 = _controlsDictionary["DonViCap1"] as ComboBox;
+                        if (cboDonViCap1 != null)
+                        {
+                            // Tạm thời tắt event để tránh trigger cascade
+                            cboDonViCap1.SelectedIndexChanged -= CboDonViCap1_SelectedIndexChanged;
+                            cboDonViCap1.SelectedValue = donViCap1.TenDonVi;
+                            cboDonViCap1.SelectedIndexChanged += CboDonViCap1_SelectedIndexChanged;
+                            
+                            // Load DonViCap2 list từ DonViCap1
+                            var donViCap2List = allDonVi.Where(dv => dv.CapTrenID == donViCap1.DonViID)
+                                .Select(dv => new { Key = dv.TenDonVi, Value = dv.TenDonVi })
+                                .ToList();
+                            
+                            if (_controlsDictionary.ContainsKey("DonViCap2"))
+                            {
+                                var cboDonViCap2 = _controlsDictionary["DonViCap2"] as ComboBox;
+                                if (cboDonViCap2 != null)
+                                {
+                                    cboDonViCap2.DataSource = donViCap2List;
+                                    cboDonViCap2.DisplayMember = "Value";
+                                    cboDonViCap2.ValueMember = "Key";
+                                    cboDonViCap2.Enabled = donViCap2List.Count > 0;
+                                    cboDonViCap2.SelectedValue = selectedDonViCap2;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Lỗi khi load DonViCap2 list: {ex.Message}");
+            }
+        }
+
+        private void LoadDonViIDList(int currentDonViID)
+        {
+            try
+            {
+                var donViService = new DonViService();
+                var allDonVi = donViService.GetAll();
+                
+                var currentDonVi = allDonVi.FirstOrDefault(dv => dv.DonViID == currentDonViID);
+                if (currentDonVi != null && currentDonVi.CapTrenID.HasValue)
+                {
+                    // Tìm DonViCap2 (cấp trên của DonViID hiện tại)
+                    var donViCap2 = allDonVi.FirstOrDefault(dv => dv.DonViID == currentDonVi.CapTrenID.Value);
+                    if (donViCap2 != null)
+                    {
+                        // Load DonViCap2 list trước
+                        LoadDonViCap2List(donViCap2.TenDonVi);
+                        
+                        // Load DonViID list từ DonViCap2
+                        if (_controlsDictionary.ContainsKey("DonViID"))
+                        {
+                            var cboDonViID = _controlsDictionary["DonViID"] as ComboBox;
+                            if (cboDonViID != null)
+                            {
+                                var donViIDList = allDonVi.Where(dv => dv.CapTrenID == donViCap2.DonViID)
+                                    .Select(dv => new { Key = dv.DonViID, Value = dv.TenDonVi })
+                                    .ToList();
+                                cboDonViID.DataSource = donViIDList;
+                                cboDonViID.DisplayMember = "Value";
+                                cboDonViID.ValueMember = "Key";
+                                cboDonViID.Enabled = donViIDList.Count > 0;
+                                cboDonViID.SelectedValue = currentDonViID;
+                            }
+                        }
+                    }
+                }
+                else if (currentDonVi != null && !currentDonVi.CapTrenID.HasValue)
+                {
+                    // Nếu DonViID hiện tại không có CapTrenID, có thể nó là DonViCap1
+                    // Trong trường hợp này, không có DonViCap2 và DonViID sẽ là chính nó
+                    if (_controlsDictionary.ContainsKey("DonViID"))
+                    {
+                        var cboDonViID = _controlsDictionary["DonViID"] as ComboBox;
+                        if (cboDonViID != null)
+                        {
+                            var donViIDList = new[] { new { Key = currentDonViID, Value = currentDonVi.TenDonVi } }.ToList();
+                            cboDonViID.DataSource = donViIDList;
+                            cboDonViID.DisplayMember = "Value";
+                            cboDonViID.ValueMember = "Key";
+                            cboDonViID.Enabled = true;
+                            cboDonViID.SelectedValue = currentDonViID;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Lỗi khi load DonViID list: {ex.Message}");
+            }
+        }
+
+        private void CboDonViCap1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                var cboDonViCap1 = sender as ComboBox;
+                if (cboDonViCap1 == null || cboDonViCap1.SelectedValue == null) return;
+
+                string selectedDonViCap1 = cboDonViCap1.SelectedValue.ToString();
+                var donViService = new DonViService();
+                var allDonVi = donViService.GetAll();
+
+                // Tìm DonViID của DonViCap1 đã chọn
+                var donViCap1 = allDonVi.FirstOrDefault(dv => dv.TenDonVi == selectedDonViCap1);
+                if (donViCap1 == null) return;
+
+                // Load DonViCap2: các DonVi có CapTrenID = DonViCap1.DonViID
+                if (_controlsDictionary.ContainsKey("DonViCap2"))
+                {
+                    var cboDonViCap2 = _controlsDictionary["DonViCap2"] as ComboBox;
+                    if (cboDonViCap2 != null)
+                    {
+                        var donViCap2List = allDonVi.Where(dv => dv.CapTrenID == donViCap1.DonViID)
+                            .Select(dv => new { Key = dv.TenDonVi, Value = dv.TenDonVi })
+                            .ToList();
+                        cboDonViCap2.DataSource = donViCap2List;
+                        cboDonViCap2.DisplayMember = "Value";
+                        cboDonViCap2.ValueMember = "Key";
+                        cboDonViCap2.Enabled = donViCap2List.Count > 0;
+                        cboDonViCap2.SelectedIndex = -1;
+                    }
+                }
+
+                // Reset DonViID
+                if (_controlsDictionary.ContainsKey("DonViID"))
+                {
+                    var cboDonViID = _controlsDictionary["DonViID"] as ComboBox;
+                    if (cboDonViID != null)
+                    {
+                        cboDonViID.DataSource = null;
+                        cboDonViID.Enabled = false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi load DonViCap2: {ex.Message}", "Lỗi", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void CboDonViCap2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                var cboDonViCap2 = sender as ComboBox;
+                if (cboDonViCap2 == null || cboDonViCap2.SelectedValue == null) return;
+
+                string selectedDonViCap2 = cboDonViCap2.SelectedValue.ToString();
+                var donViService = new DonViService();
+                var allDonVi = donViService.GetAll();
+
+                // Tìm DonViID của DonViCap2 đã chọn
+                var donViCap2 = allDonVi.FirstOrDefault(dv => dv.TenDonVi == selectedDonViCap2);
+                if (donViCap2 == null) return;
+
+                // Load DonViID: các DonVi có CapTrenID = DonViCap2.DonViID
+                if (_controlsDictionary.ContainsKey("DonViID"))
+                {
+                    var cboDonViID = _controlsDictionary["DonViID"] as ComboBox;
+                    if (cboDonViID != null)
+                    {
+                        var donViIDList = allDonVi.Where(dv => dv.CapTrenID == donViCap2.DonViID)
+                            .Select(dv => new { Key = dv.DonViID, Value = dv.TenDonVi })
+                            .ToList();
+                        cboDonViID.DataSource = donViIDList;
+                        cboDonViID.DisplayMember = "Value";
+                        cboDonViID.ValueMember = "Key";
+                        cboDonViID.Enabled = donViIDList.Count > 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi load DonViID: {ex.Message}", "Lỗi", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         /// <summary>

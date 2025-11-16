@@ -357,11 +357,33 @@ namespace QuanLyDangVien.Helper
                         // Kiểm tra nếu ComboBox có ValueMember (được bind từ ControlFactory)
                         if (!string.IsNullOrEmpty(comboBox.ValueMember))
                         {
-                            value = comboBox.SelectedValue;
+                            if (comboBox.SelectedIndex == -1)
+                            {
+                                // Nếu không chọn gì, set null hoặc empty string tùy theo property type
+                                if (property.PropertyType == typeof(string))
+                                {
+                                    value = null;
+                                }
+                                else
+                                {
+                                    value = null;
+                                }
+                            }
+                            else
+                            {
+                                value = comboBox.SelectedValue;
+                            }
                         }
                         else
                         {
-                            value = comboBox.SelectedItem;
+                            if (comboBox.SelectedIndex == -1)
+                            {
+                                value = null;
+                            }
+                            else
+                            {
+                                value = comboBox.SelectedItem;
+                            }
                         }
                     }
                     else if (control is NumericUpDown numericUpDown)
@@ -566,8 +588,6 @@ namespace QuanLyDangVien.Helper
             int controlWidth, Dictionary<string, Control> controlsDictionary, 
             Dictionary<string, PropertyInfo> propertiesDictionary, bool isReadOnly = false, bool isEditMode = false)
         {
-            int labelWidth = 150;
-
             foreach (PropertyInfo property in properties)
             {
                 // Filter properties theo mode:
@@ -603,29 +623,39 @@ namespace QuanLyDangVien.Helper
                 fieldContainer.Padding = new Padding(5);
                 fieldContainer.Width = controlWidth;
 
-                // Tạo label
+                // Tạo label với khả năng tự động mở rộng và wrap text
                 Label label = new Label();
-                label.Text = displayName + (isRequired ? " *" : "") + ":";
+                string labelText = displayName + (isRequired ? " *" : "") + ":";
+                label.Text = labelText;
                 label.Location = new Point(0, 5);
-                label.Size = new Size(labelWidth, 23);
-                label.TextAlign = ContentAlignment.MiddleLeft;
+                label.AutoSize = true; // Tự động tính toán chiều cao
+                label.MaximumSize = new Size(controlWidth - 10, 0); // Cho phép wrap text khi quá dài
+                label.TextAlign = ContentAlignment.TopLeft;
                 label.Font = new Font("Segoe UI", 9, isReadOnly ? FontStyle.Bold : FontStyle.Regular);
                 if (isRequired)
                 {
                     label.ForeColor = Color.FromArgb(209, 17, 65);
                 }
                 fieldContainer.Controls.Add(label);
+                
+                // Force layout để label tính toán chiều cao chính xác
+                label.PerformLayout();
+                Application.DoEvents();
+
+                // Tính toán vị trí Y cho input control dựa trên chiều cao thực tế của label
+                int labelHeight = label.Height > 0 ? label.Height : 23; // Fallback nếu chưa tính được
+                int inputControlTop = 5 + labelHeight + 5; // 5px top padding + label height + 5px spacing
 
                 // Tạo control (truyền thông tin read-only cho FileDialog)
                 Control inputControl = ControlFactory.CreateControl(property, fieldIsReadOnly);
-                inputControl.Location = new Point(0, 30);
+                inputControl.Location = new Point(0, inputControlTop);
                 inputControl.Name = property.Name;
 
                 // Set kích thước
                 if (inputControl is RichTextBox)
                 {
                     inputControl.Size = new Size(controlWidth - 10, 400);
-                    fieldContainer.Height = 460;
+                    fieldContainer.Height = inputControlTop + 400 + 5; // inputControlTop + RichTextBox height + bottom padding
                 }
                 else if (inputControl is Panel) // PictureBox container hoặc FileDialog
                 {
@@ -634,19 +664,19 @@ namespace QuanLyDangVien.Helper
                     if (pictureBox != null)
                     {
                         inputControl.Size = new Size(controlWidth - 10, 200);
-                        fieldContainer.Height = 260;
+                        fieldContainer.Height = inputControlTop + 200 + 5; // inputControlTop + PictureBox height + bottom padding
                     }
                     else
                     {
                         // FileDialog - chỉ cần chiều cao vừa đủ
                         inputControl.Size = new Size(controlWidth - 10, 30);
-                        fieldContainer.Height = 65;
+                        fieldContainer.Height = inputControlTop + 30 + 5; // inputControlTop + FileDialog height + bottom padding
                     }
                 }
                 else
                 {
                     inputControl.Size = new Size(controlWidth - 10, 25);
-                    fieldContainer.Height = 65;
+                    fieldContainer.Height = inputControlTop + 25 + 5; // inputControlTop + control height + bottom padding
                 }
 
                 // Set ReadOnly/Disabled

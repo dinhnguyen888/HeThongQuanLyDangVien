@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace QuanLyDangVien.Services
 {
@@ -14,6 +15,12 @@ namespace QuanLyDangVien.Services
     /// </summary>
     public class QuanNhanService
     {
+        private AuditLogService _auditLogService;
+
+        public QuanNhanService()
+        {
+            _auditLogService = new AuditLogService();
+        }
         /// <summary>
         /// Lấy danh sách quân nhân với các điều kiện lọc
         /// </summary>
@@ -100,7 +107,17 @@ namespace QuanLyDangVien.Services
                 try
                 {
                     var result = conn.Execute("QuanNhan_Insert", parameters, commandType: CommandType.StoredProcedure);
-                    return (parameters.Get<int>("@QuanNhanID"), null);
+                    int quanNhanID = parameters.Get<int>("@QuanNhanID");
+                    
+                    // Ghi Audit Log
+                    try
+                    {
+                        string newValues = JsonConvert.SerializeObject(quanNhan, Formatting.None);
+                        _auditLogService.LogAction("Insert", "QuanNhan", quanNhanID, null, newValues);
+                    }
+                    catch { } // Không throw nếu audit log lỗi
+                    
+                    return (quanNhanID, null);
                 }
                 catch (Exception ex)
                 {
@@ -116,6 +133,18 @@ namespace QuanLyDangVien.Services
         {
             using (var conn = DbHelper.GetConnection())
             {
+                // Lấy dữ liệu cũ trước khi update để ghi Audit Log
+                string oldValues = null;
+                try
+                {
+                    var oldQuanNhanDTO = GetById(quanNhan.QuanNhanID);
+                    if (oldQuanNhanDTO != null)
+                    {
+                        oldValues = JsonConvert.SerializeObject(oldQuanNhanDTO, Formatting.None);
+                    }
+                }
+                catch { } // Không throw nếu không lấy được old values
+
                 var parameters = new DynamicParameters();
                 parameters.Add("@QuanNhanID", quanNhan.QuanNhanID);
                 parameters.Add("@DonViID", quanNhan.DonViID);
@@ -151,6 +180,15 @@ namespace QuanLyDangVien.Services
                 try
                 {
                     var result = conn.Execute("QuanNhan_Update", parameters, commandType: CommandType.StoredProcedure);
+                    
+                    // Ghi Audit Log
+                    try
+                    {
+                        string newValues = JsonConvert.SerializeObject(quanNhan, Formatting.None);
+                        _auditLogService.LogAction("Update", "QuanNhan", quanNhan.QuanNhanID, oldValues, newValues);
+                    }
+                    catch { } // Không throw nếu audit log lỗi
+                    
                     return (true, null);
                 }
                 catch (Exception ex)
@@ -167,6 +205,18 @@ namespace QuanLyDangVien.Services
         {
             using (var conn = DbHelper.GetConnection())
             {
+                // Lấy dữ liệu cũ trước khi delete để ghi Audit Log
+                string oldValues = null;
+                try
+                {
+                    var oldQuanNhanDTO = GetById(quanNhanID);
+                    if (oldQuanNhanDTO != null)
+                    {
+                        oldValues = JsonConvert.SerializeObject(oldQuanNhanDTO, Formatting.None);
+                    }
+                }
+                catch { } // Không throw nếu không lấy được old values
+
                 var parameters = new DynamicParameters();
                 parameters.Add("@QuanNhanID", quanNhanID);
                 parameters.Add("ReturnValue", dbType: DbType.Int32, direction: ParameterDirection.ReturnValue);
@@ -177,7 +227,16 @@ namespace QuanLyDangVien.Services
                     int returnValue = parameters.Get<int>("ReturnValue");
 
                     if (returnValue == 1)
+                    {
+                        // Ghi Audit Log
+                        try
+                        {
+                            _auditLogService.LogAction("Delete", "QuanNhan", quanNhanID, oldValues, null);
+                        }
+                        catch { } // Không throw nếu audit log lỗi
+                        
                         return (true, null);
+                    }
                     else
                         return (false, "Xóa quân nhân thất bại.");
                 }

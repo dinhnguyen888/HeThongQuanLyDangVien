@@ -19,7 +19,7 @@ namespace QuanLyDangVien.Models
 
         [DisplayName("Cấp bậc")]
         [ControlType(ControlInputType.ComboBox)]
-        [ComboBoxData("Tá", "Tá", "Úy", "Úy")]
+        [ComboBoxData("Chi bộ", "Chi bộ", "Đoàn bộ", "Đoàn bộ", "Đảng bộ", "Đảng bộ", "Tỉnh ủy", "Tỉnh ủy", "Trung ương", "Trung ương")]
         public string CapBac { get; set; }
 
         [DisplayName("Địa chỉ")]

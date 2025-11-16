@@ -2,6 +2,7 @@
 using QuanLyDangVien.Services;
 using QuanLyDangVien.Models;
 using QuanLyDangVien.DTOs;
+using QuanLyDangVien.Helper;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -36,6 +37,7 @@ namespace QuanLyDangVien
             
             // Mặc định hiển thị tab hồ sơ đơn vị
             ShowHoSoDonVi();
+            ApplyPermissions();
         }
 
         private void InitializeUI()
@@ -535,6 +537,11 @@ namespace QuanLyDangVien
 
         private void BtnThemDangVien_Click(object sender, EventArgs e)
         {
+            if (!AuthorizationHelper.HasPermission("DangVien", "Create", _selectedDonViId > 0 ? _selectedDonViId : (int?)null))
+            {
+                MessageBox.Show("Bạn không có quyền thêm đảng viên!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             if (_selectedDonViId <= 0)
             {
                 MessageBox.Show("Vui lòng chọn đơn vị trước!", "Thông báo",
@@ -579,6 +586,11 @@ namespace QuanLyDangVien
             {
                 MessageBox.Show("Vui lòng chọn đảng viên cần sửa!", "Thông báo",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            if (!AuthorizationHelper.HasPermission("DangVien", "Update", selectedDangVien.DonViID))
+            {
+                MessageBox.Show("Bạn không có quyền sửa đảng viên này!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -636,13 +648,27 @@ namespace QuanLyDangVien
 
         private void BtnXoaDangVien_Click(object sender, EventArgs e)
         {
+            if (dgvDangVien.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Vui lòng chọn ít nhất một đảng viên để xóa!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            // Kiểm tra quyền Delete cho từng đảng viên được chọn
+            foreach (DataGridViewRow row in dgvDangVien.SelectedRows)
+            {
+                var idObj = row.Cells["DangVienID"].Value;
+                if (idObj != null && int.TryParse(idObj.ToString(), out int dangVienID))
+                {
+                    var dangVien = _dangVienService.GetById(dangVienID);
+                    if (dangVien != null && !AuthorizationHelper.HasPermission("DangVien", "Delete", dangVien.DonViID))
+                    {
+                        MessageBox.Show("Bạn không có quyền xóa một số đảng viên đã chọn!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                }
+            }
             try
             {
-                if (dgvDangVien.SelectedRows.Count == 0)
-                {
-                    MessageBox.Show("Vui lòng chọn ít nhất một đảng viên để xóa!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
 
                 if (MessageBox.Show($"Bạn có chắc muốn xóa {dgvDangVien.SelectedRows.Count} đảng viên đã chọn?",
                                     "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
@@ -795,6 +821,11 @@ namespace QuanLyDangVien
 
         private void BtnThemDonVi_Click(object sender, EventArgs e)
         {
+            if (!AuthorizationHelper.HasPermission("DonVi", "Create"))
+            {
+                MessageBox.Show("Bạn không có quyền thêm đơn vị!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             try
             {
                 var newDonVi = new DonVi
@@ -835,6 +866,11 @@ namespace QuanLyDangVien
 
         private void BtnSuaDonVi_Click(object sender, EventArgs e)
         {
+            if (!AuthorizationHelper.HasPermission("DonVi", "Update"))
+            {
+                MessageBox.Show("Bạn không có quyền sửa đơn vị!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             var selectedDonVi = GetSelectedDonVi();
             if (selectedDonVi == null)
             {
@@ -888,6 +924,11 @@ namespace QuanLyDangVien
 
         private void BtnXoaDonVi_Click(object sender, EventArgs e)
         {
+            if (!AuthorizationHelper.HasPermission("DonVi", "Delete"))
+            {
+                MessageBox.Show("Bạn không có quyền xóa đơn vị!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             var selectedDonVi = GetSelectedDonVi();
             if (selectedDonVi == null)
             {
@@ -936,6 +977,24 @@ namespace QuanLyDangVien
             return _donViList?.FirstOrDefault(x => x.DonViID == donViId);
         }
 
-       
+        /// <summary>
+        /// Áp dụng phân quyền cho các control dựa trên vai trò người dùng
+        /// </summary>
+        private void ApplyPermissions()
+        {
+            bool canCreateDonVi = AuthorizationHelper.HasPermission("DonVi", "Create");
+            bool canUpdateDonVi = AuthorizationHelper.HasPermission("DonVi", "Update");
+            bool canDeleteDonVi = AuthorizationHelper.HasPermission("DonVi", "Delete");
+            bool canCreateDangVien = AuthorizationHelper.HasPermission("DangVien", "Create");
+            bool canUpdateDangVien = AuthorizationHelper.HasPermission("DangVien", "Update");
+            bool canDeleteDangVien = AuthorizationHelper.HasPermission("DangVien", "Delete");
+
+            if (btnThemDonVi != null) btnThemDonVi.Enabled = canCreateDonVi;
+            if (btnSuaDonVi != null) btnSuaDonVi.Enabled = canUpdateDonVi;
+            if (btnXoaDonVi != null) btnXoaDonVi.Enabled = canDeleteDonVi;
+            if (btnThemDangVien != null) btnThemDangVien.Enabled = canCreateDangVien;
+            if (btnSuaDangVien != null) btnSuaDangVien.Enabled = canUpdateDangVien;
+            if (btnXoaDangVien != null) btnXoaDangVien.Enabled = canDeleteDangVien;
+        }
     }
 }

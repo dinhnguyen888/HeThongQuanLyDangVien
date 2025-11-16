@@ -451,7 +451,6 @@ namespace QuanLyDangVien.Pages
                 DanToc = dto.DanToc,
                 TonGiao = dto.TonGiao,
                 NgheNghiep = dto.NgheNghiep,
-                TrinhDoHocVan = dto.TrinhDoHocVan,
                 TrinhDoChuyenMon = dto.TrinhDoChuyenMon,
                 LyLuanChinhTri = dto.LyLuanChinhTri,
                 NgoaiNgu = dto.NgoaiNgu,

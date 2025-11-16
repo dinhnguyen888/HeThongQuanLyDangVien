@@ -12,6 +12,7 @@ using QuanLyDangVien.DTOs;
 using QuanLyDangVien.Helper;
 using QuanLyDangVien.Models;
 using QuanLyDangVien.Services;
+using static QuanLyDangVien.Helper.AuthorizationHelper;
 
 namespace QuanLyDangVien
 {
@@ -33,6 +34,7 @@ namespace QuanLyDangVien
             InitializeServices();
             SetupUI();
             LoadData();
+            ApplyPermissions();
         }
 
         private void InitializeServices()
@@ -251,9 +253,21 @@ namespace QuanLyDangVien
                         XemChiTiet(chuyenSinhHoatID);
                         break;
                     case "Sửa":
+                        if (!HasPermission("ChuyenSinhHoatDang", "Update"))
+                        {
+                            MessageBox.Show("Bạn không có quyền sửa chuyển sinh hoạt đảng!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            comboBox.SelectedIndex = -1;
+                            return;
+                        }
                         SuaChuyenSinhHoat(chuyenSinhHoatID);
                         break;
                     case "Xóa":
+                        if (!HasPermission("ChuyenSinhHoatDang", "Delete"))
+                        {
+                            MessageBox.Show("Bạn không có quyền xóa chuyển sinh hoạt đảng!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            comboBox.SelectedIndex = -1;
+                            return;
+                        }
                         XoaChuyenSinhHoat(chuyenSinhHoatID);
                         break;
                 }
@@ -645,6 +659,21 @@ namespace QuanLyDangVien
             _donViIDFilter = null;
             _trangThaiFilter = null;
             LoadData();
+        }
+
+        /// <summary>
+        /// Áp dụng phân quyền cho các control dựa trên vai trò người dùng
+        /// </summary>
+        private void ApplyPermissions()
+        {
+            bool canUpdate = HasPermission("ChuyenSinhHoatDang", "Update");
+            bool canDelete = HasPermission("ChuyenSinhHoatDang", "Delete");
+
+            // Disable edit trong DataGridView nếu không có quyền
+            if (dataGridView1 != null && ChucNang != null)
+            {
+                ChucNang.ReadOnly = !canUpdate && !canDelete;
+            }
         }
 
         /// <summary>
