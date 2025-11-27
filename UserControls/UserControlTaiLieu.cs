@@ -13,16 +13,25 @@ namespace QuanLyDangVien.UserControls
 {
     public partial class UserControlTaiLieu : UserControl
     {
-        private DonViService _donViService;
-        private string _currentSelectedDonViPath = ""; // Đường dẫn thư mục chi bộ được chọn
-        private int? _currentSelectedDonViID = null; // ID chi bộ được chọn
         private PdfViewer _pdfViewer; // PdfiumViewer control
         private FileInfo _currentSelectedFile = null; // File hiện tại được chọn
+        private string _currentSelectedFolderPath = ""; // Đường dẫn thư mục được chọn
+        private TreeNode _currentSelectedNode = null; // Node hiện tại được chọn
+        
+        // Danh sách các folder cố định
+        private readonly string[] _defaultFolders = new string[]
+        {
+            "Tuyên huấn",
+            "Tổ chức",
+            "Cán bộ",
+            "Quần chúng",
+            "BVAN-DV",
+            "Tổng hợp"
+        };
 
         public UserControlTaiLieu()
         {
             InitializeComponent();
-            _donViService = new DonViService();
             ApplyPermissions();
         }
 
@@ -47,15 +56,12 @@ namespace QuanLyDangVien.UserControls
         }
 
         /// <summary>
-        /// Khởi tạo folders: Fetch chi bộ từ database và tạo folder nếu chưa có
+        /// Khởi tạo folders: Tạo các folder cố định nếu chưa có
         /// </summary>
         private void InitializeFolders()
         {
             try
             {
-                // Lấy danh sách chi bộ từ database
-                var donViList = _donViService.GetAll();
-                
                 // Lấy đường dẫn thư mục TaiLieu
                 string taiLieuFolder = FileHelper.GetTaiLieuFolder();
                 
@@ -65,16 +71,13 @@ namespace QuanLyDangVien.UserControls
                     Directory.CreateDirectory(taiLieuFolder);
                 }
 
-                // Tạo folder cho từng chi bộ nếu chưa có
-                foreach (var donVi in donViList)
+                // Tạo các folder cố định nếu chưa có
+                foreach (string folderName in _defaultFolders)
                 {
-                    if (donVi != null && !string.IsNullOrWhiteSpace(donVi.TenDonVi))
+                    string folderPath = Path.Combine(taiLieuFolder, folderName);
+                    if (!Directory.Exists(folderPath))
                     {
-                        string donViFolder = Path.Combine(taiLieuFolder, donVi.TenDonVi);
-                        if (!Directory.Exists(donViFolder))
-                        {
-                            Directory.CreateDirectory(donViFolder);
-                        }
+                        Directory.CreateDirectory(folderPath);
                     }
                 }
             }
@@ -85,7 +88,7 @@ namespace QuanLyDangVien.UserControls
         }
 
         /// <summary>
-        /// Load TreeView với folder TaiLieu, các chi bộ và files
+        /// Load TreeView với folder TaiLieu, các folder cố định và files
         /// </summary>
         private void LoadTreeView()
         {
@@ -103,48 +106,45 @@ namespace QuanLyDangVien.UserControls
                 // Tạo node gốc "Tài liệu"
                 TreeNode rootNode = new TreeNode("Tài liệu")
                 {
-                    Tag = taiLieuFolder,
+                    Tag = new Dictionary<string, object> { { "Path", taiLieuFolder }, { "Type", "Root" } },
                     ImageIndex = 0,
                     SelectedImageIndex = 0
                 };
 
-                // Lấy danh sách chi bộ từ database
-                var donViList = _donViService.GetAll();
-                
-                // Thêm các node chi bộ và files
-                foreach (var donVi in donViList)
+                // Load các folder cố định
+                foreach (string folderName in _defaultFolders)
                 {
-                    if (donVi != null && !string.IsNullOrWhiteSpace(donVi.TenDonVi))
+                    string folderPath = Path.Combine(taiLieuFolder, folderName);
+                    
+                    // Đảm bảo folder tồn tại
+                    if (!Directory.Exists(folderPath))
                     {
-                        string donViFolder = Path.Combine(taiLieuFolder, donVi.TenDonVi);
-                        
-                        // Đảm bảo folder tồn tại
-                        if (!Directory.Exists(donViFolder))
-                        {
-                            Directory.CreateDirectory(donViFolder);
-                        }
-
-                        // Tạo dictionary để lưu thông tin
-                        Dictionary<string, object> tagData = new Dictionary<string, object>
-                        {
-                            { "Path", donViFolder },
-                            { "DonViID", donVi.DonViID },
-                            { "Type", "DonVi" }
-                        };
-
-                        TreeNode donViNode = new TreeNode(donVi.TenDonVi)
-                        {
-                            Tag = tagData,
-                            ImageIndex = 1,
-                            SelectedImageIndex = 1
-                        };
-                        
-                        // Load files trong thư mục chi bộ
-                        LoadFilesIntoNode(donViNode, donViFolder);
-                        
-                        rootNode.Nodes.Add(donViNode);
+                        Directory.CreateDirectory(folderPath);
                     }
+
+                    // Tạo dictionary để lưu thông tin
+                    Dictionary<string, object> tagData = new Dictionary<string, object>
+                    {
+                        { "Path", folderPath },
+                        { "Type", "Folder" },
+                        { "IsDefault", true }
+                    };
+
+                    TreeNode folderNode = new TreeNode(folderName)
+                    {
+                        Tag = tagData,
+                        ImageIndex = 1,
+                        SelectedImageIndex = 1
+                    };
+                    
+                    // Load files và subfolders trong thư mục
+                    LoadFolderContent(folderNode, folderPath);
+                    
+                    rootNode.Nodes.Add(folderNode);
                 }
+                
+                // Load các folder tùy chỉnh (không phải folder cố định)
+                LoadCustomFolders(rootNode, taiLieuFolder);
 
                 treeViewTaiLieu.Nodes.Add(rootNode);
                 rootNode.Expand();
@@ -158,11 +158,56 @@ namespace QuanLyDangVien.UserControls
                 MessageBox.Show($"Lỗi khi load TreeView: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
+        
         /// <summary>
-        /// Load files vào node chi bộ
+        /// Load các folder tùy chỉnh (không phải folder cố định)
         /// </summary>
-        private void LoadFilesIntoNode(TreeNode parentNode, string folderPath)
+        private void LoadCustomFolders(TreeNode rootNode, string taiLieuFolder)
+        {
+            try
+            {
+                if (!Directory.Exists(taiLieuFolder))
+                    return;
+
+                DirectoryInfo dirInfo = new DirectoryInfo(taiLieuFolder);
+                DirectoryInfo[] directories = dirInfo.GetDirectories();
+
+                foreach (DirectoryInfo dir in directories)
+                {
+                    // Bỏ qua các folder cố định
+                    if (_defaultFolders.Contains(dir.Name))
+                        continue;
+
+                    Dictionary<string, object> tagData = new Dictionary<string, object>
+                    {
+                        { "Path", dir.FullName },
+                        { "Type", "Folder" },
+                        { "IsDefault", false }
+                    };
+
+                    TreeNode folderNode = new TreeNode(dir.Name)
+                    {
+                        Tag = tagData,
+                        ImageIndex = 1,
+                        SelectedImageIndex = 1
+                    };
+                    
+                    // Load files và subfolders trong thư mục
+                    LoadFolderContent(folderNode, dir.FullName);
+                    
+                    rootNode.Nodes.Add(folderNode);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Lỗi khi load custom folders: {ex.Message}");
+            }
+        }
+        
+        /// <summary>
+        /// Load nội dung của folder (files và subfolders)
+        /// </summary>
+        private void LoadFolderContent(TreeNode parentNode, string folderPath)
         {
             try
             {
@@ -170,8 +215,33 @@ namespace QuanLyDangVien.UserControls
                     return;
 
                 DirectoryInfo dirInfo = new DirectoryInfo(folderPath);
-                FileInfo[] files = dirInfo.GetFiles();
+                
+                // Load subfolders
+                DirectoryInfo[] subDirs = dirInfo.GetDirectories();
+                foreach (DirectoryInfo subDir in subDirs)
+                {
+                    Dictionary<string, object> tagData = new Dictionary<string, object>
+                    {
+                        { "Path", subDir.FullName },
+                        { "Type", "Folder" },
+                        { "IsDefault", false }
+                    };
 
+                    TreeNode subFolderNode = new TreeNode(subDir.Name)
+                    {
+                        Tag = tagData,
+                        ImageIndex = 1,
+                        SelectedImageIndex = 1
+                    };
+                    
+                    // Recursive load subfolder content
+                    LoadFolderContent(subFolderNode, subDir.FullName);
+                    
+                    parentNode.Nodes.Add(subFolderNode);
+                }
+                
+                // Load files
+                FileInfo[] files = dirInfo.GetFiles();
                 foreach (FileInfo file in files)
                 {
                     Dictionary<string, object> fileTag = new Dictionary<string, object>
@@ -193,9 +263,10 @@ namespace QuanLyDangVien.UserControls
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Lỗi khi load files vào node: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Lỗi khi load folder content: {ex.Message}");
             }
         }
+
 
         /// <summary>
         /// Xử lý khi chọn node trong TreeView
@@ -205,10 +276,13 @@ namespace QuanLyDangVien.UserControls
             try
             {
                 TreeNode selectedNode = e.Node;
+                _currentSelectedNode = selectedNode;
                 
                 if (selectedNode == null || selectedNode.Tag == null)
                 {
                     ClearPreview();
+                    _currentSelectedFolderPath = "";
+                    _currentSelectedFile = null;
                     return;
                 }
 
@@ -223,14 +297,14 @@ namespace QuanLyDangVien.UserControls
                         if (tagData.ContainsKey("FileInfo") && tagData["FileInfo"] is FileInfo fileInfo)
                         {
                             _currentSelectedFile = fileInfo;
+                            _currentSelectedFolderPath = fileInfo.DirectoryName;
                             PreviewFile(fileInfo);
                         }
                     }
-                    else if (nodeType == "DonVi")
+                    else if (nodeType == "Folder" || nodeType == "Root")
                     {
-                        // Node chi bộ: Clear preview
-                        _currentSelectedDonViPath = tagData.ContainsKey("Path") ? tagData["Path"].ToString() : "";
-                        _currentSelectedDonViID = tagData.ContainsKey("DonViID") ? (int?)tagData["DonViID"] : null;
+                        // Node folder: Clear preview, lưu đường dẫn folder
+                        _currentSelectedFolderPath = tagData.ContainsKey("Path") ? tagData["Path"].ToString() : "";
                         _currentSelectedFile = null;
                         ClearPreview();
                     }
@@ -238,6 +312,8 @@ namespace QuanLyDangVien.UserControls
                 else
                 {
                     ClearPreview();
+                    _currentSelectedFolderPath = "";
+                    _currentSelectedFile = null;
                 }
             }
             catch (Exception ex)
@@ -354,21 +430,54 @@ namespace QuanLyDangVien.UserControls
         }
 
         /// <summary>
-        /// Nút Thêm
+        /// Nút Thêm - Có thể thêm file hoặc tạo folder mới
         /// </summary>
         private void btnThem_Click(object sender, EventArgs e)
         {
-            if (!AuthorizationHelper.HasPermission("TaiLieu", "Create", _currentSelectedDonViID))
+            if (!AuthorizationHelper.HasPermission("TaiLieu", "Create"))
             {
                 MessageBox.Show("Bạn không có quyền thêm tài liệu!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+            
             try
             {
-                if (_currentSelectedDonViID == null)
+                // Kiểm tra xem đã chọn folder chưa
+                if (string.IsNullOrEmpty(_currentSelectedFolderPath))
                 {
-                    MessageBox.Show("Vui lòng chọn chi bộ trước khi thêm tài liệu!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
+                    // Nếu chưa chọn folder, sử dụng thư mục gốc
+                    _currentSelectedFolderPath = FileHelper.GetTaiLieuFolder();
+                }
+                
+                // Hiển thị menu để chọn: Thêm file hoặc Tạo folder
+                ContextMenuStrip menu = new ContextMenuStrip();
+                ToolStripMenuItem menuItemFile = new ToolStripMenuItem("Thêm file");
+                ToolStripMenuItem menuItemFolder = new ToolStripMenuItem("Tạo thư mục");
+                
+                menuItemFile.Click += (s, args) => AddFile();
+                menuItemFolder.Click += (s, args) => CreateFolder();
+                
+                menu.Items.Add(menuItemFile);
+                menu.Items.Add(menuItemFolder);
+                
+                menu.Show(btnThem, new Point(0, btnThem.Height));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        
+        /// <summary>
+        /// Thêm file vào folder đã chọn
+        /// </summary>
+        private void AddFile()
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(_currentSelectedFolderPath))
+                {
+                    _currentSelectedFolderPath = FileHelper.GetTaiLieuFolder();
                 }
 
                 // Mở dialog chọn file
@@ -382,9 +491,9 @@ namespace QuanLyDangVien.UserControls
                     {
                         string sourceFilePath = openFileDialog.FileName;
                         string fileName = Path.GetFileName(sourceFilePath);
-                        string destinationPath = Path.Combine(_currentSelectedDonViPath, fileName);
+                        string destinationPath = Path.Combine(_currentSelectedFolderPath, fileName);
 
-                        // Copy file vào thư mục chi bộ
+                        // Copy file vào thư mục
                         File.Copy(sourceFilePath, destinationPath, true);
 
                         // Refresh TreeView
@@ -399,69 +508,233 @@ namespace QuanLyDangVien.UserControls
                 MessageBox.Show($"Lỗi khi thêm tài liệu: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
+        
         /// <summary>
-        /// Nút Sửa
+        /// Tạo thư mục mới
         /// </summary>
-        private void btnSua_Click(object sender, EventArgs e)
+        private void CreateFolder()
         {
-            if (!AuthorizationHelper.HasPermission("TaiLieu", "Update", _currentSelectedDonViID))
-            {
-                MessageBox.Show("Bạn không có quyền sửa tài liệu!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
             try
             {
-                if (_currentSelectedFile == null)
+                if (string.IsNullOrEmpty(_currentSelectedFolderPath))
                 {
-                    MessageBox.Show("Vui lòng chọn file cần sửa!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    _currentSelectedFolderPath = FileHelper.GetTaiLieuFolder();
+                }
+                
+                // Hiển thị dialog nhập tên folder
+                string folderName = ShowInputDialog("Nhập tên thư mục mới:", "Tạo thư mục");
+                
+                if (string.IsNullOrWhiteSpace(folderName))
+                    return;
+                
+                // Kiểm tra tên folder hợp lệ
+                char[] invalidChars = Path.GetInvalidFileNameChars();
+                if (folderName.IndexOfAny(invalidChars) >= 0)
+                {
+                    MessageBox.Show("Tên thư mục chứa ký tự không hợp lệ!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
-
-                // Mở file bằng ứng dụng mặc định
-                System.Diagnostics.Process.Start(_currentSelectedFile.FullName);
+                
+                string newFolderPath = Path.Combine(_currentSelectedFolderPath, folderName);
+                
+                // Kiểm tra folder đã tồn tại chưa
+                if (Directory.Exists(newFolderPath))
+                {
+                    MessageBox.Show("Thư mục đã tồn tại!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+                
+                // Tạo folder
+                Directory.CreateDirectory(newFolderPath);
+                
+                // Refresh TreeView
+                LoadTreeView();
+                
+                MessageBox.Show("Tạo thư mục thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Lỗi khi mở file: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Lỗi khi tạo thư mục: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         /// <summary>
-        /// Nút Xóa
+        /// Nút Sửa - Có thể sửa file (mở file) hoặc đổi tên folder
         /// </summary>
-        private void btnXoa_Click(object sender, EventArgs e)
+        private void btnSua_Click(object sender, EventArgs e)
         {
-            if (!AuthorizationHelper.HasPermission("TaiLieu", "Delete", _currentSelectedDonViID))
+            if (!AuthorizationHelper.HasPermission("TaiLieu", "Update"))
             {
-                MessageBox.Show("Bạn không có quyền xóa tài liệu!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Bạn không có quyền sửa tài liệu!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+            
             try
             {
-                if (_currentSelectedFile == null)
+                if (_currentSelectedNode == null || _currentSelectedNode.Tag == null)
                 {
-                    MessageBox.Show("Vui lòng chọn file cần xóa!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("Vui lòng chọn file hoặc thư mục cần sửa!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
-
-                DialogResult result = MessageBox.Show(
-                    $"Bạn có chắc chắn muốn xóa file '{_currentSelectedFile.Name}'?",
-                    "Xác nhận xóa",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question);
-
-                if (result == DialogResult.Yes)
+                
+                if (_currentSelectedNode.Tag is Dictionary<string, object> tagData)
                 {
-                    File.Delete(_currentSelectedFile.FullName);
-                    ClearPreview();
-                    LoadTreeView();
-                    MessageBox.Show("Xóa file thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    string nodeType = tagData.ContainsKey("Type") ? tagData["Type"].ToString() : "";
+                    
+                    if (nodeType == "File")
+                    {
+                        // Mở file bằng ứng dụng mặc định
+                        if (_currentSelectedFile != null && _currentSelectedFile.Exists)
+                        {
+                            System.Diagnostics.Process.Start(_currentSelectedFile.FullName);
+                        }
+                    }
+                    else if (nodeType == "Folder")
+                    {
+                        // Đổi tên folder
+                        bool isDefault = tagData.ContainsKey("IsDefault") && (bool)tagData["IsDefault"];
+                        if (isDefault)
+                        {
+                            MessageBox.Show("Không thể đổi tên thư mục cố định!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                        
+                        string currentPath = tagData.ContainsKey("Path") ? tagData["Path"].ToString() : "";
+                        if (string.IsNullOrEmpty(currentPath))
+                            return;
+                        
+                        string currentName = Path.GetFileName(currentPath);
+                        string newName = ShowInputDialog("Nhập tên mới cho thư mục:", "Đổi tên thư mục", currentName);
+                        
+                        if (string.IsNullOrWhiteSpace(newName) || newName == currentName)
+                            return;
+                        
+                        // Kiểm tra tên folder hợp lệ
+                        char[] invalidChars = Path.GetInvalidFileNameChars();
+                        if (newName.IndexOfAny(invalidChars) >= 0)
+                        {
+                            MessageBox.Show("Tên thư mục chứa ký tự không hợp lệ!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+                        
+                        string parentPath = Path.GetDirectoryName(currentPath);
+                        string newPath = Path.Combine(parentPath, newName);
+                        
+                        // Kiểm tra folder đã tồn tại chưa
+                        if (Directory.Exists(newPath))
+                        {
+                            MessageBox.Show("Thư mục đã tồn tại!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                        
+                        // Đổi tên folder
+                        Directory.Move(currentPath, newPath);
+                        
+                        // Refresh TreeView
+                        LoadTreeView();
+                        
+                        MessageBox.Show("Đổi tên thư mục thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Lỗi khi xóa file: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Lỗi khi sửa: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Nút Xóa - Có thể xóa file hoặc folder
+        /// </summary>
+        private void btnXoa_Click(object sender, EventArgs e)
+        {
+            if (!AuthorizationHelper.HasPermission("TaiLieu", "Delete"))
+            {
+                MessageBox.Show("Bạn không có quyền xóa tài liệu!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            
+            try
+            {
+                if (_currentSelectedNode == null || _currentSelectedNode.Tag == null)
+                {
+                    MessageBox.Show("Vui lòng chọn file hoặc thư mục cần xóa!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+                
+                if (_currentSelectedNode.Tag is Dictionary<string, object> tagData)
+                {
+                    string nodeType = tagData.ContainsKey("Type") ? tagData["Type"].ToString() : "";
+                    
+                    if (nodeType == "File")
+                    {
+                        // Xóa file
+                        if (_currentSelectedFile == null || !_currentSelectedFile.Exists)
+                        {
+                            MessageBox.Show("File không tồn tại!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                        
+                        DialogResult result = MessageBox.Show(
+                            $"Bạn có chắc chắn muốn xóa file '{_currentSelectedFile.Name}'?",
+                            "Xác nhận xóa",
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Question);
+
+                        if (result == DialogResult.Yes)
+                        {
+                            File.Delete(_currentSelectedFile.FullName);
+                            ClearPreview();
+                            LoadTreeView();
+                            MessageBox.Show("Xóa file thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                    }
+                    else if (nodeType == "Folder")
+                    {
+                        // Xóa folder
+                        bool isDefault = tagData.ContainsKey("IsDefault") && (bool)tagData["IsDefault"];
+                        if (isDefault)
+                        {
+                            MessageBox.Show("Không thể xóa thư mục cố định!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                        
+                        string folderPath = tagData.ContainsKey("Path") ? tagData["Path"].ToString() : "";
+                        if (string.IsNullOrEmpty(folderPath) || !Directory.Exists(folderPath))
+                        {
+                            MessageBox.Show("Thư mục không tồn tại!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                        
+                        string folderName = Path.GetFileName(folderPath);
+                        
+                        // Kiểm tra folder có chứa file không
+                        DirectoryInfo dirInfo = new DirectoryInfo(folderPath);
+                        bool hasContent = dirInfo.GetFiles().Length > 0 || dirInfo.GetDirectories().Length > 0;
+                        
+                        string message = hasContent 
+                            ? $"Bạn có chắc chắn muốn xóa thư mục '{folderName}' và tất cả nội dung bên trong?"
+                            : $"Bạn có chắc chắn muốn xóa thư mục '{folderName}'?";
+                        
+                        DialogResult result = MessageBox.Show(
+                            message,
+                            "Xác nhận xóa",
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Question);
+
+                        if (result == DialogResult.Yes)
+                        {
+                            Directory.Delete(folderPath, true);
+                            ClearPreview();
+                            LoadTreeView();
+                            MessageBox.Show("Xóa thư mục thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi xóa: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -476,11 +749,50 @@ namespace QuanLyDangVien.UserControls
                 InitializeFolders();
                 LoadTreeView();
                 ClearPreview();
+                _currentSelectedNode = null;
+                _currentSelectedFolderPath = "";
+                _currentSelectedFile = null;
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Lỗi khi làm mới: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        /// <summary>
+        /// Hiển thị dialog nhập liệu đơn giản
+        /// </summary>
+        private string ShowInputDialog(string prompt, string title, string defaultValue = "")
+        {
+            Form inputForm = new Form();
+            inputForm.Width = 400;
+            inputForm.Height = 150;
+            inputForm.Text = title;
+            inputForm.FormBorderStyle = FormBorderStyle.FixedDialog;
+            inputForm.StartPosition = FormStartPosition.CenterParent;
+            inputForm.MaximizeBox = false;
+            inputForm.MinimizeBox = false;
+
+            Label promptLabel = new Label() { Left = 20, Top = 20, Width = 350, Text = prompt };
+            TextBox textBox = new TextBox() { Left = 20, Top = 50, Width = 350, Text = defaultValue };
+            Button okButton = new Button() { Text = "OK", Left = 200, Width = 80, Top = 80, DialogResult = DialogResult.OK };
+            Button cancelButton = new Button() { Text = "Hủy", Left = 290, Width = 80, Top = 80, DialogResult = DialogResult.Cancel };
+
+            okButton.Click += (sender, e) => { inputForm.Close(); };
+            cancelButton.Click += (sender, e) => { inputForm.Close(); };
+
+            inputForm.Controls.Add(promptLabel);
+            inputForm.Controls.Add(textBox);
+            inputForm.Controls.Add(okButton);
+            inputForm.Controls.Add(cancelButton);
+            inputForm.AcceptButton = okButton;
+            inputForm.CancelButton = cancelButton;
+
+            if (inputForm.ShowDialog() == DialogResult.OK)
+            {
+                return textBox.Text;
+            }
+            return null;
         }
 
         /// <summary>
