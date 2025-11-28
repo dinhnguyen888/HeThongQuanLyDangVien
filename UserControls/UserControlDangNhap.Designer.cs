@@ -183,7 +183,7 @@
             // 
             // pictureBox3
             // 
-            this.pictureBox3.Image = global::QuanLyDangVien.Properties.Resources.cong_binh_vat_can;
+            this.pictureBox3.BackColor = System.Drawing.Color.Transparent;
             this.pictureBox3.Location = new System.Drawing.Point(137, 3);
             this.pictureBox3.Name = "pictureBox3";
             this.pictureBox3.Size = new System.Drawing.Size(223, 165);
