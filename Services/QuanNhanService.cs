@@ -5,6 +5,7 @@ using QuanLyDangVien.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using Newtonsoft.Json;
 
@@ -72,57 +73,104 @@ namespace QuanLyDangVien.Services
         /// </summary>
         public (int id, string error) Insert(QuanNhan quanNhan)
         {
-            using (var conn = DbHelper.GetConnection())
+            try
             {
-                var parameters = new DynamicParameters();
-                parameters.Add("@DonViID", quanNhan.DonViID);
-                parameters.Add("@HoTen", quanNhan.HoTen);
-                parameters.Add("@NgaySinh", quanNhan.NgaySinh);
-                parameters.Add("@SHSQ", quanNhan.SHSQ);
-                parameters.Add("@SoTheBHYT", quanNhan.SoTheBHYT);
-                parameters.Add("@SoCCCD", quanNhan.SoCCCD);
-                parameters.Add("@CapBac", quanNhan.CapBac);
-                parameters.Add("@ChucVu", quanNhan.ChucVu);
-                parameters.Add("@NhapNgu", quanNhan.NhapNgu);
-                parameters.Add("@NgayVaoDang", quanNhan.NgayVaoDang);
-                parameters.Add("@SoTheDang", quanNhan.SoTheDang);
-                parameters.Add("@Doan", quanNhan.Doan);
-                parameters.Add("@DanToc", quanNhan.DanToc);
-                parameters.Add("@TonGiao", quanNhan.TonGiao);
-                parameters.Add("@SucKhoe", quanNhan.SucKhoe);
-                parameters.Add("@NhomMau", quanNhan.NhomMau);
-                parameters.Add("@HoTenChaNamSinh", quanNhan.HoTenChaNamSinh);
-                parameters.Add("@HoTenMeNamSinh", quanNhan.HoTenMeNamSinh);
-                parameters.Add("@HoTenVoConNamSinh", quanNhan.HoTenVoConNamSinh);
-                parameters.Add("@NgheNghiepChaMe", quanNhan.NgheNghiepChaMe);
-                parameters.Add("@MayAnhChiEm", quanNhan.MayAnhChiEm);
-                parameters.Add("@QueQuan", quanNhan.QueQuan);
-                parameters.Add("@NoiO", quanNhan.NoiO);
-                parameters.Add("@KhiCanBaoTin", quanNhan.KhiCanBaoTin);
-                parameters.Add("@GhiChu", quanNhan.GhiChu);
-                parameters.Add("@AnhDaiDien", quanNhan.AnhDaiDien, dbType: DbType.Binary);
-                parameters.Add("@NguoiTao", quanNhan.NguoiTao);
-                parameters.Add("@QuanNhanID", dbType: DbType.Int32, direction: ParameterDirection.Output);
-
-                try
+                // Đảm bảo các trường bắt buộc có giá trị
+                if (quanNhan == null)
                 {
-                    var result = conn.Execute("QuanNhan_Insert", parameters, commandType: CommandType.StoredProcedure);
+                    return (0, "Dữ liệu quân nhân không hợp lệ!");
+                }
+                
+                // Kiểm tra và set giá trị mặc định cho các trường bắt buộc
+                if (quanNhan.DonViID <= 0)
+                {
+                    return (0, "Vui lòng chọn đơn vị!");
+                }
+                
+                if (string.IsNullOrWhiteSpace(quanNhan.HoTen))
+                {
+                    return (0, "Vui lòng nhập họ tên!");
+                }
+                
+                if (string.IsNullOrWhiteSpace(quanNhan.SoCCCD))
+                {
+                    return (0, "Vui lòng nhập số CCCD!");
+                }
+                
+                // Trim và chuẩn hóa dữ liệu
+                quanNhan.HoTen = quanNhan.HoTen.Trim();
+                quanNhan.SoCCCD = quanNhan.SoCCCD.Trim();
+                
+                // TrangThai đã có giá trị mặc định là true trong model
+                
+                using (var conn = DbHelper.GetConnection())
+                {
+                    conn.Open();
+                    
+                    var parameters = new DynamicParameters();
+                    parameters.Add("@DonViID", quanNhan.DonViID);
+                    parameters.Add("@HoTen", quanNhan.HoTen);
+                    parameters.Add("@NgaySinh", quanNhan.NgaySinh);
+                    parameters.Add("@SHSQ", quanNhan.SHSQ);
+                    parameters.Add("@SoTheBHYT", quanNhan.SoTheBHYT);
+                    parameters.Add("@SoCCCD", quanNhan.SoCCCD);
+                    parameters.Add("@CapBac", quanNhan.CapBac);
+                    parameters.Add("@ChucVu", quanNhan.ChucVu);
+                    parameters.Add("@NhapNgu", quanNhan.NhapNgu);
+                    parameters.Add("@NgayVaoDang", quanNhan.NgayVaoDang);
+                    parameters.Add("@SoTheDang", quanNhan.SoTheDang);
+                    parameters.Add("@Doan", quanNhan.Doan);
+                    parameters.Add("@DanToc", quanNhan.DanToc);
+                    parameters.Add("@TonGiao", quanNhan.TonGiao);
+                    parameters.Add("@SucKhoe", quanNhan.SucKhoe);
+                    parameters.Add("@NhomMau", quanNhan.NhomMau);
+                    parameters.Add("@HoTenChaNamSinh", quanNhan.HoTenChaNamSinh);
+                    parameters.Add("@HoTenMeNamSinh", quanNhan.HoTenMeNamSinh);
+                    parameters.Add("@HoTenVoConNamSinh", quanNhan.HoTenVoConNamSinh);
+                    parameters.Add("@NgheNghiepChaMe", quanNhan.NgheNghiepChaMe);
+                    parameters.Add("@MayAnhChiEm", quanNhan.MayAnhChiEm);
+                    parameters.Add("@QueQuan", quanNhan.QueQuan);
+                    parameters.Add("@NoiO", quanNhan.NoiO);
+                    parameters.Add("@KhiCanBaoTin", quanNhan.KhiCanBaoTin);
+                    parameters.Add("@GhiChu", quanNhan.GhiChu);
+                    parameters.Add("@AnhDaiDien", quanNhan.AnhDaiDien, dbType: DbType.Binary);
+                    parameters.Add("@NguoiTao", string.IsNullOrWhiteSpace(quanNhan.NguoiTao) ? Environment.UserName : quanNhan.NguoiTao);
+                    parameters.Add("@QuanNhanID", dbType: DbType.Int32, direction: ParameterDirection.Output);
+
+                    conn.Execute("QuanNhan_Insert", parameters, commandType: CommandType.StoredProcedure);
+                    
                     int quanNhanID = parameters.Get<int>("@QuanNhanID");
                     
-                    // Ghi Audit Log
-                    try
+                    if (quanNhanID > 0)
                     {
-                        string newValues = JsonConvert.SerializeObject(quanNhan, Formatting.None);
-                        _auditLogService.LogAction("Insert", "QuanNhan", quanNhanID, null, newValues);
+                        // Ghi Audit Log (không quan trọng, bỏ qua nếu lỗi)
+                        try
+                        {
+                            string newValues = JsonConvert.SerializeObject(quanNhan, Formatting.None);
+                            _auditLogService.LogAction("Insert", "QuanNhan", quanNhanID, null, newValues);
+                        }
+                        catch { }
+                        
+                        return (quanNhanID, null);
                     }
-                    catch { } // Không throw nếu audit log lỗi
-                    
-                    return (quanNhanID, null);
+                    else
+                    {
+                        return (0, "Không thể lấy ID sau khi thêm quân nhân.");
+                    }
                 }
-                catch (Exception ex)
-                {
-                    return (0, ex.Message);
-                }
+            }
+            catch (SqlException sqlEx)
+            {
+                string errorMessage = sqlEx.Message;
+                if (sqlEx.Number == 2627)
+                    errorMessage = "Số CCCD đã tồn tại trong hệ thống!";
+                else if (sqlEx.Number == 547)
+                    errorMessage = "Đơn vị không tồn tại! Vui lòng chọn đơn vị hợp lệ.";
+                return (0, errorMessage);
+            }
+            catch (Exception ex)
+            {
+                return (0, $"Lỗi: {ex.Message}");
             }
         }
 

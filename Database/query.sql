@@ -12,7 +12,7 @@ GO
 -- Tạo database nếu chưa tồn tại
 IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'QuanLyDangVien')
 BEGIN
-    CREATE DATABASE [QuanLyDangVien];
+    CREATE DATABASE [QuanLyDangVien] COLLATE SQL_Latin1_General_CP1_CI_AS;
     PRINT N'✓ Database QuanLyDangVien đã được tạo';
 END
 ELSE
@@ -127,7 +127,7 @@ BEGIN
         [NgaySinh] DATE NULL,
         [SHSQ] NVARCHAR(50) NULL,
         [SoTheBHYT] NVARCHAR(50) NULL,
-        [SoCCCD] NCHAR(20) NOT NULL,
+        [SoCCCD] NVARCHAR(20) NOT NULL,
         [CapBac] NVARCHAR(50) NULL,
         [ChucVu] NVARCHAR(100) NULL,
         [NhapNgu] DATE NULL,
@@ -172,6 +172,36 @@ BEGIN
         ALTER TABLE [dbo].[QuanNhan] DROP COLUMN [TT];
         PRINT N'✓ Đã xóa cột TT khỏi bảng QuanNhan';
     END
+    
+    -- Sửa cột SoCCCD từ NCHAR sang NVARCHAR để tránh vấn đề padding
+    IF EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[dbo].[QuanNhan]') AND name = 'SoCCCD' AND system_type_id = 239)
+    BEGIN
+        -- Kiểm tra xem có dữ liệu không
+        IF EXISTS (SELECT 1 FROM QuanNhan)
+        BEGIN
+            -- Nếu có dữ liệu, cần xóa constraint UNIQUE trước
+            IF EXISTS (SELECT * FROM sys.indexes WHERE name = 'UK_QuanNhan_SoCCCD' AND object_id = OBJECT_ID(N'[dbo].[QuanNhan]'))
+            BEGIN
+                ALTER TABLE [dbo].[QuanNhan] DROP CONSTRAINT [UK_QuanNhan_SoCCCD];
+                PRINT N'✓ Đã xóa constraint UK_QuanNhan_SoCCCD';
+            END
+            
+            -- Cập nhật dữ liệu: trim spaces từ SoCCCD
+            UPDATE [dbo].[QuanNhan] SET [SoCCCD] = RTRIM(LTRIM([SoCCCD]));
+            PRINT N'✓ Đã trim spaces từ SoCCCD';
+        END
+        
+        -- Đổi kiểu dữ liệu
+        ALTER TABLE [dbo].[QuanNhan] ALTER COLUMN [SoCCCD] NVARCHAR(20) NOT NULL;
+        PRINT N'✓ Đã đổi SoCCCD từ NCHAR(20) sang NVARCHAR(20)';
+        
+        -- Tạo lại constraint UNIQUE nếu chưa có
+        IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'UK_QuanNhan_SoCCCD' AND object_id = OBJECT_ID(N'[dbo].[QuanNhan]'))
+        BEGIN
+            ALTER TABLE [dbo].[QuanNhan] ADD CONSTRAINT [UK_QuanNhan_SoCCCD] UNIQUE ([SoCCCD]);
+            PRINT N'✓ Đã tạo lại constraint UK_QuanNhan_SoCCCD';
+        END
+    END
 END
 GO
 
@@ -213,7 +243,7 @@ BEGIN
         [HoTen] NVARCHAR(100) NOT NULL,
         [NgaySinh] DATE NULL,
         [GioiTinh] NVARCHAR(10) NULL,
-        [SoCCCD] NCHAR(20) NOT NULL,
+        [SoCCCD] NVARCHAR(20) NOT NULL,
         [SoDienThoai] NCHAR(20) NULL,
         [SoTheDangVien] NVARCHAR(50) NULL,
         [SoLyLichDangVien] NVARCHAR(50) NULL,
@@ -1253,19 +1283,17 @@ CREATE PROCEDURE [dbo].[QuanNhan_Insert]
     @KhiCanBaoTin NVARCHAR(200) = NULL,
     @GhiChu NVARCHAR(MAX) = NULL,
     @AnhDaiDien VARBINARY(MAX) = NULL,
-    @NguoiTao NVARCHAR(100),
+    @NguoiTao NVARCHAR(100) = NULL,
     @QuanNhanID INT OUTPUT
 AS
 BEGIN
     SET NOCOUNT ON;
     
-    -- Check if SoCCCD already exists
-    IF EXISTS (SELECT 1 FROM QuanNhan WHERE SoCCCD = @SoCCCD)
-    BEGIN
-        RAISERROR(N'Số CCCD đã tồn tại!', 16, 1);
-        RETURN -1;
-    END
+    -- Trim values
+    SET @SoCCCD = LTRIM(RTRIM(ISNULL(@SoCCCD, '')));
+    SET @HoTen = LTRIM(RTRIM(ISNULL(@HoTen, '')));
     
+    -- Insert directly, let database handle constraints
     INSERT INTO QuanNhan (
         DonViID, HoTen, NgaySinh, SHSQ, SoTheBHYT, SoCCCD, CapBac, ChucVu,
         NhapNgu, NgayVaoDang, SoTheDang, Doan, DanToc, TonGiao, SucKhoe, NhomMau,
@@ -1276,11 +1304,10 @@ BEGIN
         @DonViID, @HoTen, @NgaySinh, @SHSQ, @SoTheBHYT, @SoCCCD, @CapBac, @ChucVu,
         @NhapNgu, @NgayVaoDang, @SoTheDang, @Doan, @DanToc, @TonGiao, @SucKhoe, @NhomMau,
         @HoTenChaNamSinh, @HoTenMeNamSinh, @HoTenVoConNamSinh, @NgheNghiepChaMe,
-        @MayAnhChiEm, @QueQuan, @NoiO, @KhiCanBaoTin, @GhiChu, @AnhDaiDien, @NguoiTao
+        @MayAnhChiEm, @QueQuan, @NoiO, @KhiCanBaoTin, @GhiChu, @AnhDaiDien, ISNULL(@NguoiTao, 'system')
     );
     
     SET @QuanNhanID = SCOPE_IDENTITY();
-    RETURN 0;
 END
 GO
 PRINT N'✓ Đã tạo SP QuanNhan_Insert';

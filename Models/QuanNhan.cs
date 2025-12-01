@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using QuanLyDangVien.Attributes;
 
 namespace QuanLyDangVien.Models
@@ -23,12 +23,15 @@ namespace QuanLyDangVien.Models
 
         [DisplayName("Ngày sinh")]
         [ControlType(ControlInputType.DateTimePicker)]
+        [Required]
         public DateTime? NgaySinh { get; set; }
 
         [DisplayName("SHSQ")]
+        [Required]
         public string SHSQ { get; set; }
 
         [DisplayName("Số thẻ BHYT")]
+        [Required]
         public string SoTheBHYT { get; set; }
 
         [DisplayName("Số CCCD")]
@@ -38,9 +41,11 @@ namespace QuanLyDangVien.Models
         [DisplayName("Cấp bậc")]
         [ControlType(ControlInputType.ComboBox)]
         [ComboBoxData("Binh nhì", "Binh nhì", "Binh nhất", "Binh nhất", "Hạ sĩ", "Hạ sĩ", "Trung sĩ", "Trung sĩ", "Thượng sĩ", "Thượng sĩ", "Thiếu úy", "Thiếu úy", "Trung úy", "Trung úy", "Thượng úy", "Thượng úy", "Đại úy", "Đại úy")]
+        [Required]
         public string CapBac { get; set; }
 
         [DisplayName("Chức vụ")]
+        [Required]
         public string ChucVu { get; set; }
 
         [DisplayName("Nhập ngũ")]
