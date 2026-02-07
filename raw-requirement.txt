@@ -60,7 +60,7 @@ ________________________________________
 - Báo cáo Thi đua, khen thưởng, Kỷ luật
 - Báo cáo Chuyển sinh hoạt đảng
 - Báo cáo phát triển đảng viên
-Form Báo cáo tổng hợp theo năm:
+Xuất file word Báo cáo tổng hợp theo năm:
 o	Tổng số đảng viên ( theo từng Đối Tượng :SQ, QNCN, HSQ-BS, LĐHĐ, CNVCQP)
 o	Số kết nạp mới, số chuyển đi/đến.
 o	Chính thức, dự bị.
@@ -73,7 +73,7 @@ o	Tuổi Bình quân
 o	 Từ 30 đến dưới 40 tuổi đảng
 o	 Từ 50 năm tuổi đảng trở lên
 -	Số khen thưởng, số kỷ luật.
-o	Form Biểu đồ thống kê: Đơn vị, phân tích Tổng hợp Tổng số đảng viên, theo giới tính, Quê quán, tuổi, chức vụ, trình độ. Số kết nạp mới, số chuyển đi/đến. Chính thức, dự bị.
+Form Biểu đồ thống kê: Đơn vị, phân tích Tổng hợp Tổng số đảng viên, theo giới tính, Quê quán, tuổi, chức vụ, trình độ. Số kết nạp mới, số chuyển đi/đến. Chính thức, dự bị.
 •	Form Xuất báo cáo, xem trực tiếp trên ứng dụng: Excel, PDF, Word (theo mẫu).
 9. Quản trị hệ thống
 •	Form Quản lý người dùng: tài khoản, phân quyền (Admin có quyền truy cập, sủa, tất cả các nội dung; Bí thư các chi bộ, đảng bộ  có quyền xem, thêm sửa xóa các nội dung của cá nhân, chi bộ, đảng bộ đó; Văn phòng các tài khoản khác chỉ Xem báo cáo, xem danh sách đảng viên chi bộ, đảng bộ, bao cáo tổng hợp số lượng,…).

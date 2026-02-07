@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using QuanLyDangVien.Attributes;
 
 namespace QuanLyDangVien.Models
@@ -12,15 +12,15 @@ namespace QuanLyDangVien.Models
         [ReadOnlyField]
         public int DangVienID { get; set; }
 
-        [DisplayName("Đơn vị cấp 1")]
+        [DisplayName("Đại đội")]
         [ControlType(ControlInputType.ComboBox)]
         public string DonViCap1 { get; set; }
 
-        [DisplayName("Đơn vị cấp 2")]
+        [DisplayName("Tiểu đoàn")]
         [ControlType(ControlInputType.ComboBox)]
         public string DonViCap2 { get; set; }
 
-        [DisplayName("Đơn vị cấp 3")]
+        [DisplayName("Cấp trên cơ sở")]
         [ControlType(ControlInputType.ComboBox)]
         [Required]
         public int DonViID { get; set; }

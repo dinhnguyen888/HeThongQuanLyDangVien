@@ -1,4 +1,4 @@
-﻿using MetroFramework.Controls;
+using MetroFramework.Controls;
 using QuanLyDangVien.Attributes;
 using QuanLyDangVien.Helper;
 using QuanLyDangVien.Models;
@@ -72,7 +72,6 @@ namespace QuanLyDangVien
 
             // Set TrinhDoComboBox
             TrinhDoCb.Items.AddRange(new object[] {
-                "Tiểu học",
                 "Trung học cơ sở",
                 "Trung học phổ thông",
                 "Trung cấp",

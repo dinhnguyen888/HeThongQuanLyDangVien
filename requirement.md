@@ -435,12 +435,10 @@
 
 ### 9.1 Database & Models
 - [x] **Tạo bảng Users** (tài khoản)
-- [x] **Tạo bảng Roles** (vai trò)
-- [x] **Tạo bảng Permissions** (quyền hạn)
 - [x] **Tạo bảng AuditLog** (nhật ký hệ thống)
 - [x] **Tạo bảng SystemConfig** (cấu hình)
 
-### 9.2 Form Quản lý người dùng
+### 9 User control quản trị hệ thống
 - [ ] **Quản lý tài khoản người dùng**
 - [ ] **Phân quyền Admin**: truy cập, sửa tất cả các nội dung
 - [ ] **Phân quyền Bí thư**: xem, thêm sửa xóa các nội dung của cá nhân, chi bộ, đảng bộ đó
@@ -450,20 +448,23 @@
 - [ ] **Thiết kế CRUD** (Create, Read, Update, Delete) cho từng module/form
 - [ ] **Áp dụng phân quyền theo chức năng cụ thể**
 - [ ] **Ví dụ**: Văn phòng chỉ được "Xem" và "Xuất Báo cáo" nhưng không được "Sửa" hồ sơ đảng viên
+- [ ] **Phân quyền ảnh hưởng đến khả năng truy cập UserControl tài liệu**: admin không bị giới hạn, Bí thư được toàn quyền nhưng chỉ trong DonVi mà Bí thư đang ở, Văn phòng chỉ được xem và tải tài liệu
+- [ ] **Cách triễn khai**: Ở mỗi UserControl sẽ tiến hành dùng một attribute hoặc một static class để check xem user hiện tại đang có role và DonViID nào, sau đó thực hiện ẩn các nút tương ứng với role của user đó (admin, biThu, vanPhong) 
 
-### 9.4 Form Nhật ký hệ thống (Audit Log)
+### 9.4 Panel Nhật ký hệ thống (Audit Log)
 - [ ] **Ghi lại thao tác thêm**
 - [ ] **Ghi lại thao tác sửa**
 - [ ] **Ghi lại thao tác xóa**
 - [ ] **Ghi lại thao tác cập nhật**
 - [ ] **Lưu thông tin tài khoản thực hiện**
 - [ ] **Lưu timestamp**
+- [ ] **Cách triễn khai**: tạo một storeProceduce AuditLog_Insert vào trong query.sql, sau đó thực hiện gọi ở tất cả các storeProceduce khác, với 3 tham số là userID, Action và Timestamps 
 
-### 9.5 Form Cấu hình hệ thống
+### 9.5 Panel Cấu hình hệ thống
 - [ ] **Cài đặt tự động sao lưu** (backup DB hàng ngày)
-- [ ] **Quản lý phân quyền chức năng**
-- [ ] **Mã hóa dữ liệu nhạy cảm** (số điện thoại, hồ sơ kỷ luật)
-- [ ] **Cấu hình bảo mật dữ liệu**
+- [ ] **Đăng xuất**
+- [ ] **Cách triễn khai**: đối với tự động sao lưu sẽ tiến hành chạy query backup database, file .bak sẽ được lưu ở C:QuanLyDangVien\Server/Backup, có tính năng set chạy backup ngầm dựa vào thời gian cụ thể (ví dụ backup sau:3 5 7 ngày), có nút restore. Đối với Đăng xuất thực hiện xóa C:\QuanLyDangVien\Data\user_info.json, sau đó reload lại winform 
+
 
 ---
 

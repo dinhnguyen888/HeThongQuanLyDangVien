@@ -1,4 +1,4 @@
-﻿namespace QuanLyDangVien.UserControls
+namespace QuanLyDangVien.UserControls
 {
     partial class UserControlDanhSachQuanNhan
     {
@@ -40,7 +40,7 @@
             this.lblSoCCCD = new System.Windows.Forms.Label();
             this.txtHoTen = new MetroFramework.Controls.MetroTextBox();
             this.lblHoTen = new System.Windows.Forms.Label();
-            this.cboDonVi = new MetroFramework.Controls.MetroComboBox();
+            this.txtDonVi = new MetroFramework.Controls.MetroTextBox();
             this.lblDonVi = new System.Windows.Forms.Label();
             this.panelBottom = new System.Windows.Forms.Panel();
             this.btnXuatExcel = new System.Windows.Forms.Button();
@@ -77,7 +77,7 @@
             this.groupBoxTimKiem.Controls.Add(this.lblSoCCCD);
             this.groupBoxTimKiem.Controls.Add(this.txtHoTen);
             this.groupBoxTimKiem.Controls.Add(this.lblHoTen);
-            this.groupBoxTimKiem.Controls.Add(this.cboDonVi);
+            this.groupBoxTimKiem.Controls.Add(this.txtDonVi);
             this.groupBoxTimKiem.Controls.Add(this.lblDonVi);
             this.groupBoxTimKiem.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBoxTimKiem.Location = new System.Drawing.Point(0, 0);
@@ -152,7 +152,15 @@
             "Thiếu úy",
             "Trung úy",
             "Thượng úy",
-            "Đại úy"});
+            "Đại úy",
+            "Thiếu tá",
+            "Trung tá",
+            "Thượng tá",
+            "Đại tá",
+            "Thiếu tướng",
+            "Trung tướng",
+            "Thượng tướng",
+            "Đại tướng"});
             this.cboCapBac.Location = new System.Drawing.Point(427, 62);
             this.cboCapBac.Margin = new System.Windows.Forms.Padding(4);
             this.cboCapBac.Name = "cboCapBac";
@@ -205,15 +213,13 @@
             this.lblHoTen.TabIndex = 2;
             this.lblHoTen.Text = "Họ tên";
             // 
-            // cboDonVi
+            // txtDonVi
             // 
-            this.cboDonVi.FormattingEnabled = true;
-            this.cboDonVi.ItemHeight = 24;
-            this.cboDonVi.Location = new System.Drawing.Point(27, 62);
-            this.cboDonVi.Margin = new System.Windows.Forms.Padding(4);
-            this.cboDonVi.Name = "cboDonVi";
-            this.cboDonVi.Size = new System.Drawing.Size(132, 30);
-            this.cboDonVi.TabIndex = 1;
+            this.txtDonVi.Location = new System.Drawing.Point(27, 62);
+            this.txtDonVi.Margin = new System.Windows.Forms.Padding(4);
+            this.txtDonVi.Name = "txtDonVi";
+            this.txtDonVi.Size = new System.Drawing.Size(132, 28);
+            this.txtDonVi.TabIndex = 1;
             // 
             // lblDonVi
             // 
@@ -371,7 +377,7 @@
         private System.Windows.Forms.Label lblSoCCCD;
         private MetroFramework.Controls.MetroTextBox txtHoTen;
         private System.Windows.Forms.Label lblHoTen;
-        private MetroFramework.Controls.MetroComboBox cboDonVi;
+        private MetroFramework.Controls.MetroTextBox txtDonVi;
         private System.Windows.Forms.Label lblDonVi;
         private System.Windows.Forms.Panel panelBottom;
         private System.Windows.Forms.Button btnXuatExcel;

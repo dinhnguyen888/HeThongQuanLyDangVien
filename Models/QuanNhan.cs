@@ -40,7 +40,31 @@ namespace QuanLyDangVien.Models
 
         [DisplayName("Cấp bậc")]
         [ControlType(ControlInputType.ComboBox)]
-        [ComboBoxData("Binh nhì", "Binh nhì", "Binh nhất", "Binh nhất", "Hạ sĩ", "Hạ sĩ", "Trung sĩ", "Trung sĩ", "Thượng sĩ", "Thượng sĩ", "Thiếu úy", "Thiếu úy", "Trung úy", "Trung úy", "Thượng úy", "Thượng úy", "Đại úy", "Đại úy")]
+        [ComboBoxData(
+    "Binh nhì", "Binh nhì",
+    "Binh nhất", "Binh nhất",
+    "Hạ sĩ", "Hạ sĩ",
+    "Trung sĩ", "Trung sĩ",
+    "Thượng sĩ", "Thượng sĩ",
+
+    "Thiếu úy", "Thiếu úy",
+    "Trung úy", "Trung úy",
+    "Thượng úy", "Thượng úy",
+    "Đại úy", "Đại úy",
+
+    // Cấp tá
+    "Thiếu tá", "Thiếu tá",
+    "Trung tá", "Trung tá",
+    "Thượng tá", "Thượng tá",
+    "Đại tá", "Đại tá",
+
+    // Cấp tướng
+    "Thiếu tướng", "Thiếu tướng",
+    "Trung tướng", "Trung tướng",
+    "Thượng tướng", "Thượng tướng",
+    "Đại tướng", "Đại tướng"
+)]
+
         [Required]
         public string CapBac { get; set; }
 

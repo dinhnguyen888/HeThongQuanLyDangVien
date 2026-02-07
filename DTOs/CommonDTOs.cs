@@ -46,7 +46,25 @@ namespace QuanLyDangVien.DTOs
 
         [DisplayName("Cấp bậc")]
         [ControlType(ControlInputType.ComboBox)]
-        [ComboBoxData("Thượng úy", "Thượng úy", "Trung úy", "Trung úy", "Đại úy", "Đại úy", "Thiếu tá", "Thiếu tá", "Trung tá", "Trung tá", "Thượng tá", "Thượng tá")]
+        [ComboBoxData(
+            "Binh nhì", "Binh nhì",
+            "Binh nhất", "Binh nhất",
+            "Hạ sĩ", "Hạ sĩ",
+            "Trung sĩ", "Trung sĩ",
+            "Thượng sĩ", "Thượng sĩ",
+            "Thiếu úy", "Thiếu úy",
+            "Trung úy", "Trung úy",
+            "Thượng úy", "Thượng úy",
+            "Đại úy", "Đại úy",
+            "Thiếu tá", "Thiếu tá",
+            "Trung tá", "Trung tá",
+            "Thượng tá", "Thượng tá",
+            "Đại tá", "Đại tá",
+            "Thiếu tướng", "Thiếu tướng",
+            "Trung tướng", "Trung tướng",
+            "Thượng tướng", "Thượng tướng",
+            "Đại tướng", "Đại tướng"
+        )]
         public string CapBac { get; set; }
 
         [DisplayName("Chức vụ")]
@@ -161,16 +179,16 @@ namespace QuanLyDangVien.DTOs
         [ReadOnlyField]
         public int DangVienID { get; set; }
 
-        [DisplayName("Đơn vị cấp 3")]
+        [DisplayName("Cấp trên cơ sở")]
         [ReadOnlyField]
         public int DonViID { get; set; }
 
-        [DisplayName("Đơn vị cấp 1")]
+        [DisplayName("Đại đội")]
         [ControlType(ControlInputType.TextBox)]
         [ReadOnlyField]
         public string DonViCap1 { get; set; }
 
-        [DisplayName("Đơn vị cấp 2")]
+        [DisplayName("Tiểu đoàn")]
         [ControlType(ControlInputType.TextBox)]
         [ReadOnlyField]
         public string DonViCap2 { get; set; }
@@ -261,7 +279,25 @@ namespace QuanLyDangVien.DTOs
 
         [DisplayName("Cấp bậc")]
         [ControlType(ControlInputType.ComboBox)]
-        [ComboBoxData("Thượng úy", "Thượng úy", "Trung úy", "Trung úy", "Đại úy", "Đại úy", "Thiếu tá", "Thiếu tá", "Trung tá", "Trung tá", "Thượng tá", "Thượng tá")]
+        [ComboBoxData(
+            "Binh nhì", "Binh nhì",
+            "Binh nhất", "Binh nhất",
+            "Hạ sĩ", "Hạ sĩ",
+            "Trung sĩ", "Trung sĩ",
+            "Thượng sĩ", "Thượng sĩ",
+            "Thiếu úy", "Thiếu úy",
+            "Trung úy", "Trung úy",
+            "Thượng úy", "Thượng úy",
+            "Đại úy", "Đại úy",
+            "Thiếu tá", "Thiếu tá",
+            "Trung tá", "Trung tá",
+            "Thượng tá", "Thượng tá",
+            "Đại tá", "Đại tá",
+            "Thiếu tướng", "Thiếu tướng",
+            "Trung tướng", "Trung tướng",
+            "Thượng tướng", "Thượng tướng",
+            "Đại tướng", "Đại tướng"
+        )]
         public string CapBac { get; set; }
 
         [DisplayName("Chức vụ")]

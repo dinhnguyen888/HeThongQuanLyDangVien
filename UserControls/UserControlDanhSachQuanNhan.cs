@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -29,7 +29,6 @@ namespace QuanLyDangVien.UserControls
         private QuanNhanService _quanNhanService;
         private DonViService _donViService;
         private List<QuanNhanDTO> _quanNhanList;
-        private List<DonViSimplified> _donViList;
 
         public UserControlDanhSachQuanNhan()
         {
@@ -42,75 +41,32 @@ namespace QuanLyDangVien.UserControls
 
         private void InitializeData()
         {
-            LoadDonViComboBox();
             LoadQuanNhanData(); // SetupDataGridView sẽ được gọi trong LoadQuanNhanData
-        }
-
-        private void LoadDonViComboBox()
-        {
-            try
-            {
-                // Sử dụng GetDonViData() để lấy danh sách đơn giản cho ComboBox
-                _donViList = _donViService.GetDonViData();
-                
-                if (_donViList == null || _donViList.Count == 0)
-                {
-                    // Nếu không có dữ liệu, tạo một item mặc định
-                    _donViList = new List<DonViSimplified>
-                    {
-                        new DonViSimplified { DonViID = 0, TenDonVi = "Chưa có đơn vị nào" }
-                    };
-                }
-                
-                // Đảm bảo ComboBox được reset trước khi bind
-                cboDonVi.DataSource = null;
-                cboDonVi.Items.Clear();
-                
-                // Đảm bảo ComboBox FormattingEnabled = true
-                // MetroComboBox không có DropDownStyle property
-                
-                // Bind dữ liệu
-                cboDonVi.DataSource = _donViList;
-                cboDonVi.DisplayMember = "TenDonVi";
-                cboDonVi.ValueMember = "DonViID";
-                
-                // Refresh để đảm bảo dữ liệu được hiển thị
-                cboDonVi.Refresh();
-                cboDonVi.SelectedIndex = -1;
-                
-                // Debug: Kiểm tra xem dữ liệu đã được load chưa
-                System.Diagnostics.Debug.WriteLine($"Đã load {_donViList.Count} đơn vị vào ComboBox");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Lỗi tải danh sách đơn vị: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                System.Diagnostics.Debug.WriteLine($"Lỗi LoadDonViComboBox: {ex.Message}");
-                // Tạo danh sách rỗng để tránh lỗi
-                _donViList = new List<DonViSimplified>();
-            }
         }
 
         private void LoadQuanNhanData()
         {
             try
             {
-                // Xử lý SelectedValue có thể trả về DonViSimplified object
+                // Tìm DonViID từ tên đơn vị nhập vào
                 int? donViID = null;
-                if (cboDonVi.SelectedValue != null)
+                string tenDonVi = txtDonVi.Text.Trim();
+                if (!string.IsNullOrEmpty(tenDonVi))
                 {
-                    if (cboDonVi.SelectedValue is DonViSimplified donVi)
+                    // Tìm đơn vị theo tên (tìm chính xác hoặc chứa, không phân biệt hoa thường)
+                    var donViList = _donViService.GetDonViCapThapNhat();
+                    string tenDonViLower = tenDonVi.ToLower();
+                    var donVi = donViList.FirstOrDefault(d => 
+                        d.TenDonVi != null && (
+                            d.TenDonVi.ToLower().Equals(tenDonViLower) ||
+                            d.TenDonVi.ToLower().Contains(tenDonViLower)));
+                    
+                    if (donVi != null && donVi.DonViID > 0)
                     {
-                        donViID = donVi.DonViID > 0 ? (int?)donVi.DonViID : null;
-                    }
-                    else if (cboDonVi.SelectedValue is int)
-                    {
-                        donViID = (int?)cboDonVi.SelectedValue;
-                    }
-                    else if (int.TryParse(cboDonVi.SelectedValue.ToString(), out int id))
-                    {
-                        donViID = id > 0 ? (int?)id : null;
+                        donViID = donVi.DonViID;
                     }
                 }
+                
                 string hoTen = txtHoTen.Text.Trim();
                 string soCCCD = txtSoCCCD.Text.Trim();
                 string capBac = cboCapBac.SelectedItem?.ToString();
@@ -487,7 +443,7 @@ namespace QuanLyDangVien.UserControls
 
         private void btnLamMoi_Click(object sender, EventArgs e)
         {
-            cboDonVi.SelectedIndex = -1;
+            txtDonVi.Clear();
             txtHoTen.Clear();
             txtSoCCCD.Clear();
             cboCapBac.SelectedIndex = -1;

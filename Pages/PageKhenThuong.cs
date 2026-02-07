@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -115,7 +115,10 @@ namespace QuanLyDangVien.Pages
             try
             {
                 var donViService = new DonViService();
-                var donViList = donViService.GetDonViData();
+                //TODO: chữa cháy trước, về sau là tách chi bộ và đơn vị ra
+                // Chỉ lấy các đơn vị có tên chứa "Chi bộ"
+                var donViList = donViService.GetDonViChiBo();
+
                 cboLocTheo.DataSource = donViList;
                 cboLocTheo.DisplayMember = "TenDonVi";
                 cboLocTheo.ValueMember = "DonViID";

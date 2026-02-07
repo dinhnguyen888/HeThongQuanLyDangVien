@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using QuanLyDangVien.Helper;
 using QuanLyDangVien.Models;
 using QuanLyDangVien.DTOs;
@@ -51,6 +51,94 @@ namespace QuanLyDangVien.Services
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Lỗi khi lấy dữ liệu đơn vị: {ex.Message}");
+                return new List<DonViSimplified>
+                {
+                    new DonViSimplified { DonViID = -1, TenDonVi = "Lỗi tải dữ liệu đơn vị" }
+                };
+            }
+        }
+
+        /// <summary>
+        /// Lấy danh sách đơn vị cấp thấp nhất (không có đơn vị con) cho dropdown
+        /// </summary>
+        public List<DonViSimplified> GetDonViCapThapNhat()
+        {
+            try
+            {
+                using (var conn = DbHelper.GetConnection())
+                {
+                    if (conn == null)
+                        throw new Exception("Không thể tạo database connection");
+
+                    // Lấy các đơn vị không có đơn vị con (không có đơn vị nào có CapTrenID = DonViID của nó)
+                    string sql = @"
+                        SELECT DonViID, TenDonVi 
+                        FROM DonVi d1
+                        WHERE NOT EXISTS (
+                            SELECT 1 
+                            FROM DonVi d2 
+                            WHERE d2.CapTrenID = d1.DonViID
+                        )
+                        ORDER BY TenDonVi";
+                    
+                    var donViList = conn.Query<DonViSimplified>(sql).ToList();
+
+                    if (donViList == null || donViList.Count == 0)
+                    {
+                        return new List<DonViSimplified>
+                        {
+                            new DonViSimplified { DonViID = 0, TenDonVi = "Chưa có đơn vị nào" }
+                        };
+                    }
+
+                    return donViList;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Lỗi khi lấy dữ liệu đơn vị cấp thấp nhất: {ex.Message}");
+                return new List<DonViSimplified>
+                {
+                    new DonViSimplified { DonViID = -1, TenDonVi = "Lỗi tải dữ liệu đơn vị" }
+                };
+            }
+        }
+
+        //TODO: chữa cháy trước, về sau là tách chi bộ và đơn vị ra
+        /// <summary>
+        /// Lấy danh sách đơn vị có tên chứa "Chi bộ" cho dropdown
+        /// </summary>
+        public List<DonViSimplified> GetDonViChiBo()
+        {
+            try
+            {
+                using (var conn = DbHelper.GetConnection())
+                {
+                    if (conn == null)
+                        throw new Exception("Không thể tạo database connection");
+
+                    string sql = @"
+                        SELECT DonViID, TenDonVi 
+                        FROM DonVi
+                        WHERE TenDonVi LIKE N'%Chi bộ%'
+                        ORDER BY TenDonVi";
+                    
+                    var donViList = conn.Query<DonViSimplified>(sql).ToList();
+
+                    if (donViList == null || donViList.Count == 0)
+                    {
+                        return new List<DonViSimplified>
+                        {
+                            new DonViSimplified { DonViID = 0, TenDonVi = "Chưa có đơn vị nào" }
+                        };
+                    }
+
+                    return donViList;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Lỗi khi lấy dữ liệu đơn vị Chi bộ: {ex.Message}");
                 return new List<DonViSimplified>
                 {
                     new DonViSimplified { DonViID = -1, TenDonVi = "Lỗi tải dữ liệu đơn vị" }
